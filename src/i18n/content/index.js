@@ -42,6 +42,7 @@ export function getTranslatedGear(gear, lang) {
     return {
       ...g,
       name: gt.name || g.name,
+      price: gt.price || g.price,
       description: gt.description || g.description,
       tip: gt.tip || g.tip,
     };
