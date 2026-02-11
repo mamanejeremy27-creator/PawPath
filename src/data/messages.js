@@ -1,0 +1,17 @@
+export const DAILY_MESSAGES = [
+  "Consistency beats intensity. A 5-minute session today is worth more than a 30-minute one next week.",
+  "Your dog doesn't know they're 'training' \u2014 to them, this is quality time with their favorite person.",
+  "Every rep builds a habit. You're literally shaping your dog's brain right now.",
+  "Frustration means the step is too big. Make it easier and watch them succeed.",
+  "The best trainers reward 10x more than they correct. Be generous.",
+  "Short sessions, high energy, lots of wins. That's the formula.",
+  "Your dog reads your mood. If you're stressed, they know. Take a breath first.",
+  "Progress isn't always linear. Some days your dog will seem to forget everything. That's normal.",
+  "The goal isn't a 'trained' dog \u2014 it's a dog that trusts you and wants to work with you.",
+  "Every single interaction is training, whether you mean it or not.",
+  "Celebrate the small wins. That half-second of eye contact? That's progress.",
+  "Training isn't about control \u2014 it's about communication.",
+  "Your dog is doing their best. Always assume that first.",
+  "End every session on a win, even if you have to make it easy.",
+  "The relationship comes first. Skills come second. Always.",
+];
