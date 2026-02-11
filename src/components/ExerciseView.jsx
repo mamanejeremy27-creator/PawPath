@@ -58,7 +58,7 @@ export default function ExerciseView() {
             {gear.map(g => (
               <div key={g.id} style={{ display: "flex", gap: 10, marginBottom: 10, padding: "10px", background: "rgba(255,255,255,0.02)", borderRadius: 10 }}>
                 <span style={{ fontSize: 22 }}>{g.emoji}</span>
-                <div><div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{g.name} <span style={{ color: C.t3, fontWeight: 500 }}>· {g.price}</span></div><div style={{ fontSize: 12, color: C.t3, marginTop: 3, lineHeight: 1.5 }}>{g.tip}</div></div>
+                <div><div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{g.name} <span style={{ color: C.t3, fontWeight: 500 }}>· <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "embed" }}>{g.price}</span></span></div><div style={{ fontSize: 12, color: C.t3, marginTop: 3, lineHeight: 1.5 }}>{g.tip}</div></div>
               </div>
             ))}
           </div>

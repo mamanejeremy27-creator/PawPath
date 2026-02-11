@@ -5,7 +5,7 @@ const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5
 const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
 
 export default function GearShop() {
-  const { showGear, setShowGear, T, gear: gearData } = useApp();
+  const { showGear, setShowGear, T, rtl, gear: gearData } = useApp();
   const [gearCat, setGearCat] = useState("all");
   if (!showGear) return null;
 
@@ -36,7 +36,7 @@ export default function GearShop() {
               <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{g.name}</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: C.acc }}>{g.price}</div>
+                  <div dir="ltr" style={{ fontSize: 13, fontWeight: 700, color: C.acc, direction: "ltr", unicodeBidi: "embed" }}>{g.price}</div>
                 </div>
                 <p style={{ fontSize: 13, color: C.t2, marginTop: 6, lineHeight: 1.6 }}>{g.description}</p>
                 <p style={{ fontSize: 12, color: C.t3, marginTop: 6, lineHeight: 1.5, fontStyle: "italic" }}>{g.tip}</p>
