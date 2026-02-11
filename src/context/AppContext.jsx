@@ -7,6 +7,8 @@ import { t, isRTL } from "../i18n/index.js";
 import { getTranslatedPrograms, getTranslatedGear, getTranslatedMessages, getTranslatedBadges } from "../i18n/content/index.js";
 
 const STORAGE_KEY = "pawpath_v3";
+const FEEDBACK_KEY = "pawpath_feedback";
+const FEEDBACK_PROMPT_KEY = "pawpath_lastFeedbackPrompt";
 
 const AppContext = createContext(null);
 
@@ -29,6 +31,12 @@ export function AppProvider({ children }) {
   const [journal, setJournal] = useState([]);
   const [reminders, setReminders] = useState({ enabled: false, times: ["09:00", "18:00"], notifPermission: "default" });
   const [lang, setLang] = useState("en");
+
+  // ─── Feedback State ───
+  const [feedback, setFeedback] = useState([]);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [showFeedbackAdmin, setShowFeedbackAdmin] = useState(false);
+  const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
 
   // ─── Navigation State ───
   const [screen, setScreen] = useState("splash");
@@ -68,6 +76,11 @@ export function AppProvider({ children }) {
         if (d.lang) setLang(d.lang);
       }
     } catch (e) { /* ignore */ }
+    // Load feedback from separate localStorage key
+    try {
+      const rawFeedback = localStorage.getItem(FEEDBACK_KEY);
+      if (rawFeedback) setFeedback(JSON.parse(rawFeedback));
+    } catch (e) { /* ignore */ }
     setLoaded(true);
   }, []);
 
@@ -82,6 +95,14 @@ export function AppProvider({ children }) {
       }));
     } catch (e) { /* ignore */ }
   }, [dogProfile, completedExercises, completedLevels, totalXP, currentStreak, lastTrainDate, totalSessions, earnedBadges, journal, reminders, lang, loaded]);
+
+  // ─── Save Feedback to localStorage ───
+  useEffect(() => {
+    if (!loaded) return;
+    try {
+      localStorage.setItem(FEEDBACK_KEY, JSON.stringify(feedback));
+    } catch (e) { /* ignore */ }
+  }, [feedback, loaded]);
 
   // ─── Player Level ───
   const playerLevel = useMemo(() => {
@@ -226,6 +247,19 @@ export function AppProvider({ children }) {
       }]);
     }
 
+    // Check if we should show feedback prompt (every 5th exercise, max once per week)
+    const newTotal = completedExercises.length + 1; // +1 for the one being completed now
+    if (newTotal % 5 === 0) {
+      try {
+        const lastPrompt = localStorage.getItem(FEEDBACK_PROMPT_KEY);
+        const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+        if (!lastPrompt || Number(lastPrompt) < oneWeekAgo) {
+          localStorage.setItem(FEEDBACK_PROMPT_KEY, Date.now().toString());
+          setTimeout(() => setShowFeedbackPrompt(true), 2500); // slight delay after completion animations
+        }
+      } catch (e) { /* ignore */ }
+    }
+
     setPendingComplete(null);
     setShowJournalEntry(false);
   }, [pendingComplete, lastTrainDate, completedExercises, completedLevels, journalForm, programs]);
@@ -236,6 +270,11 @@ export function AppProvider({ children }) {
       const perm = await Notification.requestPermission();
       setReminders(r => ({ ...r, notifPermission: perm }));
     }
+  }, []);
+
+  // ─── Submit Feedback ───
+  const submitFeedback = useCallback((entry) => {
+    setFeedback(prev => [...prev, entry]);
   }, []);
 
   // ─── Reset ───
@@ -289,6 +328,12 @@ export function AppProvider({ children }) {
     // Actions
     triggerComplete, finalizeComplete,
     requestNotifPermission, resetAllData,
+
+    // Feedback
+    feedback, showFeedback, setShowFeedback,
+    showFeedbackAdmin, setShowFeedbackAdmin,
+    showFeedbackPrompt, setShowFeedbackPrompt,
+    submitFeedback,
 
     // i18n
     T, rtl,

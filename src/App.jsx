@@ -11,6 +11,10 @@ import Profile from "./components/Profile.jsx";
 import GearShop from "./components/GearShop.jsx";
 import RemindersModal from "./components/RemindersModal.jsx";
 import JournalModal from "./components/JournalModal.jsx";
+import FeedbackButton from "./components/FeedbackButton.jsx";
+import FeedbackModal from "./components/FeedbackModal.jsx";
+import FeedbackPrompt from "./components/FeedbackPrompt.jsx";
+import FeedbackAdmin from "./components/FeedbackAdmin.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
@@ -48,10 +52,16 @@ export default function App() {
       {screen === "badges" && <Badges />}
       {screen === "profile" && <Profile />}
 
+      {/* Feedback */}
+      <FeedbackButton />
+      <FeedbackPrompt />
+
       {/* Modals */}
       <GearShop />
       <RemindersModal />
       <JournalModal />
+      <FeedbackModal />
+      <FeedbackAdmin />
     </div>
   );
 }

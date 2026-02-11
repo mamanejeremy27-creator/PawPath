@@ -1,3 +1,4 @@
+import { useState, useRef } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
@@ -5,7 +6,21 @@ import LanguageToggle from "./LanguageToggle.jsx";
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16 };
 
 export default function Profile() {
-  const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges } = useApp();
+  const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin } = useApp();
+  const [tapCount, setTapCount] = useState(0);
+  const tapTimer = useRef(null);
+
+  const handleVersionTap = () => {
+    const newCount = tapCount + 1;
+    setTapCount(newCount);
+    clearTimeout(tapTimer.current);
+    if (newCount >= 5) {
+      setTapCount(0);
+      setShowFeedbackAdmin(true);
+    } else {
+      tapTimer.current = setTimeout(() => setTapCount(0), 2000);
+    }
+  };
 
   return (
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
@@ -35,6 +50,12 @@ export default function Profile() {
         ))}
         <button onClick={resetAllData}
           style={{ marginTop: 32, width: "100%", padding: "14px", fontSize: 14, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: C.danger, border: `1px solid rgba(239,68,68,0.2)`, borderRadius: C.r, cursor: "pointer" }}>{T("resetAllData")}</button>
+        <div
+          onClick={handleVersionTap}
+          style={{ textAlign: "center", marginTop: 24, padding: "12px 0", fontSize: 12, color: C.t3, cursor: "default", userSelect: "none" }}
+        >
+          v1.0.0
+        </div>
       </div>
       <BottomNav active="profile" />
     </div>
