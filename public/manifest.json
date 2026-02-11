@@ -1,0 +1,17 @@
+{
+  "name": "PawPath — Train Smarter, Bond Deeper",
+  "short_name": "PawPath",
+  "description": "Smart dog training app. Build skills, track progress, and strengthen your bond.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0C",
+  "theme_color": "#0A0A0C",
+  "icons": [
+    {
+      "src": "/pawpath-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+<svg width="240" height="80" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(10, 8)">
+    <ellipse cx="30" cy="48" rx="18" ry="15" fill="#22C55E"/>
+    <circle cx="14" cy="26" r="8" fill="#22C55E"/>
+    <circle cx="30" cy="18" r="8" fill="#22C55E"/>
+    <circle cx="46" cy="26" r="8" fill="#22C55E"/>
+    <circle cx="56" cy="58" r="3" fill="#22C55E" opacity="0.6"/>
+    <circle cx="64" cy="52" r="2.5" fill="#22C55E" opacity="0.4"/>
+    <circle cx="71" cy="48" r="2" fill="#22C55E" opacity="0.2"/>
+  </g>
+  <text x="85" y="54" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-weight="800" font-size="36" fill="#F5F5F7" letter-spacing="-1">Paw</text>
+  <text x="152" y="54" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-weight="800" font-size="36" fill="#22C55E" letter-spacing="-1">Path</text>
+</svg>
