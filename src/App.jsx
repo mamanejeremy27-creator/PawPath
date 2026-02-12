@@ -29,14 +29,14 @@ export default function App() {
     <div style={{ fontFamily: "'DM Sans', sans-serif", background: C.bg, color: C.t1, minHeight: "100vh", maxWidth: 480, margin: "0 auto", position: "relative", WebkitFontSmoothing: "antialiased", direction: rtl ? "rtl" : "ltr", textAlign: rtl ? "right" : "left" }}>
       {/* XP Animation */}
       {xpAnim && (
-        <div style={{ position: "fixed", top: 80, left: "50%", zIndex: 400, animation: "xpFloat 2s ease forwards", background: C.acc, color: "#000", padding: "12px 28px", borderRadius: 24, fontSize: 18, fontWeight: 800, boxShadow: "0 8px 32px rgba(34,197,94,0.4)" }}>
+        <div style={{ position: "fixed", top: 80, left: "50%", transform: "translateX(-50%)", zIndex: 400, animation: "xpFloat 2s ease forwards", background: C.acc, color: "#000", padding: "12px 28px", borderRadius: 24, fontSize: 18, fontWeight: 800, boxShadow: "0 8px 32px rgba(34,197,94,0.4)" }}>
           +{xpAnim} XP ⚡
         </div>
       )}
 
       {/* Badge Notification */}
       {newBadge && (
-        <div style={{ position: "fixed", top: 20, left: "50%", zIndex: 400, display: "flex", alignItems: "center", gap: 14, background: "rgba(20,20,24,0.95)", border: "1px solid rgba(34,197,94,0.25)", padding: "16px 24px", borderRadius: 20, boxShadow: "0 16px 48px rgba(0,0,0,0.6)", backdropFilter: "blur(24px)", animation: "badgeDrop 0.5s ease", minWidth: 280 }}>
+        <div style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 400, display: "flex", alignItems: "center", gap: 14, background: "rgba(20,20,24,0.95)", border: "1px solid rgba(34,197,94,0.25)", padding: "16px 24px", borderRadius: 20, boxShadow: "0 16px 48px rgba(0,0,0,0.6)", backdropFilter: "blur(24px)", animation: "badgeDrop 0.5s ease", width: "calc(100% - 40px)", maxWidth: 340 }}>
           <span style={{ fontSize: 36 }}>{newBadge.emoji}</span>
           <div>
             <div style={{ fontSize: 10, color: C.acc, textTransform: "uppercase", letterSpacing: 2, fontWeight: 800 }}>Achievement Unlocked</div>
