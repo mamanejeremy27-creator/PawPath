@@ -14,9 +14,9 @@ export default {
   age: "Age",
   selectAge: "Select age range",
   agePuppy: "Puppy (under 6 months)",
-  ageYoung: "Young (6\u201312 months)",
-  ageAdolescent: "Adolescent (1\u20132 years)",
-  ageAdult: "Adult (2\u20137 years)",
+  ageYoung: "Young (6-12 months)",
+  ageAdolescent: "Adolescent (1-2 years)",
+  ageAdult: "Adult (2-7 years)",
   ageSenior: "Senior (7+ years)",
   beginTraining: "Begin Training \u2192",
 

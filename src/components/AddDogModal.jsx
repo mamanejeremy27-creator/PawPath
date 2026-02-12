@@ -72,9 +72,9 @@ export default function AddDogModal() {
             <select value={form.age} onChange={e => setForm(p => ({ ...p, age: e.target.value }))} style={{ width: "100%", padding: "14px 16px", fontSize: 15, background: C.bg, border: `1px solid ${C.b2}`, borderRadius: C.r, color: form.age ? C.t1 : C.t4, outline: "none", appearance: "none" }}>
               <option value="">{T("selectAge")}</option>
               <option value="Puppy (under 6mo)">{T("agePuppy")}</option>
-              <option value="Young (6\u201312mo)">{T("ageYoung")}</option>
-              <option value="Adolescent (1\u20132yr)">{T("ageAdolescent")}</option>
-              <option value="Adult (2\u20137yr)">{T("ageAdult")}</option>
+              <option value="Young (6-12mo)">{T("ageYoung")}</option>
+              <option value="Adolescent (1-2yr)">{T("ageAdolescent")}</option>
+              <option value="Adult (2-7yr)">{T("ageAdult")}</option>
               <option value="Senior (7+yr)">{T("ageSenior")}</option>
             </select>
           </div>

@@ -3,7 +3,7 @@ export const TRAINING_PROGRAMS = [
     id: "foundations", name: "Puppy Foundations", emoji: "\uD83D\uDC3E",
     description: "Essential skills every puppy needs. Build trust, focus, and the basics that everything else is built on.",
     color: "#22C55E", gradient: "linear-gradient(135deg, #22C55E, #16A34A)",
-    unlockLevel: 0, difficulty: "Beginner", duration: "2\u20134 weeks",
+    unlockLevel: 0, difficulty: "Beginner", duration: "2-4 weeks",
     levels: [
       { id: "f1", name: "First Steps", xpReward: 50, description: "The absolute basics \u2014 your first week together.",
         exercises: [
@@ -32,7 +32,7 @@ export const TRAINING_PROGRAMS = [
     id: "potty", name: "Potty Training", emoji: "\uD83C\uDFE0",
     description: "Housebreaking done right. A structured, no-punishment approach to teaching your dog where and when to go.",
     color: "#06B6D4", gradient: "linear-gradient(135deg, #06B6D4, #0891B2)",
-    unlockLevel: 0, difficulty: "Beginner", duration: "2\u20136 weeks",
+    unlockLevel: 0, difficulty: "Beginner", duration: "2-6 weeks",
     levels: [
       { id: "pt1", name: "The Basics", xpReward: 75, description: "Set up for success \u2014 schedules, management, and the foundation of clean habits.",
         exercises: [
@@ -54,7 +54,7 @@ export const TRAINING_PROGRAMS = [
     id: "crate", name: "Crate Training", emoji: "\uD83C\uDFE1",
     description: "Make the crate your dog's favorite place. A safe space they choose to go to, not a punishment.",
     color: "#F472B6", gradient: "linear-gradient(135deg, #F472B6, #EC4899)",
-    unlockLevel: 0, difficulty: "Beginner", duration: "1\u20133 weeks",
+    unlockLevel: 0, difficulty: "Beginner", duration: "1-3 weeks",
     levels: [
       { id: "cr1", name: "Introduction", xpReward: 75, description: "Your dog discovers the crate is a magical place where amazing things happen.",
         exercises: [
@@ -76,7 +76,7 @@ export const TRAINING_PROGRAMS = [
     id: "social", name: "Puppy Socialization", emoji: "\uD83D\uDC15\u200D\uD83E\uDDBA",
     description: "Expose your puppy to the world safely. Build confidence, not fear. The window is short \u2014 start now.",
     color: "#10B981", gradient: "linear-gradient(135deg, #10B981, #059669)",
-    unlockLevel: 0, difficulty: "Beginner", duration: "8\u201316 weeks of age (critical period)",
+    unlockLevel: 0, difficulty: "Beginner", duration: "8-16 weeks of age (critical period)",
     levels: [
       { id: "sc1", name: "Sounds & Surfaces", xpReward: 75, description: "Your puppy discovers that the world is full of interesting (not scary) things.",
         exercises: [
@@ -120,7 +120,7 @@ export const TRAINING_PROGRAMS = [
     id: "obedience", name: "Core Obedience", emoji: "\uD83C\uDFAF",
     description: "Make your basics bulletproof. Real-world reliability with distance, distractions, and duration.",
     color: "#3B82F6", gradient: "linear-gradient(135deg, #3B82F6, #2563EB)",
-    unlockLevel: 2, difficulty: "Intermediate", duration: "3\u20136 weeks",
+    unlockLevel: 2, difficulty: "Intermediate", duration: "3-6 weeks",
     levels: [
       { id: "o1", name: "Reliable Basics", xpReward: 100, description: "Proof your commands against the real world.",
         exercises: [
@@ -171,7 +171,7 @@ export const TRAINING_PROGRAMS = [
     id: "reactivity", name: "Leash Reactivity", emoji: "\uD83D\uDD17",
     description: "Your dog barks, lunges, or loses their mind on leash at other dogs or people. There's a systematic fix.",
     color: "#F97316", gradient: "linear-gradient(135deg, #F97316, #EA580C)",
-    unlockLevel: 2, difficulty: "Intermediate\u2013Advanced", duration: "4\u201312 weeks",
+    unlockLevel: 2, difficulty: "Intermediate-Advanced", duration: "4-12 weeks",
     levels: [
       { id: "lr1", name: "Foundation Skills", xpReward: 100, description: "Before working on reactivity directly, your dog needs some foundation skills to fall back on.",
         exercises: [
