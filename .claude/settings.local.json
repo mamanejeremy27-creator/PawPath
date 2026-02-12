@@ -14,7 +14,8 @@
       "Bash(find:*)",
       "Bash(npm run build:*)",
       "Bash(npx vercel:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(powershell -Command \"$c = Get-Content ''C:\\\\Users\\\\User\\\\OneDrive\\\\Desktop\\\\PawPath\\\\src\\\\i18n\\\\he.js'' -Raw; $idx = $c.IndexOf\\(''whenBorn''\\); $c.Substring\\($idx, 100\\)\")"
     ]
   }
 }
