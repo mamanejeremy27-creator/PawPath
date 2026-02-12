@@ -1,5 +1,5 @@
 const WEBHOOK_URL =
-  "https://script.google.com/macros/s/AKfycbzbUAPeUyv3rUfmpz4NjBf5__YBuG81NotPpfkLY5HsUpG9Z0CEaAepS3s4X-AGDk-eZw/exec";
+  "https://script.google.com/macros/s/AKfycbxs3knzd2Ren4vdGwjEvcdMrp6KhgPHI_qn3OZaeTibGBAOjf_ksxfjAcM8S3IOFfs29w/exec";
 
 export async function submitFeedbackToSheet({ type, rating, message, dogName, language }) {
   const payload = {
