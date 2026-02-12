@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext.jsx";
+import { submitFeedbackToSheet } from "../utils/feedback.js";
 
 const C = {
   bg: "#0A0A0C",
   s1: "#131316",
   b1: "rgba(255,255,255,0.06)",
   t1: "#F5F5F7",
-  t2: "#A1A1AA",
   t3: "#71717A",
   acc: "#22C55E",
   rL: 24,
@@ -14,17 +14,17 @@ const C = {
 };
 
 const TYPES = [
-  { id: "bug", emoji: "🐛", labelKey: "bugReport", subKey: "somethingBroken" },
-  { id: "feature", emoji: "💡", labelKey: "featureRequest", subKey: "wishAppCould" },
-  { id: "rating", emoji: "⭐", labelKey: "appRating", subKey: "howAmIDoing" },
-  { id: "general", emoji: "📝", labelKey: "generalFeedback", subKey: "wantToSay" },
+  { id: "bug", emoji: "\uD83D\uDC1B", labelKey: "bugReport" },
+  { id: "rating", emoji: "\u2B50", labelKey: "rateApp" },
+  { id: "feature", emoji: "\uD83D\uDCA1", labelKey: "featureRequest" },
+  { id: "general", emoji: "\uD83D\uDCDD", labelKey: "generalFeedback" },
 ];
 
 const PLACEHOLDERS = {
-  bug: "bugPlaceholder",
-  feature: "featurePlaceholder",
-  rating: "ratingPlaceholder",
-  general: "generalPlaceholder",
+  bug: "whatWentWrong",
+  feature: "whatToSee",
+  rating: "tellUsWhatYouThink",
+  general: "tellUsWhatYouThink",
 };
 
 export default function FeedbackModal() {
@@ -36,7 +36,7 @@ export default function FeedbackModal() {
   const [type, setType] = useState(null);
   const [rating, setRating] = useState(0);
   const [message, setMessage] = useState("");
-  const [contact, setContact] = useState("");
+  const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   if (!showFeedback) return null;
@@ -46,39 +46,51 @@ export default function FeedbackModal() {
     setType(null);
     setRating(0);
     setMessage("");
-    setContact("");
+    setSending(false);
     setSubmitted(false);
   };
 
-  const handleSubmit = () => {
-    if (!type || !message.trim()) return;
+  const canSubmit = type && !sending && (type === "rating" ? rating > 0 : message.trim());
 
-    const entry = {
-      id: Date.now().toString(),
-      type,
-      rating: type === "rating" ? rating : undefined,
-      message: message.trim(),
-      contact: contact.trim() || undefined,
-      context: {
-        screen,
+  const handleSubmit = async () => {
+    if (!canSubmit) return;
+    setSending(true);
+
+    try {
+      await submitFeedbackToSheet({
+        type,
+        rating,
+        message: message.trim(),
         dogName: dogProfile?.name || "",
-        dogBreed: dogProfile?.breed || "",
-        playerLevel: playerLevel.level,
-        totalXP,
-        currentStreak,
-        totalExercises: completedExercises.length,
         language: lang,
-      },
-      timestamp: new Date().toISOString(),
-      status: "new",
-    };
+      });
 
-    submitFeedback(entry);
-    setSubmitted(true);
-    setTimeout(handleClose, 2000);
+      // Also save locally for FeedbackAdmin
+      submitFeedback({
+        id: Date.now().toString(),
+        type,
+        rating: type === "rating" ? rating : undefined,
+        message: message.trim() || (type === "rating" ? `${rating}/5 stars` : ""),
+        context: {
+          screen,
+          dogName: dogProfile?.name || "",
+          dogBreed: dogProfile?.breed || "",
+          playerLevel: playerLevel.level,
+          totalXP,
+          currentStreak,
+          totalExercises: completedExercises.length,
+          language: lang,
+        },
+        timestamp: new Date().toISOString(),
+        status: "new",
+      });
+
+      setSubmitted(true);
+      setTimeout(handleClose, 2000);
+    } catch {
+      setSending(false);
+    }
   };
-
-  const canSubmit = type && message.trim();
 
   return (
     <div
@@ -108,51 +120,37 @@ export default function FeedbackModal() {
       >
         {submitted ? (
           <div style={{ textAlign: "center", padding: "48px 20px", animation: "fadeIn 0.4s ease" }}>
-            <div style={{ fontSize: 56, marginBottom: 16 }}>🎉</div>
+            <div style={{ fontSize: 56, marginBottom: 16 }}>{"\uD83C\uDF89"}</div>
             <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>
-              {T("thankYouFeedback")}
+              {T("thanksFeedback")}
             </div>
           </div>
         ) : (
           <>
             {/* Header */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-              <h3
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: 22,
-                  fontWeight: 800,
-                  margin: 0,
-                  color: C.t1,
-                }}
-              >
+              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 800, margin: 0, color: C.t1 }}>
                 {T("feedbackTitle")}
               </h3>
               <button
                 onClick={handleClose}
-                style={{
-                  background: C.b1,
-                  border: "none",
-                  color: C.t3,
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  cursor: "pointer",
-                  fontSize: 16,
-                }}
+                style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", fontSize: 16 }}
               >
-                ✕
+                {"\u2715"}
               </button>
             </div>
 
-            {/* Type Selection */}
+            {/* Type Selector */}
+            <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 }}>
+              {T("feedbackType")}
+            </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 24 }}>
               {TYPES.map(tp => (
                 <button
                   key={tp.id}
-                  onClick={() => setType(tp.id)}
+                  onClick={() => { setType(tp.id); setRating(0); setMessage(""); }}
                   style={{
-                    padding: "16px 12px",
+                    padding: "14px 12px",
                     background: type === tp.id ? "rgba(34,197,94,0.1)" : C.bg,
                     border: `1px solid ${type === tp.id ? "rgba(34,197,94,0.3)" : C.b1}`,
                     borderRadius: C.rL,
@@ -161,27 +159,17 @@ export default function FeedbackModal() {
                     transition: "all 0.15s ease",
                   }}
                 >
-                  <div style={{ fontSize: 28, marginBottom: 6 }}>{tp.emoji}</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{T(tp.labelKey)}</div>
-                  <div style={{ fontSize: 11, color: C.t3, marginTop: 2 }}>{T(tp.subKey)}</div>
+                  <div style={{ fontSize: 24, marginBottom: 4 }}>{tp.emoji}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: type === tp.id ? C.acc : C.t1 }}>{T(tp.labelKey)}</div>
                 </button>
               ))}
             </div>
 
-            {/* Rating (only for rating type) */}
+            {/* Rating Stars (only for rating type) */}
             {type === "rating" && (
               <div style={{ marginBottom: 20 }}>
-                <div
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: C.t3,
-                    letterSpacing: 2,
-                    textTransform: "uppercase",
-                    marginBottom: 12,
-                  }}
-                >
-                  {T("appRating")}
+                <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>
+                  {T("rateApp")}
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
                   {[1, 2, 3, 4, 5].map(n => (
@@ -199,14 +187,14 @@ export default function FeedbackModal() {
                         transition: "all 0.15s",
                       }}
                     >
-                      {n <= rating ? "⭐" : "☆"}
+                      {n <= rating ? "\u2B50" : "\u2606"}
                     </button>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Details textarea */}
+            {/* Message Textarea */}
             {type && (
               <>
                 <textarea
@@ -226,39 +214,6 @@ export default function FeedbackModal() {
                     outline: "none",
                     lineHeight: 1.6,
                     resize: "none",
-                    boxSizing: "border-box",
-                    marginBottom: 16,
-                  }}
-                />
-
-                {/* Contact field */}
-                <div
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: C.t3,
-                    letterSpacing: 2,
-                    textTransform: "uppercase",
-                    marginBottom: 8,
-                  }}
-                >
-                  {T("contactLabel")}
-                </div>
-                <input
-                  type="text"
-                  value={contact}
-                  onChange={e => setContact(e.target.value)}
-                  placeholder={T("contactPlaceholder")}
-                  style={{
-                    width: "100%",
-                    padding: "14px 16px",
-                    fontSize: 14,
-                    fontFamily: "'DM Sans', sans-serif",
-                    background: C.bg,
-                    border: `1px solid rgba(255,255,255,0.1)`,
-                    borderRadius: C.r,
-                    color: C.t1,
-                    outline: "none",
                     boxSizing: "border-box",
                     marginBottom: 24,
                   }}
@@ -281,9 +236,10 @@ export default function FeedbackModal() {
                     cursor: canSubmit ? "pointer" : "default",
                     boxShadow: canSubmit ? "0 8px 32px rgba(34,197,94,0.25)" : "none",
                     transition: "all 0.2s ease",
+                    opacity: sending ? 0.7 : 1,
                   }}
                 >
-                  {T("sendFeedback")}
+                  {sending ? T("sending") : T("sendFeedback")}
                 </button>
               </>
             )}

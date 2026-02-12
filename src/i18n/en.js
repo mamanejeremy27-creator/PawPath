@@ -149,6 +149,13 @@ export default {
   wishAppCould: "I wish the app could...",
   howAmIDoing: "How am I doing?",
   wantToSay: "I want to say something",
+  feedbackType: "Feedback Type",
+  rateApp: "Rate App",
+  whatWentWrong: "What went wrong?",
+  whatToSee: "What would you like to see?",
+  tellUsWhatYouThink: "Tell us what you think",
+  thanksFeedback: "Thanks for your feedback!",
+  sending: "Sending...",
 
   // Life Stage
   whenBorn: "What's {dogName}'s birthday?",
