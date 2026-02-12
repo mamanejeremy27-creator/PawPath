@@ -22,7 +22,7 @@ export default function DailyPlan() {
           <div style={{ width: 42, height: 42, borderRadius: 12, background: item.program.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>{item.program.emoji}</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700 }}>{item.exercise.name}</div>
-            <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{item.program.name} · {item.reason === "Continue progress" ? T("continueProgress") : T("reviewReinforce")}</div>
+            <div style={{ fontSize: 12, color: item.reason === "needsReview" ? "#EF4444" : C.t3, marginTop: 2 }}>{item.program.name} · {item.reason === "needsReview" ? T("needsReview") : item.reason === "continueProgress" ? T("continueProgress") : T("reviewReinforce")}</div>
           </div>
           <span style={{ fontSize: 11, padding: "4px 10px", borderRadius: 8, background: C.b1, color: C.t3, fontWeight: 600 }}>{Math.floor(item.exercise.duration / 60)}m</span>
         </button>

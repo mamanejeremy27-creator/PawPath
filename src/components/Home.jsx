@@ -1,5 +1,6 @@
 import { useApp } from "../context/AppContext.jsx";
 import DailyPlan from "./DailyPlan.jsx";
+import SkillHealth from "./SkillHealth.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 
@@ -49,6 +50,7 @@ export default function Home() {
         ))}
       </div>
 
+      <SkillHealth />
       <DailyPlan />
 
       {/* Quick Actions */}

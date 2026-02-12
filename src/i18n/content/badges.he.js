@@ -14,4 +14,6 @@ export default {
   quick_learner: { name: "לומד מהיר", desc: "3 תרגילים ביום אחד" },
   journal_5: { name: "מהורהרים", desc: "כתבו 5 רשומות ביומן" },
   journal_20: { name: "כרוניקאים", desc: "כתבו 20 רשומות ביומן" },
+  caretaker: { name: "מטפל", desc: "חזרו על 10 תרגילים" },
+  maintenance_master: { name: "אמן תחזוקה", desc: "שמרו על כל המיומנויות רעננות 7 ימים" },
 };

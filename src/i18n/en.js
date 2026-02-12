@@ -50,6 +50,14 @@ export default {
   yourPastNotes: "\uD83D\uDCDD Your Past Notes",
   markComplete: "Mark as Complete \u2713",
   exerciseCompleted: "\u2705 Exercise Completed!",
+  skillHealth: "Skill Health",
+  needsReview: "Needs review",
+  skillsNeedReview: "skills need review",
+  allSkillsFresh: "All skills in great shape!",
+  lastPracticed: "Last practiced",
+  daysAgo: "days",
+  reviewRefresh: "Review & Refresh \u21BB",
+  reviewXP: "Review XP",
   min: "min",
   difficulty: "difficulty",
   completed: "Completed",
@@ -141,4 +149,21 @@ export default {
   wishAppCould: "I wish the app could...",
   howAmIDoing: "How am I doing?",
   wantToSay: "I want to say something",
+
+  // Skill Health
+  fresh: "Strong",
+  fading: "Fading",
+  stale: "Needs Refresh",
+  refresh: "Refresh",
+  maintenanceReview: "Quick Review",
+
+  // Photo Journal
+  addPhoto: "Add Photo",
+  camera: "Camera",
+  gallery: "Gallery",
+  timeline: "Timeline",
+  growth: "The Journey",
+  thenVsNow: "Then vs. Now",
+  photosStored: "photos stored",
+  storageAlmostFull: "No more room for photos",
 };

@@ -1,15 +1,18 @@
 import { useApp } from "../context/AppContext.jsx";
 import Timer from "./Timer.jsx";
+import { calculateFreshness, getFreshnessColor } from "../utils/freshness.js";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", warn: "#F59E0B", rL: 24, r: 16 };
 const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
 const sectionLabel = (text) => <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{text}</div>;
 
 export default function ExerciseView() {
-  const { selExercise, selLevel, selProgram, completedExercises, journal, triggerComplete, nav, T, rtl, lang, gear: gearData } = useApp();
+  const { selExercise, selLevel, selProgram, completedExercises, journal, triggerComplete, nav, T, rtl, lang, gear: gearData, skillFreshness } = useApp();
   if (!selExercise || !selLevel || !selProgram) return null;
   const ex = selExercise;
   const done = completedExercises.includes(ex.id);
+  const freshData = skillFreshness[ex.id];
+  const daysSince = freshData ? Math.floor((Date.now() - new Date(freshData.lastCompleted).getTime()) / 86400000) : null;
   const gear = (ex.gear || []).map(id => gearData.find(g => g.id === id)).filter(Boolean);
   const journalEntries = journal.filter(j => j.exerciseId === ex.id);
 
@@ -27,9 +30,15 @@ export default function ExerciseView() {
           <span>⏱ {Math.floor(ex.duration / 60)} {T("min")}</span>
           <span style={{ color: selProgram.color }}>{"●".repeat(ex.difficulty)}{"○".repeat(4 - ex.difficulty)}</span>
         </div>
+        {done && freshData && (
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: getFreshnessColor(calculateFreshness(freshData.lastCompleted, freshData.interval)) }} />
+            <span style={{ fontSize: 12, color: C.t3 }}>{T("lastPracticed")} {daysSince} {T("daysAgo")}</span>
+          </div>
+        )}
         <p style={{ fontSize: 15, color: C.t2, marginTop: 14, lineHeight: 1.7 }}>{ex.description}</p>
 
-        {!done && <Timer duration={ex.duration} />}
+        <Timer duration={ex.duration} />
 
         {/* Steps */}
         <div style={{ marginTop: 20, ...cardStyle }}>
@@ -84,9 +93,10 @@ export default function ExerciseView() {
             {T("markComplete")}
           </button>
         ) : (
-          <div style={{ marginTop: 24, padding: "18px", textAlign: "center", background: "rgba(34,197,94,0.08)", borderRadius: C.rL, border: "1px solid rgba(34,197,94,0.2)" }}>
-            <span style={{ fontSize: 15, fontWeight: 700, color: C.acc }}>{T("exerciseCompleted")}</span>
-          </div>
+          <button onClick={() => triggerComplete(ex.id, selLevel.id, selProgram.id)}
+            style={{ width: "100%", padding: "20px", marginTop: 24, fontSize: 16, fontWeight: 800, background: "transparent", color: C.acc, border: `2px solid ${C.acc}`, borderRadius: 50, cursor: "pointer" }}>
+            {T("reviewRefresh")}
+          </button>
         )}
       </div>
     </div>

@@ -13,6 +13,8 @@ export const BADGE_DEFS = [
   { id: "quick_learner", name: "Quick Learner", emoji: "\uD83E\uDDE0", desc: "3 exercises in one day" },
   { id: "journal_5", name: "Reflective", emoji: "\uD83D\uDCDD", desc: "Write 5 journal entries" },
   { id: "journal_20", name: "Chronicler", emoji: "\uD83D\uDCD6", desc: "Write 20 journal entries" },
+  { id: "caretaker", name: "Caretaker", emoji: "\uD83C\uDF3F", desc: "Review 10 exercises" },
+  { id: "maintenance_master", name: "Maintenance Master", emoji: "\uD83D\uDC8E", desc: "Keep all skills fresh for 7 days" },
 ];
 
 export function checkBadgeCondition(badgeId, state) {
@@ -32,6 +34,8 @@ export function checkBadgeCondition(badgeId, state) {
     case "quick_learner": return todayExercises >= 3;
     case "journal_5": return journal.length >= 5;
     case "journal_20": return journal.length >= 20;
+    case "caretaker": return (state.totalReviews || 0) >= 10;
+    case "maintenance_master": return state.allSkillsFresh && completedExercises.length >= 5;
     default: return false;
   }
 }

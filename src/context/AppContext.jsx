@@ -5,6 +5,7 @@ import { DAILY_MESSAGES } from "../data/messages.js";
 import { GEAR_TIPS } from "../data/gear.js";
 import { t, isRTL } from "../i18n/index.js";
 import { getTranslatedPrograms, getTranslatedGear, getTranslatedMessages, getTranslatedBadges } from "../i18n/content/index.js";
+import { calculateFreshness, getNextInterval, getFreshnessLabel, getFreshnessColor } from "../utils/freshness.js";
 
 const STORAGE_KEY = "pawpath_v3";
 const FEEDBACK_KEY = "pawpath_feedback";
@@ -31,6 +32,8 @@ export function AppProvider({ children }) {
   const [journal, setJournal] = useState([]);
   const [reminders, setReminders] = useState({ enabled: false, times: ["09:00", "18:00"], notifPermission: "default" });
   const [lang, setLang] = useState("en");
+  const [skillFreshness, setSkillFreshness] = useState({});
+  const [totalReviews, setTotalReviews] = useState(0);
 
   // ─── Feedback State ───
   const [feedback, setFeedback] = useState([]);
@@ -74,6 +77,24 @@ export function AppProvider({ children }) {
         if (d.journal) setJournal(d.journal);
         if (d.reminders) setReminders(d.reminders);
         if (d.lang) setLang(d.lang);
+        if (d.totalReviews) setTotalReviews(d.totalReviews);
+
+        // Load or migrate skillFreshness
+        if (d.skillFreshness) {
+          setSkillFreshness(d.skillFreshness);
+        } else if (d.completedExercises && d.completedExercises.length > 0) {
+          // Migration: build skillFreshness from existing data
+          const migrated = {};
+          d.completedExercises.forEach(exId => {
+            let lastDate = d.lastTrainDate || new Date().toDateString();
+            if (d.journal) {
+              const entries = d.journal.filter(j => j.exerciseId === exId);
+              if (entries.length > 0) lastDate = entries[entries.length - 1].date;
+            }
+            migrated[exId] = { lastCompleted: new Date(lastDate).toISOString(), interval: 3, completions: 1 };
+          });
+          setSkillFreshness(migrated);
+        }
       }
     } catch (e) { /* ignore */ }
     // Load feedback from separate localStorage key
@@ -91,10 +112,10 @@ export function AppProvider({ children }) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         dogProfile, completedExercises, completedLevels, totalXP,
         currentStreak, lastTrainDate, totalSessions, earnedBadges,
-        journal, reminders, lang,
+        journal, reminders, lang, skillFreshness, totalReviews,
       }));
     } catch (e) { /* ignore */ }
-  }, [dogProfile, completedExercises, completedLevels, totalXP, currentStreak, lastTrainDate, totalSessions, earnedBadges, journal, reminders, lang, loaded]);
+  }, [dogProfile, completedExercises, completedLevels, totalXP, currentStreak, lastTrainDate, totalSessions, earnedBadges, journal, reminders, lang, skillFreshness, totalReviews, loaded]);
 
   // ─── Save Feedback to localStorage ───
   useEffect(() => {
@@ -127,33 +148,81 @@ export function AppProvider({ children }) {
   const messages = useMemo(() => getTranslatedMessages(DAILY_MESSAGES, lang), [lang]);
   const badges = useMemo(() => getTranslatedBadges(BADGE_DEFS, lang), [lang]);
 
+  // ─── Skill Health Data ───
+  const skillHealthData = useMemo(() => {
+    const entries = Object.entries(skillFreshness);
+    if (entries.length === 0) return [];
+    const result = [];
+    for (const [exId, data] of entries) {
+      const score = calculateFreshness(data.lastCompleted, data.interval);
+      let exercise = null, program = null, level = null;
+      for (const p of programs) {
+        for (const l of p.levels) {
+          const ex = l.exercises.find(e => e.id === exId);
+          if (ex) { exercise = ex; program = p; level = l; break; }
+        }
+        if (exercise) break;
+      }
+      if (!exercise) continue;
+      result.push({ exerciseId: exId, freshness: score, label: getFreshnessLabel(score), color: getFreshnessColor(score), exercise, program, level });
+    }
+    result.sort((a, b) => a.freshness - b.freshness);
+    return result;
+  }, [skillFreshness, programs]);
+
+  const allSkillsFresh = useMemo(() => {
+    return skillHealthData.length > 0 && skillHealthData.every(s => s.label === "fresh");
+  }, [skillHealthData]);
+
   // ─── Daily Plan ───
   const dailyPlan = useMemo(() => {
     const plan = [];
-    for (const prog of programs) {
-      if (playerLevel.level < prog.unlockLevel) continue;
-      for (const level of prog.levels) {
-        const prevIdx = prog.levels.indexOf(level);
-        if (prevIdx > 0 && !prog.levels[prevIdx - 1].exercises.every(e => completedExercises.includes(e.id))) continue;
-        for (const ex of level.exercises) {
-          if (!completedExercises.includes(ex.id) && plan.length < 3) {
-            plan.push({ exercise: ex, level, program: prog, reason: "Continue progress" });
+
+    // 1. Stale reviews (freshness < 0.3) — up to 2 slots
+    const stale = skillHealthData.filter(s => s.label === "stale");
+    for (const s of stale) {
+      if (plan.length >= 2) break;
+      plan.push({ exercise: s.exercise, level: s.level, program: s.program, reason: "needsReview", freshness: s.freshness });
+    }
+
+    // 2. New exercises — fill remaining up to 3
+    if (plan.length < 3) {
+      for (const prog of programs) {
+        if (playerLevel.level < prog.unlockLevel) continue;
+        for (const level of prog.levels) {
+          const prevIdx = prog.levels.indexOf(level);
+          if (prevIdx > 0 && !prog.levels[prevIdx - 1].exercises.every(e => completedExercises.includes(e.id))) continue;
+          for (const ex of level.exercises) {
+            if (!completedExercises.includes(ex.id) && plan.length < 3) {
+              plan.push({ exercise: ex, level, program: prog, reason: "continueProgress" });
+            }
           }
+          if (plan.length >= 3) break;
         }
         if (plan.length >= 3) break;
       }
-      if (plan.length >= 3) break;
     }
+
+    // 3. Fading reviews (0.3–0.6) — fill leftover
+    if (plan.length < 3) {
+      const fading = skillHealthData.filter(s => s.label === "fading" && !plan.some(p => p.exercise.id === s.exerciseId));
+      for (const s of fading) {
+        if (plan.length >= 3) break;
+        plan.push({ exercise: s.exercise, level: s.level, program: s.program, reason: "reviewReinforce", freshness: s.freshness });
+      }
+    }
+
+    // 4. Fallback: random completed exercises
     if (plan.length === 0) {
       const doneExercises = [];
       programs.forEach(p => p.levels.forEach(l => l.exercises.forEach(e => {
-        if (completedExercises.includes(e.id)) doneExercises.push({ exercise: e, level: l, program: p, reason: "Review & reinforce" });
+        if (completedExercises.includes(e.id)) doneExercises.push({ exercise: e, level: l, program: p, reason: "reviewReinforce" });
       })));
       const shuffled = doneExercises.sort(() => 0.5 - Math.random());
       plan.push(...shuffled.slice(0, 3));
     }
     return plan;
-  }, [completedExercises, playerLevel.level, programs]);
+  }, [completedExercises, playerLevel.level, programs, skillHealthData]);
 
   // ─── Daily Message ───
   const dailyMsg = useMemo(() => {
@@ -163,7 +232,7 @@ export function AppProvider({ children }) {
 
   // ─── Badge Checking ───
   useEffect(() => {
-    const state = { totalSessions, currentStreak, completedExercises, completedLevels, totalXP, todayExercises, journal };
+    const state = { totalSessions, currentStreak, completedExercises, completedLevels, totalXP, todayExercises, journal, totalReviews, allSkillsFresh };
     badges.forEach(b => {
       if (!earnedBadges.includes(b.id) && checkBadgeCondition(b.id, state)) {
         setEarnedBadges(prev => [...prev, b.id]);
@@ -171,7 +240,7 @@ export function AppProvider({ children }) {
         setTimeout(() => setNewBadge(null), 3500);
       }
     });
-  }, [completedExercises, totalXP, currentStreak, totalSessions, todayExercises, journal, earnedBadges, badges]);
+  }, [completedExercises, totalXP, currentStreak, totalSessions, todayExercises, journal, earnedBadges, badges, totalReviews, allSkillsFresh]);
 
   // ─── Reminder Check ───
   useEffect(() => {
@@ -199,16 +268,22 @@ export function AppProvider({ children }) {
 
   // ─── Exercise Completion ───
   const triggerComplete = useCallback((exId, lvlId, progId) => {
-    if (completedExercises.includes(exId)) return;
-    setPendingComplete({ exId, lvlId, progId });
+    const isReview = completedExercises.includes(exId);
+    setPendingComplete({ exId, lvlId, progId, isReview });
     setJournalForm({ note: "", rating: 3, mood: "happy" });
     setShowJournalEntry(true);
   }, [completedExercises]);
 
   const finalizeComplete = useCallback((skipJournal) => {
     if (!pendingComplete) return;
-    const { exId, lvlId, progId } = pendingComplete;
-    setCompletedExercises(prev => [...prev, exId]);
+    const { exId, lvlId, progId, isReview } = pendingComplete;
+
+    if (!isReview) {
+      setCompletedExercises(prev => [...prev, exId]);
+    } else {
+      setTotalReviews(prev => prev + 1);
+    }
+
     setTotalSessions(prev => prev + 1);
     setTodayExercises(prev => prev + 1);
 
@@ -221,14 +296,23 @@ export function AppProvider({ children }) {
 
     const baseProg = TRAINING_PROGRAMS.find(p => p.id === progId);
     const baseLvl = baseProg.levels.find(l => l.id === lvlId);
-    const xp = Math.round(baseLvl.xpReward / baseLvl.exercises.length);
+    const baseXp = Math.round(baseLvl.xpReward / baseLvl.exercises.length);
+    const xp = isReview ? Math.round(baseXp * 0.3) : baseXp;
     setTotalXP(prev => prev + xp);
     setXpAnim(xp);
     setTimeout(() => setXpAnim(null), 2000);
 
-    if (baseLvl.exercises.every(e => e.id === exId || completedExercises.includes(e.id))) {
+    if (!isReview && baseLvl.exercises.every(e => e.id === exId || completedExercises.includes(e.id))) {
       if (!completedLevels.includes(lvlId)) setCompletedLevels(prev => [...prev, lvlId]);
     }
+
+    // Update skill freshness
+    const prevData = skillFreshness[exId] || { interval: 3, completions: 0 };
+    const newInterval = getNextInterval(prevData.interval, journalForm.rating);
+    setSkillFreshness(prev => ({
+      ...prev,
+      [exId]: { lastCompleted: new Date().toISOString(), interval: newInterval, completions: (prevData.completions || 0) + 1 },
+    }));
 
     if (!skipJournal && journalForm.note.trim()) {
       const tProg = programs.find(p => p.id === progId);
@@ -248,21 +332,23 @@ export function AppProvider({ children }) {
     }
 
     // Check if we should show feedback prompt (every 5th exercise, max once per week)
-    const newTotal = completedExercises.length + 1; // +1 for the one being completed now
-    if (newTotal % 5 === 0) {
-      try {
-        const lastPrompt = localStorage.getItem(FEEDBACK_PROMPT_KEY);
-        const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-        if (!lastPrompt || Number(lastPrompt) < oneWeekAgo) {
-          localStorage.setItem(FEEDBACK_PROMPT_KEY, Date.now().toString());
-          setTimeout(() => setShowFeedbackPrompt(true), 2500); // slight delay after completion animations
-        }
-      } catch (e) { /* ignore */ }
+    if (!isReview) {
+      const newTotal = completedExercises.length + 1;
+      if (newTotal % 5 === 0) {
+        try {
+          const lastPrompt = localStorage.getItem(FEEDBACK_PROMPT_KEY);
+          const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+          if (!lastPrompt || Number(lastPrompt) < oneWeekAgo) {
+            localStorage.setItem(FEEDBACK_PROMPT_KEY, Date.now().toString());
+            setTimeout(() => setShowFeedbackPrompt(true), 2500);
+          }
+        } catch (e) { /* ignore */ }
+      }
     }
 
     setPendingComplete(null);
     setShowJournalEntry(false);
-  }, [pendingComplete, lastTrainDate, completedExercises, completedLevels, journalForm, programs]);
+  }, [pendingComplete, lastTrainDate, completedExercises, completedLevels, journalForm, programs, skillFreshness]);
 
   // ─── Notification Permission ───
   const requestNotifPermission = useCallback(async () => {
@@ -287,6 +373,8 @@ export function AppProvider({ children }) {
     setTotalSessions(0);
     setEarnedBadges([]);
     setJournal([]);
+    setSkillFreshness({});
+    setTotalReviews(0);
     setScreen("splash");
   }, []);
 
@@ -302,6 +390,7 @@ export function AppProvider({ children }) {
     totalSessions, earnedBadges, journal,
     reminders, setReminders,
     lang, setLang,
+    skillFreshness, totalReviews,
 
     // Navigation
     screen, setScreen, nav,
@@ -324,6 +413,7 @@ export function AppProvider({ children }) {
     // Computed
     playerLevel, xpProgress,
     dailyPlan, dailyMsg,
+    skillHealthData, allSkillsFresh,
 
     // Actions
     triggerComplete, finalizeComplete,
