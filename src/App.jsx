@@ -19,6 +19,8 @@ import LifeStageDetail from "./components/LifeStageDetail.jsx";
 import StageTransitionModal from "./components/StageTransitionModal.jsx";
 import MilestoneCards from "./components/MilestoneCards.jsx";
 import AddDogModal from "./components/AddDogModal.jsx";
+import MemoryDetail from "./components/MemoryDetail.jsx";
+import AnnualRecap from "./components/AnnualRecap.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
@@ -57,6 +59,8 @@ export default function App() {
       {screen === "profile" && <Profile />}
       {screen === "lifeStageDetail" && <LifeStageDetail />}
       {screen === "milestoneCards" && <MilestoneCards />}
+      {screen === "memoryDetail" && <MemoryDetail />}
+      {screen === "annualRecap" && <AnnualRecap />}
 
       {/* Stage Transition */}
       <StageTransitionModal />

@@ -3,6 +3,7 @@ import { hasPreviousMonthReport } from "../utils/monthlyStats.js";
 import DailyPlan from "./DailyPlan.jsx";
 import SkillHealth from "./SkillHealth.jsx";
 import LifeStageBanner from "./LifeStageBanner.jsx";
+import MemoryCard from "./MemoryCard.jsx";
 import DogSwitcher from "./DogSwitcher.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
@@ -81,6 +82,7 @@ export default function Home() {
         </div>
       )}
 
+      <MemoryCard />
       <SkillHealth />
       <DailyPlan />
 

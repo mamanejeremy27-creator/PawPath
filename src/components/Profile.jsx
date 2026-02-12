@@ -1,12 +1,14 @@
 import { useState, useRef } from "react";
 import { useApp } from "../context/AppContext.jsx";
+import { hasRecapData } from "../utils/recapData.js";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16 };
 
 export default function Profile() {
-  const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog } = useApp();
+  const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog, nav } = useApp();
+  const showRecap = hasRecapData(journal);
   const [tapCount, setTapCount] = useState(0);
   const [confirmRemove, setConfirmRemove] = useState(null);
   const tapTimer = useRef(null);
@@ -96,8 +98,15 @@ export default function Profile() {
           </div>
         </div>
 
+        {showRecap && (
+          <button onClick={() => nav("annualRecap")}
+            style={{ marginTop: 32, width: "100%", padding: "16px", fontSize: 14, fontWeight: 700, background: "linear-gradient(135deg, rgba(34,197,94,0.1), rgba(139,92,246,0.08))", color: C.acc, border: `1px solid rgba(34,197,94,0.2)`, borderRadius: C.r, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            {"\uD83C\uDF1F"} {T("viewRecap")}
+          </button>
+        )}
+
         <button onClick={resetAllData}
-          style={{ marginTop: 32, width: "100%", padding: "14px", fontSize: 14, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: C.danger, border: `1px solid rgba(239,68,68,0.2)`, borderRadius: C.r, cursor: "pointer" }}>{T("resetAllData")}</button>
+          style={{ marginTop: 16, width: "100%", padding: "14px", fontSize: 14, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: C.danger, border: `1px solid rgba(239,68,68,0.2)`, borderRadius: C.r, cursor: "pointer" }}>{T("resetAllData")}</button>
         <div
           onClick={handleVersionTap}
           style={{ textAlign: "center", marginTop: 24, padding: "12px 0", fontSize: 12, color: C.t3, cursor: "default", userSelect: "none" }}
