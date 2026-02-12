@@ -1,11 +1,36 @@
+import { useRef } from "react";
 import { useApp } from "../context/AppContext.jsx";
+import { compressPhoto, getPhotoCount, canAddPhotos, MAX_PHOTOS } from "../utils/photoCompressor.js";
 
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", r: 16 };
+const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", warn: "#F59E0B", r: 16 };
 const sectionLabel = (text) => <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{text}</div>;
 
 export default function JournalModal() {
-  const { showJournalEntry, journalForm, setJournalForm, finalizeComplete, T } = useApp();
+  const { showJournalEntry, journalForm, setJournalForm, finalizeComplete, journal, T } = useApp();
+  const cameraRef = useRef(null);
+  const galleryRef = useRef(null);
+
   if (!showJournalEntry) return null;
+
+  const photos = journalForm.photos || [];
+  const totalPhotos = getPhotoCount(journal);
+  const atCapacity = !canAddPhotos(journal, 1);
+  const nearCapacity = totalPhotos >= MAX_PHOTOS * 0.8;
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (photos.length >= 3 || !canAddPhotos(journal, photos.length + 1)) return;
+    try {
+      const dataUrl = await compressPhoto(file);
+      setJournalForm(f => ({ ...f, photos: [...(f.photos || []), dataUrl] }));
+    } catch { /* ignore failed compression */ }
+    e.target.value = "";
+  };
+
+  const removePhoto = (idx) => {
+    setJournalForm(f => ({ ...f, photos: f.photos.filter((_, i) => i !== idx) }));
+  };
 
   const moods = [
     { id: "struggling", emoji: "😟", label: T("moodStruggling") },
@@ -17,7 +42,7 @@ export default function JournalModal() {
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(12px)", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
-      <div style={{ width: "100%", maxWidth: 480, background: C.s1, borderRadius: "24px 24px 0 0", padding: "28px 24px 36px", animation: "slideUp 0.3s ease" }}>
+      <div style={{ width: "100%", maxWidth: 480, background: C.s1, borderRadius: "24px 24px 0 0", padding: "28px 24px 36px", animation: "slideUp 0.3s ease", maxHeight: "90vh", overflowY: "auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 800, margin: 0, color: C.t1 }}>{T("sessionNotes")}</h3>
           <button onClick={() => finalizeComplete(true)} style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", fontSize: 16 }}>✕</button>
@@ -42,6 +67,44 @@ export default function JournalModal() {
               <div style={{ fontSize: 10, color: C.t3, marginTop: 2, fontWeight: 600 }}>{m.label}</div>
             </button>
           ))}
+        </div>
+
+        {/* Photo Section */}
+        {sectionLabel(T("addPhoto"))}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+            {photos.map((src, i) => (
+              <div key={i} style={{ position: "relative", width: 72, height: 72, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
+                <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <button onClick={() => removePhoto(i)}
+                  style={{ position: "absolute", top: 2, right: 2, width: 22, height: 22, borderRadius: "50%", background: "rgba(0,0,0,0.7)", border: "none", color: "#fff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
+                  ✕
+                </button>
+              </div>
+            ))}
+            {photos.length < 3 && !atCapacity && (
+              <>
+                <button onClick={() => cameraRef.current?.click()}
+                  style={{ width: 72, height: 72, borderRadius: 12, background: C.bg, border: `1px dashed ${C.b2}`, color: C.t3, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, flexShrink: 0 }}>
+                  <span style={{ fontSize: 20 }}>📷</span>
+                  <span style={{ fontSize: 9, fontWeight: 600 }}>{T("camera")}</span>
+                </button>
+                <button onClick={() => galleryRef.current?.click()}
+                  style={{ width: 72, height: 72, borderRadius: 12, background: C.bg, border: `1px dashed ${C.b2}`, color: C.t3, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, flexShrink: 0 }}>
+                  <span style={{ fontSize: 20 }}>🖼️</span>
+                  <span style={{ fontSize: 9, fontWeight: 600 }}>{T("gallery")}</span>
+                </button>
+              </>
+            )}
+          </div>
+          <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: "none" }} />
+          <input ref={galleryRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
+          <div style={{ fontSize: 11, color: nearCapacity ? C.warn : C.t3, fontWeight: 600 }}>
+            {nearCapacity && totalPhotos >= MAX_PHOTOS
+              ? `⚠️ ${T("storageAlmostFull")}`
+              : `${totalPhotos + photos.length}/${MAX_PHOTOS} ${T("photosStored")}`
+            }
+          </div>
         </div>
 
         {sectionLabel(T("notesOptional"))}

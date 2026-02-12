@@ -55,8 +55,9 @@ export function AppProvider({ children }) {
   const [showGear, setShowGear] = useState(false);
   const [showReminders, setShowReminders] = useState(false);
   const [showJournalEntry, setShowJournalEntry] = useState(false);
-  const [journalForm, setJournalForm] = useState({ note: "", rating: 3, mood: "happy" });
+  const [journalForm, setJournalForm] = useState({ note: "", rating: 3, mood: "happy", photos: [] });
   const [pendingComplete, setPendingComplete] = useState(null);
+  const [journalTab, setJournalTab] = useState("entries");
 
   const reminderCheckRef = useRef(null);
 
@@ -270,7 +271,7 @@ export function AppProvider({ children }) {
   const triggerComplete = useCallback((exId, lvlId, progId) => {
     const isReview = completedExercises.includes(exId);
     setPendingComplete({ exId, lvlId, progId, isReview });
-    setJournalForm({ note: "", rating: 3, mood: "happy" });
+    setJournalForm({ note: "", rating: 3, mood: "happy", photos: [] });
     setShowJournalEntry(true);
   }, [completedExercises]);
 
@@ -314,7 +315,8 @@ export function AppProvider({ children }) {
       [exId]: { lastCompleted: new Date().toISOString(), interval: newInterval, completions: (prevData.completions || 0) + 1 },
     }));
 
-    if (!skipJournal && journalForm.note.trim()) {
+    const hasContent = journalForm.note.trim() || (journalForm.photos && journalForm.photos.length > 0);
+    if (!skipJournal && hasContent) {
       const tProg = programs.find(p => p.id === progId);
       const tLvl = tProg.levels.find(l => l.id === lvlId);
       const ex = tLvl.exercises.find(e => e.id === exId);
@@ -328,6 +330,7 @@ export function AppProvider({ children }) {
         note: journalForm.note,
         rating: journalForm.rating,
         mood: journalForm.mood,
+        ...(journalForm.photos.length > 0 && { photos: journalForm.photos }),
       }]);
     }
 
@@ -406,6 +409,7 @@ export function AppProvider({ children }) {
     showJournalEntry, setShowJournalEntry,
     journalForm, setJournalForm,
     pendingComplete,
+    journalTab, setJournalTab,
 
     // Translated content
     programs, gear, messages, badges,
