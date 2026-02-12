@@ -1,6 +1,8 @@
 import { useApp } from "../context/AppContext.jsx";
+import { hasPreviousMonthReport } from "../utils/monthlyStats.js";
 import DailyPlan from "./DailyPlan.jsx";
 import SkillHealth from "./SkillHealth.jsx";
+import LifeStageBanner from "./LifeStageBanner.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 
@@ -8,7 +10,8 @@ const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5
 const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
 
 export default function Home() {
-  const { dogProfile, totalXP, playerLevel, xpProgress, currentStreak, completedExercises, earnedBadges, nav, setShowGear, setShowReminders, T, programs } = useApp();
+  const { dogProfile, totalXP, playerLevel, xpProgress, currentStreak, completedExercises, earnedBadges, journal, nav, setShowGear, setShowReminders, T, programs } = useApp();
+  const showReportBanner = hasPreviousMonthReport(journal);
 
   return (
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
@@ -49,6 +52,31 @@ export default function Home() {
           </div>
         ))}
       </div>
+
+      <div style={{ padding: "12px 20px 0" }}><LifeStageBanner /></div>
+
+      {/* Monthly Report Banner */}
+      {showReportBanner && (
+        <div style={{ padding: "12px 20px 0" }}>
+          <button
+            onClick={() => nav("milestoneCards")}
+            style={{
+              width: "100%", padding: "16px 20px",
+              background: "linear-gradient(135deg, rgba(34,197,94,0.08), rgba(59,130,246,0.08))",
+              border: `1px solid rgba(34,197,94,0.2)`,
+              borderRadius: C.rL, cursor: "pointer",
+              display: "flex", alignItems: "center", gap: 14,
+              color: C.t1, textAlign: "start",
+            }}
+          >
+            <span style={{ fontSize: 28 }}>{"\uD83C\uDFC6"}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("reportReady")}</div>
+              <div style={{ fontSize: 12, color: C.acc, fontWeight: 600, marginTop: 2 }}>{T("viewReport")} \u2192</div>
+            </div>
+          </button>
+        </div>
+      )}
 
       <SkillHealth />
       <DailyPlan />

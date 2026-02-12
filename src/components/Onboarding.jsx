@@ -6,7 +6,7 @@ const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", b2: "rgb
 
 export default function Onboarding() {
   const { setDogProfile, setScreen, T, rtl } = useApp();
-  const [form, setForm] = useState({ name: "", breed: "", age: "" });
+  const [form, setForm] = useState({ name: "", breed: "", age: "", birthday: "" });
   const [breedSug, setBreedSug] = useState([]);
   const [showBreeds, setShowBreeds] = useState(false);
 
@@ -55,6 +55,11 @@ export default function Onboarding() {
             <option value="Adult (2–7yr)">{T("ageAdult")}</option>
             <option value="Senior (7+yr)">{T("ageSenior")}</option>
           </select>
+        </div>
+        <div>
+          {sectionLabel(`${T("birthday")} (${T("optional")})`)}
+          <p style={{ fontSize: 13, color: C.t3, margin: "-4px 0 10px" }}>{T("whenBorn").replace("{name}", form.name || T("dogName"))}</p>
+          <input type="date" value={form.birthday} onChange={e => setForm(p => ({ ...p, birthday: e.target.value }))} max={new Date().toISOString().split("T")[0]} style={{ width: "100%", padding: "16px 20px", fontSize: 16, background: C.s1, border: `1px solid ${C.b2}`, borderRadius: C.r, color: form.birthday ? C.t1 : C.t4, outline: "none", colorScheme: "dark" }} />
         </div>
         <button disabled={!ready} onClick={() => { setDogProfile(form); setScreen("home"); }}
           style={{ marginTop: 12, padding: "18px", fontSize: 16, fontWeight: 700, background: ready ? C.acc : C.s2, color: ready ? "#000" : C.t3, border: "none", borderRadius: 50, cursor: ready ? "pointer" : "default", boxShadow: ready ? "0 8px 32px rgba(34,197,94,0.25)" : "none" }}>

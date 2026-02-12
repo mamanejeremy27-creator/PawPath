@@ -15,6 +15,9 @@ import FeedbackButton from "./components/FeedbackButton.jsx";
 import FeedbackModal from "./components/FeedbackModal.jsx";
 import FeedbackPrompt from "./components/FeedbackPrompt.jsx";
 import FeedbackAdmin from "./components/FeedbackAdmin.jsx";
+import LifeStageDetail from "./components/LifeStageDetail.jsx";
+import StageTransitionModal from "./components/StageTransitionModal.jsx";
+import MilestoneCards from "./components/MilestoneCards.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
@@ -51,6 +54,11 @@ export default function App() {
       {screen === "journal" && <JournalList />}
       {screen === "badges" && <Badges />}
       {screen === "profile" && <Profile />}
+      {screen === "lifeStageDetail" && <LifeStageDetail />}
+      {screen === "milestoneCards" && <MilestoneCards />}
+
+      {/* Stage Transition */}
+      <StageTransitionModal />
 
       {/* Feedback */}
       <FeedbackButton />

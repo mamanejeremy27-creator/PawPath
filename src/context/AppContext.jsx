@@ -6,6 +6,7 @@ import { GEAR_TIPS } from "../data/gear.js";
 import { t, isRTL } from "../i18n/index.js";
 import { getTranslatedPrograms, getTranslatedGear, getTranslatedMessages, getTranslatedBadges } from "../i18n/content/index.js";
 import { calculateFreshness, getNextInterval, getFreshnessLabel, getFreshnessColor } from "../utils/freshness.js";
+import { calculateLifeStage, getNextStageInfo, getAllStages } from "../utils/lifeStage.js";
 
 const STORAGE_KEY = "pawpath_v3";
 const FEEDBACK_KEY = "pawpath_feedback";
@@ -58,6 +59,8 @@ export function AppProvider({ children }) {
   const [journalForm, setJournalForm] = useState({ note: "", rating: 3, mood: "happy", photos: [] });
   const [pendingComplete, setPendingComplete] = useState(null);
   const [journalTab, setJournalTab] = useState("entries");
+  const [stageTransition, setStageTransition] = useState(null);
+  const [lastKnownStage, setLastKnownStage] = useState(null);
 
   const reminderCheckRef = useRef(null);
 
@@ -79,6 +82,7 @@ export function AppProvider({ children }) {
         if (d.reminders) setReminders(d.reminders);
         if (d.lang) setLang(d.lang);
         if (d.totalReviews) setTotalReviews(d.totalReviews);
+        if (d.lastKnownStage) setLastKnownStage(d.lastKnownStage);
 
         // Load or migrate skillFreshness
         if (d.skillFreshness) {
@@ -113,10 +117,10 @@ export function AppProvider({ children }) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         dogProfile, completedExercises, completedLevels, totalXP,
         currentStreak, lastTrainDate, totalSessions, earnedBadges,
-        journal, reminders, lang, skillFreshness, totalReviews,
+        journal, reminders, lang, skillFreshness, totalReviews, lastKnownStage,
       }));
     } catch (e) { /* ignore */ }
-  }, [dogProfile, completedExercises, completedLevels, totalXP, currentStreak, lastTrainDate, totalSessions, earnedBadges, journal, reminders, lang, skillFreshness, totalReviews, loaded]);
+  }, [dogProfile, completedExercises, completedLevels, totalXP, currentStreak, lastTrainDate, totalSessions, earnedBadges, journal, reminders, lang, skillFreshness, totalReviews, lastKnownStage, loaded]);
 
   // ─── Save Feedback to localStorage ───
   useEffect(() => {
@@ -175,12 +179,35 @@ export function AppProvider({ children }) {
     return skillHealthData.length > 0 && skillHealthData.every(s => s.label === "fresh");
   }, [skillHealthData]);
 
+  // ─── Life Stage ───
+  const lifeStageData = useMemo(() => {
+    if (!dogProfile?.birthday || !dogProfile?.breed) return null;
+    const current = calculateLifeStage(dogProfile.birthday, dogProfile.breed);
+    if (!current) return null;
+    const next = getNextStageInfo(dogProfile.birthday, dogProfile.breed);
+    const allStages = getAllStages(dogProfile.breed);
+    return { ...current, next, allStages };
+  }, [dogProfile]);
+
+  // Detect stage transitions
+  useEffect(() => {
+    if (!lifeStageData) return;
+    if (lastKnownStage && lastKnownStage !== lifeStageData.stage) {
+      setStageTransition(lifeStageData);
+    }
+    if (lastKnownStage !== lifeStageData.stage) {
+      setLastKnownStage(lifeStageData.stage);
+    }
+  }, [lifeStageData, lastKnownStage]);
+
   // ─── Daily Plan ───
   const dailyPlan = useMemo(() => {
     const plan = [];
+    const currentStage = lifeStageData?.stage;
+    const matchesStage = (ex) => !currentStage || !ex.lifeStages || ex.lifeStages.includes(currentStage);
 
     // 1. Stale reviews (freshness < 0.3) — up to 2 slots
-    const stale = skillHealthData.filter(s => s.label === "stale");
+    const stale = skillHealthData.filter(s => s.label === "stale" && matchesStage(s.exercise));
     for (const s of stale) {
       if (plan.length >= 2) break;
       plan.push({ exercise: s.exercise, level: s.level, program: s.program, reason: "needsReview", freshness: s.freshness });
@@ -194,7 +221,7 @@ export function AppProvider({ children }) {
           const prevIdx = prog.levels.indexOf(level);
           if (prevIdx > 0 && !prog.levels[prevIdx - 1].exercises.every(e => completedExercises.includes(e.id))) continue;
           for (const ex of level.exercises) {
-            if (!completedExercises.includes(ex.id) && plan.length < 3) {
+            if (!completedExercises.includes(ex.id) && matchesStage(ex) && plan.length < 3) {
               plan.push({ exercise: ex, level, program: prog, reason: "continueProgress" });
             }
           }
@@ -206,7 +233,7 @@ export function AppProvider({ children }) {
 
     // 3. Fading reviews (0.3–0.6) — fill leftover
     if (plan.length < 3) {
-      const fading = skillHealthData.filter(s => s.label === "fading" && !plan.some(p => p.exercise.id === s.exerciseId));
+      const fading = skillHealthData.filter(s => s.label === "fading" && matchesStage(s.exercise) && !plan.some(p => p.exercise.id === s.exerciseId));
       for (const s of fading) {
         if (plan.length >= 3) break;
         plan.push({ exercise: s.exercise, level: s.level, program: s.program, reason: "reviewReinforce", freshness: s.freshness });
@@ -223,7 +250,7 @@ export function AppProvider({ children }) {
       plan.push(...shuffled.slice(0, 3));
     }
     return plan;
-  }, [completedExercises, playerLevel.level, programs, skillHealthData]);
+  }, [completedExercises, playerLevel.level, programs, skillHealthData, lifeStageData]);
 
   // ─── Daily Message ───
   const dailyMsg = useMemo(() => {
@@ -378,6 +405,7 @@ export function AppProvider({ children }) {
     setJournal([]);
     setSkillFreshness({});
     setTotalReviews(0);
+    setLastKnownStage(null);
     setScreen("splash");
   }, []);
 
@@ -418,6 +446,7 @@ export function AppProvider({ children }) {
     playerLevel, xpProgress,
     dailyPlan, dailyMsg,
     skillHealthData, allSkillsFresh,
+    lifeStageData, stageTransition, setStageTransition,
 
     // Actions
     triggerComplete, finalizeComplete,
