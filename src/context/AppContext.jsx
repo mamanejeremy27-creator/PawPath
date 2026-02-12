@@ -20,21 +20,27 @@ export function useApp() {
   return ctx;
 }
 
+const DEFAULT_DOG_STATE = {
+  profile: null,
+  completedExercises: [],
+  completedLevels: [],
+  totalXP: 0,
+  currentStreak: 0,
+  lastTrainDate: null,
+  totalSessions: 0,
+  earnedBadges: [],
+  journal: [],
+  skillFreshness: {},
+  totalReviews: 0,
+  lastKnownStage: null,
+};
+
 export function AppProvider({ children }) {
-  // ─── Persisted State ───
-  const [dogProfile, setDogProfile] = useState(null);
-  const [completedExercises, setCompletedExercises] = useState([]);
-  const [completedLevels, setCompletedLevels] = useState([]);
-  const [totalXP, setTotalXP] = useState(0);
-  const [currentStreak, setCurrentStreak] = useState(0);
-  const [lastTrainDate, setLastTrainDate] = useState(null);
-  const [totalSessions, setTotalSessions] = useState(0);
-  const [earnedBadges, setEarnedBadges] = useState([]);
-  const [journal, setJournal] = useState([]);
-  const [reminders, setReminders] = useState({ enabled: false, times: ["09:00", "18:00"], notifPermission: "default" });
+  // ─── Multi-Dog Persisted State ───
+  const [dogs, setDogs] = useState({});
+  const [activeDogId, setActiveDogId] = useState(null);
   const [lang, setLang] = useState("en");
-  const [skillFreshness, setSkillFreshness] = useState({});
-  const [totalReviews, setTotalReviews] = useState(0);
+  const [reminders, setReminders] = useState({ enabled: false, times: ["09:00", "18:00"], notifPermission: "default" });
 
   // ─── Feedback State ───
   const [feedback, setFeedback] = useState([]);
@@ -60,7 +66,7 @@ export function AppProvider({ children }) {
   const [pendingComplete, setPendingComplete] = useState(null);
   const [journalTab, setJournalTab] = useState("entries");
   const [stageTransition, setStageTransition] = useState(null);
-  const [lastKnownStage, setLastKnownStage] = useState(null);
+  const [showAddDog, setShowAddDog] = useState(false);
 
   const reminderCheckRef = useRef(null);
 
@@ -70,39 +76,50 @@ export function AppProvider({ children }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const d = JSON.parse(raw);
-        if (d.dogProfile) { setDogProfile(d.dogProfile); setScreen("home"); }
-        if (d.completedExercises) setCompletedExercises(d.completedExercises);
-        if (d.completedLevels) setCompletedLevels(d.completedLevels);
-        if (d.totalXP) setTotalXP(d.totalXP);
-        if (d.currentStreak) setCurrentStreak(d.currentStreak);
-        if (d.lastTrainDate) setLastTrainDate(d.lastTrainDate);
-        if (d.totalSessions) setTotalSessions(d.totalSessions);
-        if (d.earnedBadges) setEarnedBadges(d.earnedBadges);
-        if (d.journal) setJournal(d.journal);
-        if (d.reminders) setReminders(d.reminders);
-        if (d.lang) setLang(d.lang);
-        if (d.totalReviews) setTotalReviews(d.totalReviews);
-        if (d.lastKnownStage) setLastKnownStage(d.lastKnownStage);
 
-        // Load or migrate skillFreshness
-        if (d.skillFreshness) {
-          setSkillFreshness(d.skillFreshness);
-        } else if (d.completedExercises && d.completedExercises.length > 0) {
-          // Migration: build skillFreshness from existing data
-          const migrated = {};
-          d.completedExercises.forEach(exId => {
-            let lastDate = d.lastTrainDate || new Date().toDateString();
-            if (d.journal) {
-              const entries = d.journal.filter(j => j.exerciseId === exId);
-              if (entries.length > 0) lastDate = entries[entries.length - 1].date;
-            }
-            migrated[exId] = { lastCompleted: new Date(lastDate).toISOString(), interval: 3, completions: 1 };
-          });
-          setSkillFreshness(migrated);
+        if (d.dogs) {
+          // New multi-dog format
+          setDogs(d.dogs);
+          setActiveDogId(d.activeDogId || Object.keys(d.dogs)[0]);
+          if (d.lang) setLang(d.lang);
+          if (d.reminders) setReminders(d.reminders);
+          setScreen("home");
+        } else if (d.dogProfile) {
+          // Old flat format — migrate to multi-dog
+          let sf = d.skillFreshness || {};
+          if (!d.skillFreshness && d.completedExercises && d.completedExercises.length > 0) {
+            d.completedExercises.forEach(exId => {
+              let lastDate = d.lastTrainDate || new Date().toDateString();
+              if (d.journal) {
+                const entries = d.journal.filter(j => j.exerciseId === exId);
+                if (entries.length > 0) lastDate = entries[entries.length - 1].date;
+              }
+              sf[exId] = { lastCompleted: new Date(lastDate).toISOString(), interval: 3, completions: 1 };
+            });
+          }
+
+          const migrated = {
+            profile: d.dogProfile,
+            completedExercises: d.completedExercises || [],
+            completedLevels: d.completedLevels || [],
+            totalXP: d.totalXP || 0,
+            currentStreak: d.currentStreak || 0,
+            lastTrainDate: d.lastTrainDate || null,
+            totalSessions: d.totalSessions || 0,
+            earnedBadges: d.earnedBadges || [],
+            journal: d.journal || [],
+            skillFreshness: sf,
+            totalReviews: d.totalReviews || 0,
+            lastKnownStage: d.lastKnownStage || null,
+          };
+          setDogs({ dog_1: migrated });
+          setActiveDogId("dog_1");
+          if (d.lang) setLang(d.lang);
+          if (d.reminders) setReminders(d.reminders);
+          setScreen("home");
         }
       }
     } catch (e) { /* ignore */ }
-    // Load feedback from separate localStorage key
     try {
       const rawFeedback = localStorage.getItem(FEEDBACK_KEY);
       if (rawFeedback) setFeedback(JSON.parse(rawFeedback));
@@ -114,21 +131,93 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (!loaded) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        dogProfile, completedExercises, completedLevels, totalXP,
-        currentStreak, lastTrainDate, totalSessions, earnedBadges,
-        journal, reminders, lang, skillFreshness, totalReviews, lastKnownStage,
-      }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ dogs, activeDogId, lang, reminders }));
     } catch (e) { /* ignore */ }
-  }, [dogProfile, completedExercises, completedLevels, totalXP, currentStreak, lastTrainDate, totalSessions, earnedBadges, journal, reminders, lang, skillFreshness, totalReviews, lastKnownStage, loaded]);
+  }, [dogs, activeDogId, lang, reminders, loaded]);
 
-  // ─── Save Feedback to localStorage ───
+  // ─── Save Feedback ───
   useEffect(() => {
     if (!loaded) return;
     try {
       localStorage.setItem(FEEDBACK_KEY, JSON.stringify(feedback));
     } catch (e) { /* ignore */ }
   }, [feedback, loaded]);
+
+  // ─── Batch update helper for active dog ───
+  const updateDogFields = useCallback((updates) => {
+    setDogs(prev => {
+      const dog = prev[activeDogId];
+      if (!dog) return prev;
+      const newDog = { ...dog };
+      for (const [field, updater] of Object.entries(updates)) {
+        newDog[field] = typeof updater === "function" ? updater(newDog[field]) : updater;
+      }
+      return { ...prev, [activeDogId]: newDog };
+    });
+  }, [activeDogId]);
+
+  // ─── Derive per-dog values from active dog ───
+  const activeDog = dogs[activeDogId] || null;
+  const dogProfile = activeDog?.profile || null;
+  const completedExercises = activeDog?.completedExercises || [];
+  const completedLevels = activeDog?.completedLevels || [];
+  const totalXP = activeDog?.totalXP || 0;
+  const currentStreak = activeDog?.currentStreak || 0;
+  const lastTrainDate = activeDog?.lastTrainDate || null;
+  const totalSessions = activeDog?.totalSessions || 0;
+  const earnedBadges = activeDog?.earnedBadges || [];
+  const journal = activeDog?.journal || [];
+  const skillFreshness = activeDog?.skillFreshness || {};
+  const totalReviews = activeDog?.totalReviews || 0;
+
+  // ─── Multi-Dog Management ───
+  const dogCount = Object.keys(dogs).length;
+
+  const addDog = useCallback((profile) => {
+    const dogIds = Object.keys(dogs);
+    if (dogIds.length >= 2) return null;
+    const newId = !dogs.dog_1 ? "dog_1" : "dog_2";
+    const newDog = { ...DEFAULT_DOG_STATE, profile };
+    setDogs(prev => ({ ...prev, [newId]: newDog }));
+    setActiveDogId(newId);
+    setShowAddDog(false);
+    return newId;
+  }, [dogs]);
+
+  const removeDog = useCallback((dogId) => {
+    const dogIds = Object.keys(dogs);
+    if (dogIds.length <= 1) return;
+    setDogs(prev => {
+      const next = { ...prev };
+      delete next[dogId];
+      return next;
+    });
+    if (dogId === activeDogId) {
+      const remaining = dogIds.filter(id => id !== dogId);
+      setActiveDogId(remaining[0]);
+    }
+  }, [dogs, activeDogId]);
+
+  const switchDog = useCallback((dogId) => {
+    if (dogs[dogId]) {
+      setActiveDogId(dogId);
+      setTodayExercises(0);
+    }
+  }, [dogs]);
+
+  const setDogProfile = useCallback((profile) => {
+    const dogIds = Object.keys(dogs);
+    if (dogIds.length === 0 || !activeDogId || !dogs[activeDogId]) {
+      // First dog — create it
+      const newId = dogIds.length === 0 ? "dog_1" : (!dogs.dog_1 ? "dog_1" : "dog_2");
+      const newDog = { ...DEFAULT_DOG_STATE, profile };
+      setDogs(prev => ({ ...prev, [newId]: newDog }));
+      setActiveDogId(newId);
+    } else {
+      // Update existing dog's profile
+      updateDogFields({ profile });
+    }
+  }, [dogs, activeDogId, updateDogFields]);
 
   // ─── Player Level ───
   const playerLevel = useMemo(() => {
@@ -190,15 +279,16 @@ export function AppProvider({ children }) {
   }, [dogProfile]);
 
   // Detect stage transitions
+  const lastKnownStage = activeDog?.lastKnownStage || null;
   useEffect(() => {
-    if (!lifeStageData) return;
+    if (!lifeStageData || !activeDogId) return;
     if (lastKnownStage && lastKnownStage !== lifeStageData.stage) {
       setStageTransition(lifeStageData);
     }
     if (lastKnownStage !== lifeStageData.stage) {
-      setLastKnownStage(lifeStageData.stage);
+      updateDogFields({ lastKnownStage: lifeStageData.stage });
     }
-  }, [lifeStageData, lastKnownStage]);
+  }, [lifeStageData, lastKnownStage, activeDogId, updateDogFields]);
 
   // ─── Daily Plan ───
   const dailyPlan = useMemo(() => {
@@ -206,14 +296,12 @@ export function AppProvider({ children }) {
     const currentStage = lifeStageData?.stage;
     const matchesStage = (ex) => !currentStage || !ex.lifeStages || ex.lifeStages.includes(currentStage);
 
-    // 1. Stale reviews (freshness < 0.3) — up to 2 slots
     const stale = skillHealthData.filter(s => s.label === "stale" && matchesStage(s.exercise));
     for (const s of stale) {
       if (plan.length >= 2) break;
       plan.push({ exercise: s.exercise, level: s.level, program: s.program, reason: "needsReview", freshness: s.freshness });
     }
 
-    // 2. New exercises — fill remaining up to 3
     if (plan.length < 3) {
       for (const prog of programs) {
         if (playerLevel.level < prog.unlockLevel) continue;
@@ -231,7 +319,6 @@ export function AppProvider({ children }) {
       }
     }
 
-    // 3. Fading reviews (0.3–0.6) — fill leftover
     if (plan.length < 3) {
       const fading = skillHealthData.filter(s => s.label === "fading" && matchesStage(s.exercise) && !plan.some(p => p.exercise.id === s.exerciseId));
       for (const s of fading) {
@@ -240,7 +327,6 @@ export function AppProvider({ children }) {
       }
     }
 
-    // 4. Fallback: random completed exercises
     if (plan.length === 0) {
       const doneExercises = [];
       programs.forEach(p => p.levels.forEach(l => l.exercises.forEach(e => {
@@ -260,15 +346,31 @@ export function AppProvider({ children }) {
 
   // ─── Badge Checking ───
   useEffect(() => {
-    const state = { totalSessions, currentStreak, completedExercises, completedLevels, totalXP, todayExercises, journal, totalReviews, allSkillsFresh };
+    if (!activeDogId || !dogs[activeDogId]) return;
+    const dog = dogs[activeDogId];
+    const state = {
+      totalSessions: dog.totalSessions,
+      currentStreak: dog.currentStreak,
+      completedExercises: dog.completedExercises,
+      completedLevels: dog.completedLevels,
+      totalXP: dog.totalXP,
+      todayExercises,
+      journal: dog.journal,
+      totalReviews: dog.totalReviews,
+      allSkillsFresh,
+    };
     badges.forEach(b => {
-      if (!earnedBadges.includes(b.id) && checkBadgeCondition(b.id, state)) {
-        setEarnedBadges(prev => [...prev, b.id]);
+      if (!dog.earnedBadges.includes(b.id) && checkBadgeCondition(b.id, state)) {
+        setDogs(prev => {
+          const d = prev[activeDogId];
+          if (!d || d.earnedBadges.includes(b.id)) return prev;
+          return { ...prev, [activeDogId]: { ...d, earnedBadges: [...d.earnedBadges, b.id] } };
+        });
         setNewBadge(b);
         setTimeout(() => setNewBadge(null), 3500);
       }
     });
-  }, [completedExercises, totalXP, currentStreak, totalSessions, todayExercises, journal, earnedBadges, badges, totalReviews, allSkillsFresh]);
+  }, [dogs, activeDogId, todayExercises, badges, allSkillsFresh]);
 
   // ─── Reminder Check ───
   useEffect(() => {
@@ -303,51 +405,57 @@ export function AppProvider({ children }) {
   }, [completedExercises]);
 
   const finalizeComplete = useCallback((skipJournal) => {
-    if (!pendingComplete) return;
+    if (!pendingComplete || !dogs[activeDogId]) return;
     const { exId, lvlId, progId, isReview } = pendingComplete;
+    const currentDog = dogs[activeDogId];
+
+    const updates = {};
 
     if (!isReview) {
-      setCompletedExercises(prev => [...prev, exId]);
+      updates.completedExercises = prev => [...prev, exId];
     } else {
-      setTotalReviews(prev => prev + 1);
+      updates.totalReviews = prev => prev + 1;
     }
 
-    setTotalSessions(prev => prev + 1);
+    updates.totalSessions = prev => prev + 1;
     setTodayExercises(prev => prev + 1);
 
     const today = new Date().toDateString();
-    if (lastTrainDate !== today) {
+    if (currentDog.lastTrainDate !== today) {
       const y = new Date(); y.setDate(y.getDate() - 1);
-      setCurrentStreak(prev => lastTrainDate === y.toDateString() ? prev + 1 : 1);
-      setLastTrainDate(today);
+      updates.currentStreak = currentDog.lastTrainDate === y.toDateString() ? currentDog.currentStreak + 1 : 1;
+      updates.lastTrainDate = today;
     }
 
     const baseProg = TRAINING_PROGRAMS.find(p => p.id === progId);
     const baseLvl = baseProg.levels.find(l => l.id === lvlId);
     const baseXp = Math.round(baseLvl.xpReward / baseLvl.exercises.length);
     const xp = isReview ? Math.round(baseXp * 0.3) : baseXp;
-    setTotalXP(prev => prev + xp);
+    updates.totalXP = prev => prev + xp;
     setXpAnim(xp);
     setTimeout(() => setXpAnim(null), 2000);
 
-    if (!isReview && baseLvl.exercises.every(e => e.id === exId || completedExercises.includes(e.id))) {
-      if (!completedLevels.includes(lvlId)) setCompletedLevels(prev => [...prev, lvlId]);
+    if (!isReview && baseLvl.exercises.every(e => e.id === exId || currentDog.completedExercises.includes(e.id))) {
+      if (!currentDog.completedLevels.includes(lvlId)) {
+        updates.completedLevels = prev => [...prev, lvlId];
+      }
     }
 
     // Update skill freshness
-    const prevData = skillFreshness[exId] || { interval: 3, completions: 0 };
+    const prevData = currentDog.skillFreshness[exId] || { interval: 3, completions: 0 };
     const newInterval = getNextInterval(prevData.interval, journalForm.rating);
-    setSkillFreshness(prev => ({
+    updates.skillFreshness = prev => ({
       ...prev,
       [exId]: { lastCompleted: new Date().toISOString(), interval: newInterval, completions: (prevData.completions || 0) + 1 },
-    }));
+    });
 
+    // Journal entry
     const hasContent = journalForm.note.trim() || (journalForm.photos && journalForm.photos.length > 0);
     if (!skipJournal && hasContent) {
       const tProg = programs.find(p => p.id === progId);
       const tLvl = tProg.levels.find(l => l.id === lvlId);
       const ex = tLvl.exercises.find(e => e.id === exId);
-      setJournal(prev => [...prev, {
+      updates.journal = prev => [...prev, {
         id: Date.now().toString(),
         date: new Date().toISOString(),
         exerciseId: exId,
@@ -358,12 +466,15 @@ export function AppProvider({ children }) {
         rating: journalForm.rating,
         mood: journalForm.mood,
         ...(journalForm.photos.length > 0 && { photos: journalForm.photos }),
-      }]);
+      }];
     }
 
-    // Check if we should show feedback prompt (every 5th exercise, max once per week)
+    // Apply all dog updates in one batch
+    updateDogFields(updates);
+
+    // Feedback prompt (every 5th new exercise, max once per week)
     if (!isReview) {
-      const newTotal = completedExercises.length + 1;
+      const newTotal = currentDog.completedExercises.length + 1;
       if (newTotal % 5 === 0) {
         try {
           const lastPrompt = localStorage.getItem(FEEDBACK_PROMPT_KEY);
@@ -378,7 +489,7 @@ export function AppProvider({ children }) {
 
     setPendingComplete(null);
     setShowJournalEntry(false);
-  }, [pendingComplete, lastTrainDate, completedExercises, completedLevels, journalForm, programs, skillFreshness]);
+  }, [pendingComplete, dogs, activeDogId, journalForm, programs, updateDogFields]);
 
   // ─── Notification Permission ───
   const requestNotifPermission = useCallback(async () => {
@@ -395,17 +506,8 @@ export function AppProvider({ children }) {
 
   // ─── Reset ───
   const resetAllData = useCallback(() => {
-    setDogProfile(null);
-    setCompletedExercises([]);
-    setCompletedLevels([]);
-    setTotalXP(0);
-    setCurrentStreak(0);
-    setTotalSessions(0);
-    setEarnedBadges([]);
-    setJournal([]);
-    setSkillFreshness({});
-    setTotalReviews(0);
-    setLastKnownStage(null);
+    setDogs({});
+    setActiveDogId(null);
     setScreen("splash");
   }, []);
 
@@ -414,14 +516,21 @@ export function AppProvider({ children }) {
   const rtl = isRTL(lang);
 
   const value = {
-    // Persisted state
+    // Per-dog state (derived from active dog)
     dogProfile, setDogProfile,
     completedExercises, completedLevels,
     totalXP, currentStreak, lastTrainDate,
     totalSessions, earnedBadges, journal,
+    skillFreshness, totalReviews,
+
+    // Shared state
     reminders, setReminders,
     lang, setLang,
-    skillFreshness, totalReviews,
+
+    // Multi-dog
+    dogs, activeDogId, dogCount,
+    addDog, removeDog, switchDog,
+    showAddDog, setShowAddDog,
 
     // Navigation
     screen, setScreen, nav,

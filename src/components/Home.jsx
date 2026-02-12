@@ -3,6 +3,7 @@ import { hasPreviousMonthReport } from "../utils/monthlyStats.js";
 import DailyPlan from "./DailyPlan.jsx";
 import SkillHealth from "./SkillHealth.jsx";
 import LifeStageBanner from "./LifeStageBanner.jsx";
+import DogSwitcher from "./DogSwitcher.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 
@@ -10,7 +11,7 @@ const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5
 const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
 
 export default function Home() {
-  const { dogProfile, totalXP, playerLevel, xpProgress, currentStreak, completedExercises, earnedBadges, journal, nav, setShowGear, setShowReminders, T, programs } = useApp();
+  const { dogProfile, totalXP, playerLevel, xpProgress, currentStreak, completedExercises, earnedBadges, journal, nav, setShowGear, setShowReminders, T, programs, dogCount } = useApp();
   const showReportBanner = hasPreviousMonthReport(journal);
 
   return (
@@ -30,6 +31,8 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {dogCount > 1 && <DogSwitcher />}
 
       {/* Level bar */}
       <div style={{ margin: "16px 20px 0", ...cardStyle }}>

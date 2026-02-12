@@ -18,6 +18,7 @@ import FeedbackAdmin from "./components/FeedbackAdmin.jsx";
 import LifeStageDetail from "./components/LifeStageDetail.jsx";
 import StageTransitionModal from "./components/StageTransitionModal.jsx";
 import MilestoneCards from "./components/MilestoneCards.jsx";
+import AddDogModal from "./components/AddDogModal.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
@@ -70,6 +71,7 @@ export default function App() {
       <JournalModal />
       <FeedbackModal />
       <FeedbackAdmin />
+      <AddDogModal />
     </div>
   );
 }

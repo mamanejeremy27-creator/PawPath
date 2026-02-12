@@ -210,4 +210,14 @@ export default {
   downloadCard: "Download",
   monthlyProgress: "Monthly Progress",
   trainingReport: "Training Report",
+
+  // Multi-Dog
+  addDog: "Add Dog",
+  switchDog: "Switch",
+  removeDog: "Remove",
+  maxDogsReached: "Maximum 2 dogs per account",
+  confirmRemoveDog: "Remove {name}? All their training data will be lost.",
+  myDogs: "My Dogs",
+  activeDog: "Active",
+  addSecondDog: "Add a second dog",
 };
