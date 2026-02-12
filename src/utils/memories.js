@@ -5,7 +5,7 @@
 
 const MEMORY_THROTTLE_KEY = "pawpath_memory_shown";
 const MAX_PER_WEEK = 3;
-const MIN_AGE_DAYS = 7; // memories must be at least 7 days old
+const MIN_AGE_DAYS = 3; // memories must be at least 3 days old
 
 function daysBetween(a, b) {
   return Math.floor(Math.abs(new Date(a) - new Date(b)) / (1000 * 60 * 60 * 24));
@@ -106,7 +106,7 @@ function findAnniversaryMemory(journal, dogProfile) {
  * Find "throwback" memory — a notable past session (high rating, first of a program, etc).
  */
 function findThrowbackMemory(journal) {
-  if (!journal || journal.length < 3) return null;
+  if (!journal || journal.length < 1) return null;
   const today = new Date();
   const oldEntries = journal.filter(e => daysBetween(e.date, today) >= MIN_AGE_DAYS);
   if (oldEntries.length === 0) return null;
@@ -153,7 +153,7 @@ export function getTodaysMemory(journal, dogProfile, dogId) {
   if (anniversary) return anniversary;
 
   // Priority 3: Throwback (only if enough history)
-  if (journal.length >= 5) {
+  if (journal.length >= 3) {
     const throwback = findThrowbackMemory(journal);
     if (throwback) {
       return {

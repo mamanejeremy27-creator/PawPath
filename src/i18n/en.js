@@ -283,4 +283,5 @@ export default {
   recapActiveMonths: "Active Months",
   recapAvgRating: "Avg Rating",
   recapTopMood: "Top Mood",
+  keepTrainingRecap: "Keep training! Your Year in Review will be ready once you have more data.",
 };

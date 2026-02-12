@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
 import { useApp } from "../context/AppContext.jsx";
-import { hasRecapData } from "../utils/recapData.js";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 
@@ -8,7 +7,8 @@ const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5
 
 export default function Profile() {
   const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog, nav } = useApp();
-  const showRecap = hasRecapData(journal);
+  const uniqueActiveDays = new Set(journal.map(e => new Date(e.date).toDateString())).size;
+  const hasEnoughForRecap = uniqueActiveDays >= 30;
   const [tapCount, setTapCount] = useState(0);
   const [confirmRemove, setConfirmRemove] = useState(null);
   const tapTimer = useRef(null);
@@ -98,12 +98,15 @@ export default function Profile() {
           </div>
         </div>
 
-        {showRecap && (
-          <button onClick={() => nav("annualRecap")}
-            style={{ marginTop: 32, width: "100%", padding: "16px", fontSize: 14, fontWeight: 700, background: "linear-gradient(135deg, rgba(34,197,94,0.1), rgba(139,92,246,0.08))", color: C.acc, border: `1px solid rgba(34,197,94,0.2)`, borderRadius: C.r, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+        <div style={{ marginTop: 32 }}>
+          <button onClick={() => hasEnoughForRecap && nav("annualRecap")}
+            style={{ width: "100%", padding: "16px", fontSize: 14, fontWeight: 700, background: "linear-gradient(135deg, rgba(34,197,94,0.1), rgba(139,92,246,0.08))", color: hasEnoughForRecap ? C.acc : C.t3, border: `1px solid rgba(34,197,94,0.2)`, borderRadius: C.r, cursor: hasEnoughForRecap ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, opacity: hasEnoughForRecap ? 1 : 0.7 }}>
             {"\uD83C\uDF1F"} {T("viewRecap")}
           </button>
-        )}
+          {!hasEnoughForRecap && (
+            <p style={{ fontSize: 12, color: C.t3, textAlign: "center", margin: "8px 0 0", lineHeight: 1.5 }}>{T("keepTrainingRecap")}</p>
+          )}
+        </div>
 
         <button onClick={resetAllData}
           style={{ marginTop: 16, width: "100%", padding: "14px", fontSize: 14, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: C.danger, border: `1px solid rgba(239,68,68,0.2)`, borderRadius: C.r, cursor: "pointer" }}>{T("resetAllData")}</button>
