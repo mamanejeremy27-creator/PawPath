@@ -10,6 +10,15 @@ import { calculateLifeStage, getNextStageInfo, getAllStages } from "../utils/lif
 import { CHALLENGES, getActiveChallenge, getChallengeDay, getWeekNumber, getWeekStartDate } from "../data/challenges.js";
 import { DEFAULT_STREAKS, DEFAULT_APP_SETTINGS, STREAK_MILESTONES, THEMES, AVATAR_ACCESSORIES, getNextMilestone, getMilestoneProgress, getStreakFire } from "../data/streakRewards.js";
 import { EXERCISE_PREREQUISITES } from "../data/exercisePrerequisites.js";
+import { useAuth } from "../hooks/useAuth.js";
+import { loadUserData, migrateLocalToSupabase } from "../lib/syncEngine.js";
+import {
+  createDog as dbCreateDog, updateDog as dbUpdateDog, deleteDog as dbDeleteDog,
+  updateDogProgress, saveCompletedExercise, createJournalEntry,
+  saveBadge, updateSkillFreshness, updateChallengeProgress,
+  saveStreakHistory, updateUserSettings, saveUnlockedReward,
+  saveFeedback, deleteAllUserData,
+} from "../lib/database.js";
 
 export const DIFFICULTY_CONFIG = {
   incompleteThreshold: 3,
@@ -50,6 +59,12 @@ const DEFAULT_DOG_STATE = {
 };
 
 export function AppProvider({ children }) {
+  // ─── Auth ───
+  const { user, loading: authLoading } = useAuth();
+  const isAuthenticated = !!user;
+  const supabaseIdMapRef = useRef({});
+  const getSupaId = (localId) => supabaseIdMapRef.current[localId];
+
   // ─── Multi-Dog Persisted State ───
   const [dogs, setDogs] = useState({});
   const [activeDogId, setActiveDogId] = useState(null);
@@ -92,16 +107,17 @@ export function AppProvider({ children }) {
   const [streakBrokenModal, setStreakBrokenModal] = useState(null);
 
   const reminderCheckRef = useRef(null);
+  const streakCheckRef = useRef(false);
+  const settingsSyncSkipRef = useRef(true); // Skip first sync after load
 
-  // ─── Load from localStorage ───
-  useEffect(() => {
+  // ─── Load from localStorage (helper) ───
+  const loadFromLocalStorage = useCallback(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const d = JSON.parse(raw);
 
         if (d.dogs) {
-          // New multi-dog format — ensure dogs have all fields
           const migratedDogs = {};
           for (const [id, dog] of Object.entries(d.dogs)) {
             migratedDogs[id] = { ...DEFAULT_DOG_STATE, ...dog };
@@ -112,8 +128,8 @@ export function AppProvider({ children }) {
           if (d.reminders) setReminders(d.reminders);
           if (d.appSettings) setAppSettings({ ...DEFAULT_APP_SETTINGS, ...d.appSettings });
           setScreen("home");
+          return d;
         } else if (d.dogProfile) {
-          // Old flat format — migrate to multi-dog
           let sf = d.skillFreshness || {};
           if (!d.skillFreshness && d.completedExercises && d.completedExercises.length > 0) {
             d.completedExercises.forEach(exId => {
@@ -146,15 +162,77 @@ export function AppProvider({ children }) {
           if (d.lang) setLang(d.lang);
           if (d.reminders) setReminders(d.reminders);
           setScreen("home");
+          return { dogs: { dog_1: migrated }, activeDogId: "dog_1", lang: d.lang, reminders: d.reminders };
         }
       }
     } catch (e) { /* ignore */ }
-    try {
-      const rawFeedback = localStorage.getItem(FEEDBACK_KEY);
-      if (rawFeedback) setFeedback(JSON.parse(rawFeedback));
-    } catch (e) { /* ignore */ }
-    setLoaded(true);
+    return null;
   }, []);
+
+  // ─── Load: branch on auth state (waits for auth to resolve) ───
+  useEffect(() => {
+    if (authLoading) return; // Wait for auth to resolve before deciding load strategy
+
+    let cancelled = false;
+    // Reset refs so new data triggers fresh checks
+    streakCheckRef.current = false;
+    settingsSyncSkipRef.current = true;
+
+    async function loadFromSupabase() {
+      const result = await loadUserData();
+      if (cancelled) return;
+
+      if (result.data && Object.keys(result.data.dogs).length > 0) {
+        // Supabase has data — use it
+        const d = result.data;
+        const migratedDogs = {};
+        for (const [id, dog] of Object.entries(d.dogs)) {
+          migratedDogs[id] = { ...DEFAULT_DOG_STATE, ...dog };
+        }
+        setDogs(migratedDogs);
+        setActiveDogId(d.activeDogId);
+        if (d.lang) setLang(d.lang);
+        if (d.reminders) setReminders(d.reminders);
+        if (d.appSettings) setAppSettings(prev => ({ ...prev, ...d.appSettings }));
+        supabaseIdMapRef.current = d.idMap;
+        setScreen("home");
+      } else {
+        // Supabase empty — check localStorage for migration
+        const localData = loadFromLocalStorage();
+        if (localData && localData.dogs && Object.keys(localData.dogs).length > 0) {
+          // Migrate localStorage to Supabase
+          const migrateResult = await migrateLocalToSupabase(localData);
+          if (!cancelled && migrateResult.idMap) {
+            supabaseIdMapRef.current = migrateResult.idMap;
+          }
+          // State already set by loadFromLocalStorage
+        }
+        // If no local data either, stay on splash (default)
+      }
+    }
+
+    if (isAuthenticated) {
+      setLoaded(false); // Hide children during Supabase load
+      loadFromSupabase().finally(() => {
+        if (!cancelled) {
+          try {
+            const rawFeedback = localStorage.getItem(FEEDBACK_KEY);
+            if (rawFeedback) setFeedback(JSON.parse(rawFeedback));
+          } catch (e) { /* ignore */ }
+          setLoaded(true);
+        }
+      });
+    } else {
+      loadFromLocalStorage();
+      try {
+        const rawFeedback = localStorage.getItem(FEEDBACK_KEY);
+        if (rawFeedback) setFeedback(JSON.parse(rawFeedback));
+      } catch (e) { /* ignore */ }
+      setLoaded(true);
+    }
+
+    return () => { cancelled = true; };
+  }, [isAuthenticated, authLoading, loadFromLocalStorage]);
 
   // ─── Save to localStorage ───
   useEffect(() => {
@@ -163,6 +241,26 @@ export function AppProvider({ children }) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ dogs, activeDogId, lang, reminders, appSettings }));
     } catch (e) { /* ignore */ }
   }, [dogs, activeDogId, lang, reminders, appSettings, loaded]);
+
+  // ─── Sync settings to Supabase (debounced, skips initial load) ───
+  useEffect(() => {
+    if (!loaded || !isAuthenticated) return;
+    if (settingsSyncSkipRef.current) {
+      settingsSyncSkipRef.current = false;
+      return;
+    }
+    const timer = setTimeout(() => {
+      updateUserSettings({
+        lang,
+        reminders,
+        activeTheme: appSettings.activeTheme,
+        unlockedThemes: appSettings.unlockedThemes,
+        activeAccessories: appSettings.activeAccessories,
+        unlockedAccessories: appSettings.unlockedAccessories,
+      });
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [lang, reminders, appSettings, loaded, isAuthenticated]);
 
   // ─── Save Feedback ───
   useEffect(() => {
@@ -211,12 +309,23 @@ export function AppProvider({ children }) {
     setDogs(prev => ({ ...prev, [newId]: newDog }));
     setActiveDogId(newId);
     setShowAddDog(false);
+    if (isAuthenticated) {
+      dbCreateDog({ name: profile.name, breed: profile.breed || null, birthday: profile.birthday || null, weight: profile.weight || null, avatar: profile.avatar || null })
+        .then(res => { if (res.data) supabaseIdMapRef.current[newId] = res.data.id; });
+    }
     return newId;
-  }, [dogs]);
+  }, [dogs, isAuthenticated]);
 
   const removeDog = useCallback((dogId) => {
     const dogIds = Object.keys(dogs);
     if (dogIds.length <= 1) return;
+    if (isAuthenticated) {
+      const supaId = getSupaId(dogId);
+      if (supaId) {
+        dbDeleteDog(supaId);
+        delete supabaseIdMapRef.current[dogId];
+      }
+    }
     setDogs(prev => {
       const next = { ...prev };
       delete next[dogId];
@@ -226,7 +335,7 @@ export function AppProvider({ children }) {
       const remaining = dogIds.filter(id => id !== dogId);
       setActiveDogId(remaining[0]);
     }
-  }, [dogs, activeDogId]);
+  }, [dogs, activeDogId, isAuthenticated]);
 
   const switchDog = useCallback((dogId) => {
     if (dogs[dogId]) {
@@ -237,17 +346,25 @@ export function AppProvider({ children }) {
 
   const setDogProfile = useCallback((profile) => {
     const dogIds = Object.keys(dogs);
+    const dbPayload = { name: profile.name, breed: profile.breed || null, birthday: profile.birthday || null, weight: profile.weight || null, avatar: profile.avatar || null };
     if (dogIds.length === 0 || !activeDogId || !dogs[activeDogId]) {
       // First dog — create it
       const newId = dogIds.length === 0 ? "dog_1" : (!dogs.dog_1 ? "dog_1" : "dog_2");
       const newDog = { ...DEFAULT_DOG_STATE, profile };
       setDogs(prev => ({ ...prev, [newId]: newDog }));
       setActiveDogId(newId);
+      if (isAuthenticated) {
+        dbCreateDog(dbPayload).then(res => { if (res.data) supabaseIdMapRef.current[newId] = res.data.id; });
+      }
     } else {
       // Update existing dog's profile
       updateDogFields({ profile });
+      if (isAuthenticated) {
+        const supaId = getSupaId(activeDogId);
+        if (supaId) dbUpdateDog(supaId, dbPayload);
+      }
     }
-  }, [dogs, activeDogId, updateDogFields]);
+  }, [dogs, activeDogId, updateDogFields, isAuthenticated]);
 
   // ─── Player Level ───
   const playerLevel = useMemo(() => {
@@ -358,27 +475,31 @@ export function AppProvider({ children }) {
       const newCurrentStreak = (partial || fullComplete) ? cs.stats.currentStreak + 1 : 0;
       const newBestStreak = Math.max(cs.stats.bestStreak, newCurrentStreak);
 
-      updateDogFields({
-        challenges: {
-          active: { challengeId: challenge.id, weekNumber: weekNum, startDate: getWeekStartDate(now), completedDays: [] },
-          history: newHistory,
-          stats: { totalCompleted: newTotal, currentStreak: newCurrentStreak, bestStreak: newBestStreak },
-        },
-        totalXP: prev => prev + xpEarned,
-      });
+      const newChallenges = {
+        active: { challengeId: challenge.id, weekNumber: weekNum, startDate: getWeekStartDate(now), completedDays: [] },
+        history: newHistory,
+        stats: { totalCompleted: newTotal, currentStreak: newCurrentStreak, bestStreak: newBestStreak },
+      };
+      updateDogFields({ challenges: newChallenges, totalXP: prev => prev + xpEarned });
+      if (isAuthenticated) {
+        const supaId = getSupaId(activeDogId);
+        if (supaId) {
+          updateChallengeProgress(supaId, newChallenges);
+          updateDogProgress(supaId, { total_xp: (dogs[activeDogId].totalXP || 0) + xpEarned });
+        }
+      }
     } else if (!cs.active) {
       // First time — init challenge
-      updateDogFields({
-        challenges: {
-          ...cs,
-          active: { challengeId: challenge.id, weekNumber: weekNum, startDate: getWeekStartDate(now), completedDays: [] },
-        },
-      });
+      const newChallenges = { ...cs, active: { challengeId: challenge.id, weekNumber: weekNum, startDate: getWeekStartDate(now), completedDays: [] } };
+      updateDogFields({ challenges: newChallenges });
+      if (isAuthenticated) {
+        const supaId = getSupaId(activeDogId);
+        if (supaId) updateChallengeProgress(supaId, newChallenges);
+      }
     }
-  }, [activeDogId, dogs, updateDogFields]);
+  }, [activeDogId, dogs, updateDogFields, isAuthenticated]);
 
   // ─── Streak Break Detection (runs on app load / dog switch) ───
-  const streakCheckRef = useRef(false);
   useEffect(() => {
     if (!loaded || !activeDogId || !dogs[activeDogId]) return;
     if (streakCheckRef.current === activeDogId) return;
@@ -398,41 +519,46 @@ export function AppProvider({ children }) {
 
     if (daysSince === 2 && streaks.freezes && streaks.freezes.available > 0) {
       // Missed exactly 1 day, freeze available — auto-use
-      updateDogFields({
-        streaks: {
-          ...streaks,
-          freezes: {
-            ...streaks.freezes,
-            available: streaks.freezes.available - 1,
-            totalUsed: streaks.freezes.totalUsed + 1,
-            lastUsedDate: now.toISOString(),
-          },
+      const updatedStreaks = {
+        ...streaks,
+        freezes: {
+          ...streaks.freezes,
+          available: streaks.freezes.available - 1,
+          totalUsed: streaks.freezes.totalUsed + 1,
+          lastUsedDate: now.toISOString(),
         },
-      });
+      };
+      updateDogFields({ streaks: updatedStreaks });
+      if (isAuthenticated) {
+        const supaId = getSupaId(activeDogId);
+        if (supaId) saveStreakHistory(supaId, updatedStreaks);
+      }
       setStreakFreezeNotif(true);
       setTimeout(() => setStreakFreezeNotif(null), 4000);
     } else {
       // Streak broken
       const bestStreak = Math.max(streaks.best || 0, streaks.current || 0);
-      updateDogFields({
-        streaks: {
-          ...streaks,
-          current: 0,
-          best: bestStreak,
-          startDate: null,
-          recovery: { active: false, daysCompleted: 0, startDate: null },
-          history: [...(streaks.history || []), {
-            streak: streaks.current,
-            startDate: streaks.startDate,
-            endDate: streaks.lastTrainingDate,
-            brokenDate: now.toISOString(),
-          }],
-        },
-        currentStreak: 0,
-      });
+      const brokenStreaks = {
+        ...streaks,
+        current: 0,
+        best: bestStreak,
+        startDate: null,
+        recovery: { active: false, daysCompleted: 0, startDate: null },
+        history: [...(streaks.history || []), {
+          streak: streaks.current,
+          startDate: streaks.startDate,
+          endDate: streaks.lastTrainingDate,
+          brokenDate: now.toISOString(),
+        }],
+      };
+      updateDogFields({ streaks: brokenStreaks, currentStreak: 0 });
+      if (isAuthenticated) {
+        const supaId = getSupaId(activeDogId);
+        if (supaId) saveStreakHistory(supaId, brokenStreaks);
+      }
       setStreakBrokenModal({ previous: streaks.current, best: bestStreak });
     }
-  }, [loaded, activeDogId]);
+  }, [loaded, activeDogId, isAuthenticated]);
 
   // Compute active challenge data for UI
   const challengeData = useMemo(() => {
@@ -466,12 +592,12 @@ export function AppProvider({ children }) {
     if (cs.active.completedDays.includes(dayNum)) return;
 
     const newDays = [...cs.active.completedDays, dayNum];
-    updateDogFields({
-      challenges: {
-        ...cs,
-        active: { ...cs.active, completedDays: newDays },
-      },
-    });
+    const newChallenges = { ...cs, active: { ...cs.active, completedDays: newDays } };
+    updateDogFields({ challenges: newChallenges });
+    if (isAuthenticated) {
+      const supaId = getSupaId(activeDogId);
+      if (supaId) updateChallengeProgress(supaId, newChallenges);
+    }
 
     // Toast
     const remaining = 7 - newDays.length;
@@ -489,7 +615,7 @@ export function AppProvider({ children }) {
         });
       }, 500);
     }
-  }, [activeDogId, dogs, updateDogFields]);
+  }, [activeDogId, dogs, updateDogFields, isAuthenticated]);
 
   // ─── Streak Computed Data ───
   const streakData = useMemo(() => {
@@ -533,14 +659,14 @@ export function AppProvider({ children }) {
   const startRecovery = useCallback(() => {
     if (!activeDogId || !dogs[activeDogId]) return;
     const streaks = dogs[activeDogId].streaks || { ...DEFAULT_STREAKS };
-    updateDogFields({
-      streaks: {
-        ...streaks,
-        recovery: { active: true, daysCompleted: 0, startDate: new Date().toISOString() },
-      },
-    });
+    const updatedStreaks = { ...streaks, recovery: { active: true, daysCompleted: 0, startDate: new Date().toISOString() } };
+    updateDogFields({ streaks: updatedStreaks });
+    if (isAuthenticated) {
+      const supaId = getSupaId(activeDogId);
+      if (supaId) saveStreakHistory(supaId, updatedStreaks);
+    }
     setStreakBrokenModal(null);
-  }, [activeDogId, dogs, updateDogFields]);
+  }, [activeDogId, dogs, updateDogFields, isAuthenticated]);
 
   // ─── Difficulty Tracking ───
   const isExerciseStruggling = useCallback((exId) => {
@@ -623,6 +749,17 @@ export function AppProvider({ children }) {
     }
     setMoodCheck(null);
   }, [incrementDifficultyField, updateDogFields]);
+
+  // ─── Sync difficulty tracking to Supabase (debounced) ───
+  useEffect(() => {
+    if (!loaded || !isAuthenticated || !activeDogId) return;
+    const supaId = getSupaId(activeDogId);
+    if (!supaId) return;
+    const timer = setTimeout(() => {
+      updateDogProgress(supaId, { difficulty_tracking: difficultyTracking });
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [difficultyTracking, loaded, isAuthenticated, activeDogId]);
 
   // ─── Daily Plan ───
   const dailyPlan = useMemo(() => {
@@ -714,11 +851,15 @@ export function AppProvider({ children }) {
           if (!d || d.earnedBadges.includes(b.id)) return prev;
           return { ...prev, [activeDogId]: { ...d, earnedBadges: [...d.earnedBadges, b.id] } };
         });
+        if (isAuthenticated) {
+          const supaId = getSupaId(activeDogId);
+          if (supaId) saveBadge(supaId, b.id);
+        }
         setNewBadge(b);
         setTimeout(() => setNewBadge(null), 3500);
       }
     });
-  }, [dogs, activeDogId, todayExercises, badges, allSkillsFresh]);
+  }, [dogs, activeDogId, todayExercises, badges, allSkillsFresh, isAuthenticated]);
 
   // ─── Reminder Check ───
   useEffect(() => {
@@ -895,6 +1036,59 @@ export function AppProvider({ children }) {
     // Apply all dog updates in one batch
     updateDogFields(updates);
 
+    // ─── Supabase sync for finalizeComplete ───
+    if (isAuthenticated) {
+      const supaId = getSupaId(activeDogId);
+      if (supaId) {
+        const supaPromises = [];
+        // Save completed exercise
+        supaPromises.push(saveCompletedExercise(supaId, exId, lvlId, progId, xp, isReview));
+        // Update dog progress (pre-compute final values)
+        const newTotalXP = (currentDog.totalXP || 0) + totalXpGain;
+        const newTotalSessions = (currentDog.totalSessions || 0) + 1;
+        const newTotalReviews = isReview ? (currentDog.totalReviews || 0) + 1 : (currentDog.totalReviews || 0);
+        const newCompletedLevels = updates.completedLevels
+          ? [...(currentDog.completedLevels || []), lvlId]
+          : (currentDog.completedLevels || []);
+        supaPromises.push(updateDogProgress(supaId, {
+          total_xp: newTotalXP,
+          total_sessions: newTotalSessions,
+          total_reviews: newTotalReviews,
+          completed_levels: newCompletedLevels,
+          difficulty_tracking: currentDog.difficultyTracking || { exercises: {} },
+        }));
+        // Skill freshness
+        const newFreshnessData = { lastCompleted: new Date().toISOString(), interval: newInterval, completions: (prevData.completions || 0) + 1 };
+        supaPromises.push(updateSkillFreshness(supaId, exId, newFreshnessData));
+        // Streak history
+        if (updates.streaks) {
+          supaPromises.push(saveStreakHistory(supaId, updates.streaks));
+        }
+        // Journal entry
+        if (!skipJournal && hasContent) {
+          const tProg2 = programs.find(p => p.id === progId);
+          const tLvl2 = tProg2.levels.find(l => l.id === lvlId);
+          const ex2 = tLvl2.exercises.find(e => e.id === exId);
+          supaPromises.push(createJournalEntry(supaId, {
+            exercise_id: exId,
+            exercise_name: ex2?.name || "Unknown",
+            program_name: tProg2.name,
+            program_emoji: tProg2.emoji,
+            note: journalForm.note,
+            rating: journalForm.rating,
+            mood: journalForm.mood,
+            photos: journalForm.photos || [],
+          }));
+        }
+        // Milestone reward unlock
+        if (milestoneXp > 0) {
+          const ms = STREAK_MILESTONES.find(m => milestoneXp === (m.xpBonus || 0));
+          if (ms) supaPromises.push(saveUnlockedReward(ms.rewardId, ms.reward || "milestone"));
+        }
+        Promise.allSettled(supaPromises);
+      }
+    }
+
     // Auto-complete challenge day if exercise matches
     const now = new Date();
     const todayDay = getChallengeDay(now);
@@ -926,7 +1120,7 @@ export function AppProvider({ children }) {
 
     setPendingComplete(null);
     setShowJournalEntry(false);
-  }, [pendingComplete, dogs, activeDogId, journalForm, programs, updateDogFields, completeChallengeDay]);
+  }, [pendingComplete, dogs, activeDogId, journalForm, programs, updateDogFields, completeChallengeDay, isAuthenticated]);
 
   // ─── Notification Permission ───
   const requestNotifPermission = useCallback(async () => {
@@ -939,14 +1133,19 @@ export function AppProvider({ children }) {
   // ─── Submit Feedback ───
   const submitFeedback = useCallback((entry) => {
     setFeedback(prev => [...prev, entry]);
-  }, []);
+    if (isAuthenticated) saveFeedback(entry);
+  }, [isAuthenticated]);
 
   // ─── Reset ───
   const resetAllData = useCallback(() => {
+    if (isAuthenticated) {
+      deleteAllUserData();
+      supabaseIdMapRef.current = {};
+    }
     setDogs({});
     setActiveDogId(null);
     setScreen("splash");
-  }, []);
+  }, [isAuthenticated]);
 
   // ─── Translation helper ───
   const T = useCallback((key) => t(lang, key), [lang]);
@@ -1021,9 +1220,20 @@ export function AppProvider({ children }) {
     recordMoodCheck, moodCheck, setMoodCheck,
     EXERCISE_PREREQUISITES,
 
+    // Auth
+    isAuthenticated,
+
     // i18n
     T, rtl,
   };
 
-  return <AppContext.Provider value={value}>{loaded ? children : null}</AppContext.Provider>;
+  if (!loaded) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#0A0A0C" }}>
+        <div style={{ width: 40, height: 40, border: "3px solid rgba(255,255,255,0.1)", borderTopColor: "#22C55E", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      </div>
+    );
+  }
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
