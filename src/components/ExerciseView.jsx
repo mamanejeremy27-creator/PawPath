@@ -1,5 +1,8 @@
+import { useEffect, useRef } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import Timer from "./Timer.jsx";
+import DifficultyCard from "./DifficultyCard.jsx";
+import MoodCheck from "./MoodCheck.jsx";
 import { calculateFreshness, getFreshnessColor } from "../utils/freshness.js";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", warn: "#F59E0B", rL: 24, r: 16 };
@@ -7,7 +10,22 @@ const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, 
 const sectionLabel = (text) => <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{text}</div>;
 
 export default function ExerciseView() {
-  const { selExercise, selLevel, selProgram, completedExercises, journal, triggerComplete, nav, T, rtl, lang, gear: gearData, skillFreshness } = useApp();
+  const { selExercise, selLevel, selProgram, completedExercises, journal, triggerComplete, nav, T, rtl, lang, gear: gearData, skillFreshness, incrementDifficultyField, moodCheck } = useApp();
+  const enteredRef = useRef(null);
+
+  // Track incomplete sessions (user opens exercise, stays 10+ sec, leaves without completing)
+  useEffect(() => {
+    if (!selExercise) return;
+    enteredRef.current = { exId: selExercise.id, time: Date.now(), completed: false };
+    return () => {
+      const entry = enteredRef.current;
+      if (entry && entry.exId === selExercise.id && !entry.completed && Date.now() - entry.time > 10000) {
+        incrementDifficultyField(entry.exId, "incompleteCount");
+      }
+      enteredRef.current = null;
+    };
+  }, [selExercise?.id]);
+
   if (!selExercise || !selLevel || !selProgram) return null;
   const ex = selExercise;
   const done = completedExercises.includes(ex.id);
@@ -103,15 +121,18 @@ export default function ExerciseView() {
           </div>
         )}
 
+        {/* Difficulty Suggestion Card */}
+        <DifficultyCard exerciseId={ex.id} program={selProgram} />
+
         {/* Complete */}
         {!done ? (
-          <button onClick={() => triggerComplete(ex.id, selLevel.id, selProgram.id)}
+          <button onClick={() => { if (enteredRef.current) enteredRef.current.completed = true; triggerComplete(ex.id, selLevel.id, selProgram.id); }}
             style={{ width: "100%", padding: "20px", marginTop: 24, fontSize: 16, fontWeight: 800, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer", boxShadow: "0 8px 32px rgba(34,197,94,0.25)" }}>
             {T("markComplete")}
           </button>
         ) : (
           <>
-            <button onClick={() => triggerComplete(ex.id, selLevel.id, selProgram.id)}
+            <button onClick={() => { if (enteredRef.current) enteredRef.current.completed = true; triggerComplete(ex.id, selLevel.id, selProgram.id); }}
               style={{ width: "100%", padding: "20px", marginTop: 24, fontSize: 16, fontWeight: 800, background: "transparent", color: C.acc, border: `2px solid ${C.acc}`, borderRadius: 50, cursor: "pointer" }}>
               {T("reviewRefresh")}
             </button>
@@ -144,6 +165,7 @@ export default function ExerciseView() {
           </>
         )}
       </div>
+      <MoodCheck />
     </div>
   );
 }

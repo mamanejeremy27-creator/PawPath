@@ -9,6 +9,15 @@ import { calculateFreshness, getNextInterval, getFreshnessLabel, getFreshnessCol
 import { calculateLifeStage, getNextStageInfo, getAllStages } from "../utils/lifeStage.js";
 import { CHALLENGES, getActiveChallenge, getChallengeDay, getWeekNumber, getWeekStartDate } from "../data/challenges.js";
 import { DEFAULT_STREAKS, DEFAULT_APP_SETTINGS, STREAK_MILESTONES, THEMES, AVATAR_ACCESSORIES, getNextMilestone, getMilestoneProgress, getStreakFire } from "../data/streakRewards.js";
+import { EXERCISE_PREREQUISITES } from "../data/exercisePrerequisites.js";
+
+export const DIFFICULTY_CONFIG = {
+  incompleteThreshold: 3,
+  lowRatingThreshold: 2,
+  shortDurationThreshold: 3,
+  suggestionCooldownDays: 7,
+  minTotalSessions: 5,
+};
 
 const STORAGE_KEY = "pawpath_v3";
 const FEEDBACK_KEY = "pawpath_feedback";
@@ -37,6 +46,7 @@ const DEFAULT_DOG_STATE = {
   lastKnownStage: null,
   challenges: { active: null, history: [], stats: { totalCompleted: 0, currentStreak: 0, bestStreak: 0 } },
   streaks: null,
+  difficultyTracking: { exercises: {} },
 };
 
 export function AppProvider({ children }) {
@@ -73,6 +83,7 @@ export function AppProvider({ children }) {
   const [showAddDog, setShowAddDog] = useState(false);
   const [challengeCelebration, setChallengeCelebration] = useState(null);
   const [challengeDayToast, setChallengeDayToast] = useState(null);
+  const [moodCheck, setMoodCheck] = useState(null); // { exId, lvlId, progId } — shown after completion
 
   // ─── Streak & Theme State ───
   const [appSettings, setAppSettings] = useState({ ...DEFAULT_APP_SETTINGS });
@@ -187,6 +198,7 @@ export function AppProvider({ children }) {
   const journal = activeDog?.journal || [];
   const skillFreshness = activeDog?.skillFreshness || {};
   const totalReviews = activeDog?.totalReviews || 0;
+  const difficultyTracking = activeDog?.difficultyTracking || { exercises: {} };
 
   // ─── Multi-Dog Management ───
   const dogCount = Object.keys(dogs).length;
@@ -530,6 +542,88 @@ export function AppProvider({ children }) {
     setStreakBrokenModal(null);
   }, [activeDogId, dogs, updateDogFields]);
 
+  // ─── Difficulty Tracking ───
+  const isExerciseStruggling = useCallback((exId) => {
+    if (totalSessions < DIFFICULTY_CONFIG.minTotalSessions) return false;
+    const data = difficultyTracking.exercises?.[exId];
+    if (!data) return false;
+    if (data.dismissed && data.lastSuggestionDate) {
+      const daysSince = Math.floor((Date.now() - new Date(data.lastSuggestionDate).getTime()) / 86400000);
+      if (daysSince < DIFFICULTY_CONFIG.suggestionCooldownDays) return false;
+    }
+    return (
+      (data.incompleteCount || 0) >= DIFFICULTY_CONFIG.incompleteThreshold ||
+      (data.lowRatingCount || 0) >= DIFFICULTY_CONFIG.lowRatingThreshold ||
+      (data.shortSessionCount || 0) >= DIFFICULTY_CONFIG.shortDurationThreshold
+    );
+  }, [totalSessions, difficultyTracking]);
+
+  const updateDifficultyTracking = useCallback((exId, field, value) => {
+    updateDogFields({
+      difficultyTracking: prev => {
+        const exercises = { ...(prev?.exercises || {}) };
+        exercises[exId] = { ...(exercises[exId] || { incompleteCount: 0, lowRatingCount: 0, shortSessionCount: 0, lastSuggestionDate: null, dismissed: false, totalAttempts: 0 }), [field]: value };
+        return { exercises };
+      },
+    });
+  }, [updateDogFields]);
+
+  const incrementDifficultyField = useCallback((exId, field) => {
+    updateDogFields({
+      difficultyTracking: prev => {
+        const exercises = { ...(prev?.exercises || {}) };
+        const current = exercises[exId] || { incompleteCount: 0, lowRatingCount: 0, shortSessionCount: 0, lastSuggestionDate: null, dismissed: false, totalAttempts: 0 };
+        exercises[exId] = { ...current, [field]: (current[field] || 0) + 1 };
+        return { exercises };
+      },
+    });
+  }, [updateDogFields]);
+
+  const dismissDifficultySuggestion = useCallback((exId) => {
+    updateDogFields({
+      difficultyTracking: prev => {
+        const exercises = { ...(prev?.exercises || {}) };
+        const current = exercises[exId] || {};
+        exercises[exId] = { ...current, dismissed: true, lastSuggestionDate: new Date().toISOString() };
+        return { exercises };
+      },
+    });
+  }, [updateDogFields]);
+
+  const recordMoodCheck = useCallback((exId, mood) => {
+    // mood: "nailed" | "getting" | "tricky"
+    if (mood === "tricky") {
+      incrementDifficultyField(exId, "lowRatingCount");
+    }
+    // Auto-clear: track consecutive successes
+    if (mood === "nailed") {
+      updateDogFields({
+        difficultyTracking: prev => {
+          const exercises = { ...(prev?.exercises || {}) };
+          const current = exercises[exId] || {};
+          const streak = (current.successStreak || 0) + 1;
+          if (streak >= 3) {
+            // Reset struggle counters
+            exercises[exId] = { ...current, incompleteCount: 0, lowRatingCount: 0, shortSessionCount: 0, dismissed: false, successStreak: 0 };
+          } else {
+            exercises[exId] = { ...current, successStreak: streak };
+          }
+          return { exercises };
+        },
+      });
+    } else {
+      updateDogFields({
+        difficultyTracking: prev => {
+          const exercises = { ...(prev?.exercises || {}) };
+          const current = exercises[exId] || {};
+          exercises[exId] = { ...current, successStreak: 0 };
+          return { exercises };
+        },
+      });
+    }
+    setMoodCheck(null);
+  }, [incrementDifficultyField, updateDogFields]);
+
   // ─── Daily Plan ───
   const dailyPlan = useMemo(() => {
     const plan = [];
@@ -825,6 +919,11 @@ export function AppProvider({ children }) {
       }
     }
 
+    // Show mood check after completion (only if user has 5+ sessions)
+    if (currentDog.totalSessions >= DIFFICULTY_CONFIG.minTotalSessions - 1) {
+      setMoodCheck({ exId, lvlId: lvlId, progId });
+    }
+
     setPendingComplete(null);
     setShowJournalEntry(false);
   }, [pendingComplete, dogs, activeDogId, journalForm, programs, updateDogFields, completeChallengeDay]);
@@ -915,6 +1014,12 @@ export function AppProvider({ children }) {
     showFeedbackAdmin, setShowFeedbackAdmin,
     showFeedbackPrompt, setShowFeedbackPrompt,
     submitFeedback,
+
+    // Difficulty tracking
+    difficultyTracking, isExerciseStruggling, updateDifficultyTracking,
+    incrementDifficultyField, dismissDifficultySuggestion,
+    recordMoodCheck, moodCheck, setMoodCheck,
+    EXERCISE_PREREQUISITES,
 
     // i18n
     T, rtl,

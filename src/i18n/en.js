@@ -349,6 +349,21 @@ export default {
   challengeCompleteSub: "You crushed this week's challenge!",
   nextWeekPreview: "Next Week",
 
+  // Smart Difficulty
+  needAHand: "Need a hand?",
+  thisOneCanBeTricky: "This one can be tricky!",
+  tryTheseFirst: "Try strengthening these skills first:",
+  gotItThanks: "Got it, thanks!",
+  alreadyDone: "Already done!",
+  tipLabel: "Tip",
+  howDidThatGo: "How did that go?",
+  nailedItIt: "Nailed it!",
+  gettingIt: "Getting there",
+  trickyIt: "Still tricky",
+  youveMasteredPrereqs: "You've mastered the prerequisites! Sometimes it just takes more repetitions. Try shorter sessions \u2014 3 minutes is plenty.",
+  foundationSkillFor: "Foundation skill for",
+  smartSuggestion: "Smart Suggestion",
+
   // Exercise completion navigation
   nextExercise: "Next Exercise",
   backToProgram: "Back to Program",
