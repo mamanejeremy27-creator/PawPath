@@ -66,6 +66,18 @@ export const BADGE_DEFS = [
   { id: "challenge-potty-pro", name: "Potty Pro", emoji: "\uD83D\uDEBD", desc: "Completed Potty Pro Week", category: "challenge" },
   { id: "challenge-laser-focus", name: "Laser Focus", emoji: "\uD83C\uDFAF", desc: "Completed Focus & Attention Week", category: "challenge" },
   { id: "challenge-adventurer", name: "Adventurer", emoji: "\uD83C\uDF0D", desc: "Completed Adventure Week", category: "challenge" },
+  // ─── Streak Rewards ───
+  { id: "streak-3-days", name: "3-Day Spark", emoji: "\u2728", desc: "3-day training streak", category: "streak" },
+  { id: "streak-7-days", name: "Week Warrior", emoji: "\uD83C\uDF0A", desc: "7-day training streak", category: "streak" },
+  { id: "streak-14-days", name: "2-Week Warrior", emoji: "\u2694\uFE0F", desc: "14-day training streak", category: "streak" },
+  { id: "streak-30-days", name: "Monthly Master", emoji: "\uD83D\uDC51", desc: "30-day training streak", category: "streak" },
+  { id: "streak-60-days", name: "Unstoppable", emoji: "\uD83E\uDDB8", desc: "60-day training streak", category: "streak" },
+  { id: "streak-90-days", name: "Quarter Champion", emoji: "\uD83C\uDF0C", desc: "90-day training streak", category: "streak" },
+  { id: "streak-180-days", name: "Half-Year Hero", emoji: "\uD83C\uDF08", desc: "180-day training streak", category: "streak" },
+  { id: "streak-365-days", name: "Legendary Trainer", emoji: "\uD83C\uDFC6", desc: "365-day training streak", category: "streak" },
+  { id: "streak-recovered", name: "Comeback Kid", emoji: "\uD83D\uDCAA", desc: "Recovered a broken streak", category: "streak" },
+  { id: "streak-freeze-used", name: "Ice Save", emoji: "\uD83E\uDDCA", desc: "Used a streak freeze to save your streak", category: "streak" },
+
   // Challenge meta badges
   { id: "challenge-first-complete", name: "First Challenge!", emoji: "\uD83C\uDFC6", desc: "Completed your first weekly challenge", category: "challenge" },
   { id: "challenge-5-complete", name: "Challenge Veteran", emoji: "\u2B50", desc: "Completed 5 weekly challenges", category: "challenge" },
@@ -132,6 +144,17 @@ export function checkBadgeCondition(badgeId, state) {
     // Special
     case "double_trouble": return (state.dogCount || 1) >= 2;
     case "pack_leader": return state.bothDogsTrainedToday === true;
+    // Streak rewards
+    case "streak-3-days": return (state.streakBest || state.currentStreak) >= 3;
+    case "streak-7-days": return (state.streakBest || state.currentStreak) >= 7;
+    case "streak-14-days": return (state.streakBest || state.currentStreak) >= 14;
+    case "streak-30-days": return (state.streakBest || state.currentStreak) >= 30;
+    case "streak-60-days": return (state.streakBest || state.currentStreak) >= 60;
+    case "streak-90-days": return (state.streakBest || state.currentStreak) >= 90;
+    case "streak-180-days": return (state.streakBest || state.currentStreak) >= 180;
+    case "streak-365-days": return (state.streakBest || state.currentStreak) >= 365;
+    case "streak-recovered": return state.streakRecovered === true;
+    case "streak-freeze-used": return (state.streakFreezesUsed || 0) >= 1;
     // Challenge — per-challenge badges (7/7 days completed)
     case "challenge-recall-master":
     case "challenge-patience-guru":

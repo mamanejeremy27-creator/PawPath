@@ -8,6 +8,7 @@ import { getTranslatedPrograms, getTranslatedGear, getTranslatedMessages, getTra
 import { calculateFreshness, getNextInterval, getFreshnessLabel, getFreshnessColor } from "../utils/freshness.js";
 import { calculateLifeStage, getNextStageInfo, getAllStages } from "../utils/lifeStage.js";
 import { CHALLENGES, getActiveChallenge, getChallengeDay, getWeekNumber, getWeekStartDate } from "../data/challenges.js";
+import { DEFAULT_STREAKS, DEFAULT_APP_SETTINGS, STREAK_MILESTONES, THEMES, AVATAR_ACCESSORIES, getNextMilestone, getMilestoneProgress, getStreakFire } from "../data/streakRewards.js";
 
 const STORAGE_KEY = "pawpath_v3";
 const FEEDBACK_KEY = "pawpath_feedback";
@@ -35,6 +36,7 @@ const DEFAULT_DOG_STATE = {
   totalReviews: 0,
   lastKnownStage: null,
   challenges: { active: null, history: [], stats: { totalCompleted: 0, currentStreak: 0, bestStreak: 0 } },
+  streaks: null,
 };
 
 export function AppProvider({ children }) {
@@ -72,6 +74,12 @@ export function AppProvider({ children }) {
   const [challengeCelebration, setChallengeCelebration] = useState(null);
   const [challengeDayToast, setChallengeDayToast] = useState(null);
 
+  // ─── Streak & Theme State ───
+  const [appSettings, setAppSettings] = useState({ ...DEFAULT_APP_SETTINGS });
+  const [milestoneUnlock, setMilestoneUnlock] = useState(null);
+  const [streakFreezeNotif, setStreakFreezeNotif] = useState(null);
+  const [streakBrokenModal, setStreakBrokenModal] = useState(null);
+
   const reminderCheckRef = useRef(null);
 
   // ─── Load from localStorage ───
@@ -82,11 +90,16 @@ export function AppProvider({ children }) {
         const d = JSON.parse(raw);
 
         if (d.dogs) {
-          // New multi-dog format
-          setDogs(d.dogs);
+          // New multi-dog format — ensure dogs have all fields
+          const migratedDogs = {};
+          for (const [id, dog] of Object.entries(d.dogs)) {
+            migratedDogs[id] = { ...DEFAULT_DOG_STATE, ...dog };
+          }
+          setDogs(migratedDogs);
           setActiveDogId(d.activeDogId || Object.keys(d.dogs)[0]);
           if (d.lang) setLang(d.lang);
           if (d.reminders) setReminders(d.reminders);
+          if (d.appSettings) setAppSettings({ ...DEFAULT_APP_SETTINGS, ...d.appSettings });
           setScreen("home");
         } else if (d.dogProfile) {
           // Old flat format — migrate to multi-dog
@@ -115,6 +128,7 @@ export function AppProvider({ children }) {
             skillFreshness: sf,
             totalReviews: d.totalReviews || 0,
             lastKnownStage: d.lastKnownStage || null,
+            streaks: { ...DEFAULT_STREAKS, current: d.currentStreak || 0, best: d.currentStreak || 0, lastTrainingDate: d.lastTrainDate ? new Date(d.lastTrainDate).toISOString() : null, totalTrainingDays: d.totalSessions || 0 },
           };
           setDogs({ dog_1: migrated });
           setActiveDogId("dog_1");
@@ -135,9 +149,9 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (!loaded) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ dogs, activeDogId, lang, reminders }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ dogs, activeDogId, lang, reminders, appSettings }));
     } catch (e) { /* ignore */ }
-  }, [dogs, activeDogId, lang, reminders, loaded]);
+  }, [dogs, activeDogId, lang, reminders, appSettings, loaded]);
 
   // ─── Save Feedback ───
   useEffect(() => {
@@ -351,6 +365,63 @@ export function AppProvider({ children }) {
     }
   }, [activeDogId, dogs, updateDogFields]);
 
+  // ─── Streak Break Detection (runs on app load / dog switch) ───
+  const streakCheckRef = useRef(false);
+  useEffect(() => {
+    if (!loaded || !activeDogId || !dogs[activeDogId]) return;
+    if (streakCheckRef.current === activeDogId) return;
+    streakCheckRef.current = activeDogId;
+
+    const dog = dogs[activeDogId];
+    const streaks = dog.streaks || { ...DEFAULT_STREAKS };
+    if (!streaks.lastTrainingDate || streaks.current === 0) return;
+
+    const last = new Date(streaks.lastTrainingDate);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const lastDay = new Date(last.getFullYear(), last.getMonth(), last.getDate());
+    const daysSince = Math.floor((today - lastDay) / 86400000);
+
+    if (daysSince <= 1) return; // Same day or yesterday — streak is fine
+
+    if (daysSince === 2 && streaks.freezes && streaks.freezes.available > 0) {
+      // Missed exactly 1 day, freeze available — auto-use
+      updateDogFields({
+        streaks: {
+          ...streaks,
+          freezes: {
+            ...streaks.freezes,
+            available: streaks.freezes.available - 1,
+            totalUsed: streaks.freezes.totalUsed + 1,
+            lastUsedDate: now.toISOString(),
+          },
+        },
+      });
+      setStreakFreezeNotif(true);
+      setTimeout(() => setStreakFreezeNotif(null), 4000);
+    } else {
+      // Streak broken
+      const bestStreak = Math.max(streaks.best || 0, streaks.current || 0);
+      updateDogFields({
+        streaks: {
+          ...streaks,
+          current: 0,
+          best: bestStreak,
+          startDate: null,
+          recovery: { active: false, daysCompleted: 0, startDate: null },
+          history: [...(streaks.history || []), {
+            streak: streaks.current,
+            startDate: streaks.startDate,
+            endDate: streaks.lastTrainingDate,
+            brokenDate: now.toISOString(),
+          }],
+        },
+        currentStreak: 0,
+      });
+      setStreakBrokenModal({ previous: streaks.current, best: bestStreak });
+    }
+  }, [loaded, activeDogId]);
+
   // Compute active challenge data for UI
   const challengeData = useMemo(() => {
     const now = new Date();
@@ -406,6 +477,57 @@ export function AppProvider({ children }) {
         });
       }, 500);
     }
+  }, [activeDogId, dogs, updateDogFields]);
+
+  // ─── Streak Computed Data ───
+  const streakData = useMemo(() => {
+    const streaks = activeDog?.streaks || { ...DEFAULT_STREAKS };
+    const current = streaks.current || 0;
+    const best = streaks.best || 0;
+    const fire = getStreakFire(current);
+    const nextMilestone = getNextMilestone(current);
+    const progress = getMilestoneProgress(current);
+    const freezesAvailable = streaks.freezes?.available || 0;
+    const totalTrainingDays = streaks.totalTrainingDays || 0;
+    const freezesUsed = streaks.freezes?.totalUsed || 0;
+    const unlockedMilestones = streaks.milestones?.unlocked || [];
+    const recovery = streaks.recovery || { active: false, daysCompleted: 0, startDate: null };
+
+    return { current, best, fire, nextMilestone, progress, freezesAvailable, totalTrainingDays, freezesUsed, unlockedMilestones, recovery };
+  }, [activeDog]);
+
+  // ─── Active Theme ───
+  const activeTheme = useMemo(() => {
+    return THEMES[appSettings.activeTheme] || THEMES.default;
+  }, [appSettings.activeTheme]);
+
+  // ─── Theme / Accessory Functions ───
+  const setActiveTheme = useCallback((themeId) => {
+    if (!appSettings.unlockedThemes.includes(themeId)) return;
+    setAppSettings(prev => ({ ...prev, activeTheme: themeId }));
+  }, [appSettings.unlockedThemes]);
+
+  const toggleAccessory = useCallback((accId) => {
+    if (!appSettings.unlockedAccessories.includes(accId)) return;
+    setAppSettings(prev => ({
+      ...prev,
+      activeAccessories: prev.activeAccessories.includes(accId)
+        ? prev.activeAccessories.filter(id => id !== accId)
+        : [...prev.activeAccessories, accId],
+    }));
+  }, [appSettings.unlockedAccessories]);
+
+  // ─── Start Recovery Challenge ───
+  const startRecovery = useCallback(() => {
+    if (!activeDogId || !dogs[activeDogId]) return;
+    const streaks = dogs[activeDogId].streaks || { ...DEFAULT_STREAKS };
+    updateDogFields({
+      streaks: {
+        ...streaks,
+        recovery: { active: true, daysCompleted: 0, startDate: new Date().toISOString() },
+      },
+    });
+    setStreakBrokenModal(null);
   }, [activeDogId, dogs, updateDogFields]);
 
   // ─── Daily Plan ───
@@ -469,6 +591,7 @@ export function AppProvider({ children }) {
     const today = new Date().toDateString();
     const photoCount = dog.journal.reduce((c, e) => c + (e.photos ? e.photos.length : 0), 0);
     const bothDogsTrainedToday = dogCount >= 2 && Object.values(dogs).every(d => d.lastTrainDate === today);
+    const streaksObj = dog.streaks || {};
     const state = {
       totalSessions: dog.totalSessions,
       currentStreak: dog.currentStreak,
@@ -486,6 +609,9 @@ export function AppProvider({ children }) {
       photoCount,
       challengeHistory: dog.challenges?.history || [],
       challengeStats: dog.challenges?.stats || { totalCompleted: 0, currentStreak: 0, bestStreak: 0 },
+      streakBest: streaksObj.best || dog.currentStreak || 0,
+      streakRecovered: streaksObj.recoveredOnce === true,
+      streakFreezesUsed: streaksObj.freezes?.totalUsed || 0,
     };
     badges.forEach(b => {
       if (!dog.earnedBadges.includes(b.id) && checkBadgeCondition(b.id, state)) {
@@ -549,18 +675,93 @@ export function AppProvider({ children }) {
     setTodayExercises(prev => prev + 1);
 
     const today = new Date().toDateString();
+    const streaks = currentDog.streaks || { ...DEFAULT_STREAKS };
+    let milestoneXp = 0;
+    let isNewDay = false;
+
     if (currentDog.lastTrainDate !== today) {
+      isNewDay = true;
       const y = new Date(); y.setDate(y.getDate() - 1);
-      updates.currentStreak = currentDog.lastTrainDate === y.toDateString() ? currentDog.currentStreak + 1 : 1;
+      const isConsecutive = currentDog.lastTrainDate === y.toDateString();
+      const newCurrent = isConsecutive ? (streaks.current || currentDog.currentStreak || 0) + 1 : 1;
+      const newBest = Math.max(streaks.best || 0, newCurrent);
+      updates.currentStreak = newCurrent;
       updates.lastTrainDate = today;
+
+      const updatedStreaks = {
+        ...streaks,
+        current: newCurrent,
+        best: newBest,
+        lastTrainingDate: new Date().toISOString(),
+        totalTrainingDays: (streaks.totalTrainingDays || 0) + 1,
+        startDate: isConsecutive ? (streaks.startDate || new Date().toISOString()) : new Date().toISOString(),
+        freezes: { ...(streaks.freezes || DEFAULT_STREAKS.freezes) },
+        milestones: { ...(streaks.milestones || DEFAULT_STREAKS.milestones) },
+        recovery: { ...(streaks.recovery || DEFAULT_STREAKS.recovery) },
+        history: streaks.history || [],
+      };
+
+      // Recovery tracking
+      if (updatedStreaks.recovery.active) {
+        const newRecoveryDays = updatedStreaks.recovery.daysCompleted + 1;
+        if (newRecoveryDays >= 3) {
+          updatedStreaks.recovery = { active: false, daysCompleted: 0, startDate: null };
+          updatedStreaks.recoveredOnce = true;
+        } else {
+          updatedStreaks.recovery = { ...updatedStreaks.recovery, daysCompleted: newRecoveryDays };
+        }
+      }
+
+      // Check milestones
+      const unlockedIds = updatedStreaks.milestones.unlocked || [];
+      const milestone = STREAK_MILESTONES.find(m => newCurrent >= m.days && !unlockedIds.includes(m.rewardId));
+      if (milestone) {
+        updatedStreaks.milestones = {
+          unlocked: [...unlockedIds, milestone.rewardId],
+          claimedRewards: [...(updatedStreaks.milestones.claimedRewards || []), milestone.rewardId],
+        };
+        milestoneXp = milestone.xpBonus || 0;
+
+        // Award freeze at 14, 30, 60 days
+        if (milestone.freezeReward && updatedStreaks.freezes.available < (updatedStreaks.freezes.maxFreezes || 3)) {
+          updatedStreaks.freezes = {
+            ...updatedStreaks.freezes,
+            available: Math.min(updatedStreaks.freezes.available + 1, updatedStreaks.freezes.maxFreezes || 3),
+            totalEarned: (updatedStreaks.freezes.totalEarned || 0) + 1,
+          };
+        }
+
+        // Unlock theme/accessory rewards
+        if (milestone.reward === "theme") {
+          const themeId = milestone.rewardId.replace("theme-", "");
+          setAppSettings(prev => ({
+            ...prev,
+            unlockedThemes: prev.unlockedThemes.includes(themeId) ? prev.unlockedThemes : [...prev.unlockedThemes, themeId],
+          }));
+        } else if (milestone.reward === "avatar") {
+          setAppSettings(prev => ({
+            ...prev,
+            unlockedAccessories: prev.unlockedAccessories.includes(milestone.rewardId) ? prev.unlockedAccessories : [...prev.unlockedAccessories, milestone.rewardId],
+          }));
+        }
+
+        // Trigger celebration
+        setTimeout(() => setMilestoneUnlock(milestone), 500);
+      }
+
+      updates.streaks = updatedStreaks;
+    } else {
+      // Same day — still update streaks.lastTrainingDate
+      updates.streaks = { ...streaks, lastTrainingDate: new Date().toISOString() };
     }
 
     const baseProg = TRAINING_PROGRAMS.find(p => p.id === progId);
     const baseLvl = baseProg.levels.find(l => l.id === lvlId);
     const baseXp = Math.round(baseLvl.xpReward / baseLvl.exercises.length);
     const xp = isReview ? Math.round(baseXp * 0.3) : baseXp;
-    updates.totalXP = prev => prev + xp;
-    setXpAnim(xp);
+    const totalXpGain = xp + milestoneXp;
+    updates.totalXP = prev => prev + totalXpGain;
+    setXpAnim(totalXpGain);
     setTimeout(() => setXpAnim(null), 2000);
 
     if (!isReview && baseLvl.exercises.every(e => e.id === exId || currentDog.completedExercises.includes(e.id))) {
@@ -696,6 +897,14 @@ export function AppProvider({ children }) {
     challengeData, challengeState, completeChallengeDay,
     challengeCelebration, setChallengeCelebration,
     challengeDayToast,
+
+    // Streak & Theme
+    streakData, activeTheme, appSettings,
+    setActiveTheme, toggleAccessory, startRecovery,
+    milestoneUnlock, setMilestoneUnlock,
+    streakFreezeNotif, setStreakFreezeNotif,
+    streakBrokenModal, setStreakBrokenModal,
+    THEMES, AVATAR_ACCESSORIES, STREAK_MILESTONES,
 
     // Actions
     triggerComplete, finalizeComplete,

@@ -3,13 +3,14 @@ import BottomNav from "./BottomNav.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", rL: 24 };
 
-const CATEGORY_ORDER = ["streaks", "training", "programs", "journal", "skills", "challenge", "special"];
+const CATEGORY_ORDER = ["streaks", "training", "programs", "journal", "skills", "streak", "challenge", "special"];
 const CATEGORY_KEYS = {
   streaks: "badgeCatStreaks",
   training: "badgeCatTraining",
   programs: "badgeCatPrograms",
   journal: "badgeCatJournal",
   skills: "badgeCatSkills",
+  streak: "badgeCatStreak",
   challenge: "badgeCatChallenge",
   special: "badgeCatSpecial",
 };

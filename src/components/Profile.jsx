@@ -1,13 +1,15 @@
 import { useState, useRef } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { CHALLENGES } from "../data/challenges.js";
+import DogAvatar from "./DogAvatar.jsx";
+import ThemeSelector from "./ThemeSelector.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16 };
 
 export default function Profile() {
-  const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog, nav, challengeState, lang } = useApp();
+  const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog, nav, challengeState, lang, appSettings, toggleAccessory, AVATAR_ACCESSORIES, streakData } = useApp();
   const uniqueActiveDays = new Set(journal.map(e => new Date(e.date).toDateString())).size;
   const hasEnoughForRecap = uniqueActiveDays >= 30;
   const [tapCount, setTapCount] = useState(0);
@@ -34,7 +36,7 @@ export default function Profile() {
         <div style={{ position: "absolute", top: 20, insetInlineEnd: 20 }}>
           <LanguageToggle />
         </div>
-        <div style={{ width: 80, height: 80, borderRadius: 24, background: C.s1, border: `2px solid ${C.acc}`, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>{"\uD83D\uDC15"}</div>
+        <DogAvatar size="large" />
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: "16px 0 0", color: C.t1 }}>{dogProfile?.name}</h2>
         <p style={{ fontSize: 14, color: C.t3, marginTop: 4 }}>{dogProfile?.breed} · {dogProfile?.age}</p>
         <div style={{ marginTop: 12, display: "inline-block", padding: "8px 22px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 24, color: C.acc, fontSize: 14, fontWeight: 700 }}>{T("level")} {playerLevel.level} — {playerLevel.title}</div>
@@ -139,6 +141,37 @@ export default function Profile() {
           ) : (
             <p style={{ fontSize: 13, color: C.t3, lineHeight: 1.6 }}>{T("noChallengesYet")}</p>
           )}
+        </div>
+
+        {/* Theme Selector */}
+        <ThemeSelector />
+
+        {/* Avatar Accessories */}
+        <div style={{ marginTop: 32 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("accessories")}</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {AVATAR_ACCESSORIES.map(acc => {
+              const isUnlocked = appSettings.unlockedAccessories.includes(acc.id);
+              const isActive = appSettings.activeAccessories.includes(acc.id);
+              return (
+                <div key={acc.id} style={{ padding: "14px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${isActive ? "rgba(34,197,94,0.3)" : C.b1}`, display: "flex", alignItems: "center", gap: 14, opacity: isUnlocked ? 1 : 0.4 }}>
+                  <span style={{ fontSize: 28 }}>{acc.emoji}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: isUnlocked ? C.t1 : C.t3 }}>{lang === "he" ? (acc.nameHe || acc.name) : acc.name}</div>
+                    {!isUnlocked && (
+                      <div style={{ fontSize: 11, color: C.t3, marginTop: 2 }}>{T("unlockAtStreak").replace("{days}", acc.unlockedAt)}</div>
+                    )}
+                  </div>
+                  {isUnlocked && (
+                    <button onClick={() => toggleAccessory(acc.id)} style={{ padding: "6px 16px", fontSize: 12, fontWeight: 600, background: isActive ? "rgba(34,197,94,0.1)" : "transparent", color: isActive ? C.acc : C.t3, border: `1px solid ${isActive ? "rgba(34,197,94,0.2)" : C.b1}`, borderRadius: 20, cursor: "pointer" }}>
+                      {isActive ? T("unequip") : T("equip")}
+                    </button>
+                  )}
+                  {!isUnlocked && <span style={{ fontSize: 16 }}>{"\uD83D\uDD12"}</span>}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div style={{ marginTop: 32 }}>

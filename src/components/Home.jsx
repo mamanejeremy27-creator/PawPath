@@ -6,6 +6,7 @@ import LifeStageBanner from "./LifeStageBanner.jsx";
 import MemoryCard from "./MemoryCard.jsx";
 import DogSwitcher from "./DogSwitcher.jsx";
 import ChallengeBanner from "./ChallengeBanner.jsx";
+import StreakWidget from "./StreakWidget.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 
@@ -13,7 +14,7 @@ const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5
 const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
 
 export default function Home() {
-  const { dogProfile, totalXP, playerLevel, xpProgress, currentStreak, completedExercises, earnedBadges, journal, nav, setShowGear, setShowReminders, T, programs, dogCount } = useApp();
+  const { dogProfile, totalXP, playerLevel, xpProgress, completedExercises, earnedBadges, journal, nav, setShowGear, setShowReminders, T, programs, dogCount } = useApp();
   const showReportBanner = hasPreviousMonthReport(journal);
 
   return (
@@ -47,9 +48,14 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Streak Widget */}
+      <div style={{ padding: "12px 20px 0" }}>
+        <StreakWidget />
+      </div>
+
       {/* Stats */}
-      <div style={{ display: "flex", gap: 10, padding: "12px 20px 0" }}>
-        {[{ v: currentStreak, l: T("streak"), i: "🔥" }, { v: completedExercises.length, l: T("done"), i: "✅" }, { v: earnedBadges.length, l: T("badges"), i: "🏅" }].map((s, i) => (
+      <div style={{ display: "flex", gap: 10, padding: "10px 20px 0" }}>
+        {[{ v: completedExercises.length, l: T("done"), i: "✅" }, { v: earnedBadges.length, l: T("badges"), i: "🏅" }].map((s, i) => (
           <div key={i} style={{ flex: 1, textAlign: "center", padding: "14px 6px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
             <div style={{ fontSize: 14, marginBottom: 2 }}>{s.i}</div>
             <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>{s.v}</div>

@@ -22,11 +22,14 @@ import AddDogModal from "./components/AddDogModal.jsx";
 import MemoryDetail from "./components/MemoryDetail.jsx";
 import AnnualRecap from "./components/AnnualRecap.jsx";
 import ChallengeView from "./components/ChallengeView.jsx";
+import StreakView from "./components/StreakView.jsx";
+import StreakBrokenScreen from "./components/StreakBrokenScreen.jsx";
+import MilestoneUnlockModal from "./components/MilestoneUnlockModal.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
 export default function App() {
-  const { screen, xpAnim, newBadge, rtl, challengeDayToast, T } = useApp();
+  const { screen, xpAnim, newBadge, rtl, challengeDayToast, T, streakFreezeNotif } = useApp();
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", background: C.bg, color: C.t1, minHeight: "100vh", maxWidth: 480, margin: "0 auto", position: "relative", WebkitFontSmoothing: "antialiased", direction: rtl ? "rtl" : "ltr", textAlign: rtl ? "right" : "left" }}>
@@ -63,6 +66,15 @@ export default function App() {
       {screen === "memoryDetail" && <MemoryDetail />}
       {screen === "annualRecap" && <AnnualRecap />}
       {screen === "challenge" && <ChallengeView />}
+      {screen === "streakView" && <StreakView />}
+
+      {/* Streak Freeze Notification */}
+      {streakFreezeNotif && (
+        <div style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 400, display: "flex", alignItems: "center", gap: 10, background: "rgba(20,20,24,0.95)", border: "1px solid rgba(96,165,250,0.25)", padding: "14px 22px", borderRadius: 20, boxShadow: "0 12px 40px rgba(0,0,0,0.5)", backdropFilter: "blur(24px)", animation: "badgeDrop 0.5s ease", maxWidth: 340 }}>
+          <span style={{ fontSize: 28 }}>{"\uD83E\uDDCA"}</span>
+          <div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{T("streakFreezeUsed")}</div>
+        </div>
+      )}
 
       {/* Challenge Day Toast */}
       {challengeDayToast && (
@@ -78,6 +90,10 @@ export default function App() {
       {/* Feedback */}
       <FeedbackButton />
       <FeedbackPrompt />
+
+      {/* Streak Overlays */}
+      <StreakBrokenScreen />
+      <MilestoneUnlockModal />
 
       {/* Modals */}
       <GearShop />

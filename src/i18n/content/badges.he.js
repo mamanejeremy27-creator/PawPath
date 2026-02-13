@@ -54,6 +54,18 @@ export default {
   double_trouble: { name: "צרות כפולות", desc: "הוסיפו כלב שני" },
   pack_leader: { name: "מוביל הלהקה", desc: "אמנו את שני הכלבים באותו יום" },
 
+  // Streak Rewards
+  "streak-3-days": { name: "ניצוץ של 3 ימים", desc: "רצף אימונים של 3 ימים" },
+  "streak-7-days": { name: "לוחם שבועי", desc: "רצף אימונים של 7 ימים" },
+  "streak-14-days": { name: "לוחם דו-שבועי", desc: "רצף אימונים של 14 יום" },
+  "streak-30-days": { name: "מאסטר חודשי", desc: "רצף אימונים של 30 יום" },
+  "streak-60-days": { name: "בלתי ניתן לעצירה", desc: "רצף אימונים של 60 יום" },
+  "streak-90-days": { name: "אלוף הרבעון", desc: "רצף אימונים של 90 יום" },
+  "streak-180-days": { name: "גיבור חצי שנה", desc: "רצף אימונים של 180 יום" },
+  "streak-365-days": { name: "מאמן אגדי", desc: "רצף אימונים של 365 יום" },
+  "streak-recovered": { name: "מלך החזרות", desc: "שחזרת רצף שנשבר" },
+  "streak-freeze-used": { name: "שמירת קרח", desc: "השתמשת בהקפאת רצף" },
+
   // Challenge
   "challenge-recall-master": { name: "אלוף החזרה", desc: "השלמת שבוע שליטה בחזרה" },
   "challenge-patience-guru": { name: "גורו הסבלנות", desc: "השלמת שבוע סבלנות ושליטה עצמית" },
