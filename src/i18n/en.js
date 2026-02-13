@@ -349,6 +349,23 @@ export default {
   challengeCompleteSub: "You crushed this week's challenge!",
   nextWeekPreview: "Next Week",
 
+  // Diagnostic
+  diagTitle: "What's Going On?",
+  diagSubtitle: "Pick the issue you're dealing with and we'll build a personalized training plan.",
+  diagCardTitle: "Struggling with something?",
+  diagCardSub: "Get a personalized plan →",
+  diagYourPlan: "Your Training Plan",
+  diagRecommendedProgram: "Recommended Program",
+  diagExercisesToStart: "Exercises to Start With",
+  diagQuickTips: "Quick Tips",
+  diagStartOver: "Start Over",
+  diagTryAnother: "Try Another Issue",
+  diagBackToTraining: "Back to Training",
+  diagHistory: "Diagnostic History",
+  diagRetake: "Retake",
+  diagProWarningTitle: "Consider Professional Help",
+  diagProWarning: "Growling, lunging, and raised hackles can indicate serious aggression. These exercises can help, but we strongly recommend working with a certified professional dog trainer or veterinary behaviorist for safety.",
+
   // Smart Difficulty
   needAHand: "Need a hand?",
   thisOneCanBeTricky: "This one can be tricky!",

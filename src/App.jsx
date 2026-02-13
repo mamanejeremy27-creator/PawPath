@@ -25,6 +25,7 @@ import ChallengeView from "./components/ChallengeView.jsx";
 import StreakView from "./components/StreakView.jsx";
 import StreakBrokenScreen from "./components/StreakBrokenScreen.jsx";
 import MilestoneUnlockModal from "./components/MilestoneUnlockModal.jsx";
+import DiagnosticFlow from "./components/DiagnosticFlow.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
@@ -67,6 +68,7 @@ export default function App() {
       {screen === "annualRecap" && <AnnualRecap />}
       {screen === "challenge" && <ChallengeView />}
       {screen === "streakView" && <StreakView />}
+      {screen === "diagnostic" && <DiagnosticFlow />}
 
       {/* Streak Freeze Notification */}
       {streakFreezeNotif && (

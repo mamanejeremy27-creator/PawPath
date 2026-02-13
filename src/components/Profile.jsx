@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { CHALLENGES } from "../data/challenges.js";
+import { DIAGNOSTIC_CATEGORIES } from "../data/diagnostic.js";
+import { getDiagnosticHistory } from "./DiagnosticFlow.jsx";
 import DogAvatar from "./DogAvatar.jsx";
 import ThemeSelector from "./ThemeSelector.jsx";
 import BottomNav from "./BottomNav.jsx";
@@ -142,6 +144,39 @@ export default function Profile() {
             <p style={{ fontSize: 13, color: C.t3, lineHeight: 1.6 }}>{T("noChallengesYet")}</p>
           )}
         </div>
+
+        {/* Diagnostic History */}
+        {(() => {
+          const diagHistory = getDiagnosticHistory();
+          if (diagHistory.length === 0) return null;
+          return (
+            <div style={{ marginTop: 32 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("diagHistory")}</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {diagHistory.slice(0, 10).map((h, i) => {
+                  const cat = DIAGNOSTIC_CATEGORIES.find(c => c.id === h.categoryId);
+                  if (!cat) return null;
+                  return (
+                    <div key={i} style={{ padding: "12px 16px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 12 }}>
+                      <span style={{ fontSize: 20 }}>{cat.emoji}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{cat.name[lang] || cat.name.en}</div>
+                        <div style={{ fontSize: 11, color: C.t3, marginTop: 2 }}>
+                          {new Date(h.date).toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { month: "short", day: "numeric" })}
+                          {h.dogName ? ` · ${h.dogName}` : ""}
+                          {` · ${h.exerciseCount} ${T("exercises")}`}
+                        </div>
+                      </div>
+                      <button onClick={() => nav("diagnostic")} style={{ padding: "4px 12px", fontSize: 11, fontWeight: 600, background: "rgba(34,197,94,0.08)", color: C.acc, border: "none", borderRadius: 16, cursor: "pointer" }}>
+                        {T("diagRetake")}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Theme Selector */}
         <ThemeSelector />
