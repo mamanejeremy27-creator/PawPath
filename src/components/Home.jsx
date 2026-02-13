@@ -1,5 +1,6 @@
 import { useApp } from "../context/AppContext.jsx";
 import { hasPreviousMonthReport } from "../utils/monthlyStats.js";
+import { matchBreed } from "../data/breedTraits.js";
 import DailyPlan from "./DailyPlan.jsx";
 import SkillHealth from "./SkillHealth.jsx";
 import LifeStageBanner from "./LifeStageBanner.jsx";
@@ -16,6 +17,7 @@ const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, 
 export default function Home() {
   const { dogProfile, totalXP, playerLevel, xpProgress, completedExercises, earnedBadges, journal, nav, setShowGear, setShowReminders, T, programs, dogCount } = useApp();
   const showReportBanner = hasPreviousMonthReport(journal);
+  const breedData = matchBreed(dogProfile?.breed);
 
   return (
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
@@ -147,6 +149,9 @@ export default function Home() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 15, fontWeight: 700 }}>{prog.name}</div>
                 <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{unlocked ? `${dn}/${tot} ${T("exercises")}` : `${T("unlockAt")} ${prog.unlockLevel}`}</div>
+                {unlocked && breedData && breedData.priorityPrograms.includes(prog.id) && (
+                  <div style={{ marginTop: 4, display: "inline-block", padding: "2px 8px", borderRadius: 6, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)", fontSize: 11, color: C.acc, fontWeight: 600 }}>{T("recommendedForBreed")}</div>
+                )}
                 {unlocked && dn > 0 && <div style={{ height: 3, background: C.b1, borderRadius: 10, overflow: "hidden", marginTop: 8 }}><div style={{ height: "100%", width: `${pct}%`, background: prog.gradient, borderRadius: 10 }} /></div>}
               </div>
               <span style={{ color: C.t3, fontSize: 18 }}>›</span>

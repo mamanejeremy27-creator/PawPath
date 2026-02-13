@@ -4,13 +4,14 @@ import Timer from "./Timer.jsx";
 import DifficultyCard from "./DifficultyCard.jsx";
 import MoodCheck from "./MoodCheck.jsx";
 import { calculateFreshness, getFreshnessColor } from "../utils/freshness.js";
+import { matchBreed, getBreedExerciseTip } from "../data/breedTraits.js";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", warn: "#F59E0B", rL: 24, r: 16 };
 const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
 const sectionLabel = (text) => <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{text}</div>;
 
 export default function ExerciseView() {
-  const { selExercise, selLevel, selProgram, completedExercises, journal, triggerComplete, nav, T, rtl, lang, gear: gearData, skillFreshness, incrementDifficultyField, moodCheck } = useApp();
+  const { selExercise, selLevel, selProgram, completedExercises, journal, triggerComplete, nav, T, rtl, lang, gear: gearData, skillFreshness, incrementDifficultyField, moodCheck, dogProfile } = useApp();
   const enteredRef = useRef(null);
 
   // Track incomplete sessions (user opens exercise, stays 10+ sec, leaves without completing)
@@ -94,6 +95,22 @@ export default function ExerciseView() {
             <p style={{ fontSize: 13, color: C.t2, marginTop: 6, lineHeight: 1.6 }}>{ex.tips}</p>
           </div>
         </div>
+
+        {/* Breed Tip */}
+        {(() => {
+          const breedData = matchBreed(dogProfile?.breed);
+          const breedTip = breedData ? getBreedExerciseTip(breedData.id, ex.id, lang) : null;
+          if (!breedTip) return null;
+          return (
+            <div style={{ marginTop: 14, padding: "18px", background: "rgba(245,158,11,0.05)", borderRadius: C.rL, border: "1px solid rgba(245,158,11,0.12)", display: "flex", gap: 12, alignItems: "flex-start" }}>
+              <span style={{ fontSize: 20, flexShrink: 0 }}>{"\uD83D\uDC36"}</span>
+              <div>
+                <h4 style={{ fontSize: 12, fontWeight: 800, margin: 0, color: C.warn, textTransform: "uppercase", letterSpacing: 1 }}>{T("breedTip")} — {breedData.name[lang] || breedData.name.en}</h4>
+                <p style={{ fontSize: 13, color: C.t2, marginTop: 6, lineHeight: 1.6 }}>{breedTip}</p>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Gear */}
         {gear.length > 0 && (

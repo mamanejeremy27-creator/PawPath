@@ -386,4 +386,20 @@ export default {
   backToProgram: "Back to Program",
   programComplete: "Program Complete!",
   backToPrograms: "Back to Programs",
+
+  // Breed System
+  breedProfile: "Breed Profile",
+  breedTip: "Breed Tip",
+  recommendedForBreed: "Recommended for your breed",
+  breedProfileAvailable: "Breed profile available",
+  priorityProgram: "Priority",
+  traitEnergy: "Energy",
+  traitTrainability: "Trainability",
+  traitStubbornness: "Independence",
+  traitSociability: "Sociability",
+  traitPreyDrive: "Prey Drive",
+  traitSensitivity: "Sensitivity",
+  traitBarkTendency: "Bark Tendency",
+  breedTips: "Breed Tips",
+  priorityPrograms: "Priority Programs",
 };

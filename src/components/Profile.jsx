@@ -3,6 +3,7 @@ import { useApp } from "../context/AppContext.jsx";
 import { CHALLENGES } from "../data/challenges.js";
 import { DIAGNOSTIC_CATEGORIES } from "../data/diagnostic.js";
 import { getDiagnosticHistory } from "./DiagnosticFlow.jsx";
+import { matchBreed, getTraitLabels } from "../data/breedTraits.js";
 import DogAvatar from "./DogAvatar.jsx";
 import ThemeSelector from "./ThemeSelector.jsx";
 import BottomNav from "./BottomNav.jsx";
@@ -60,6 +61,50 @@ export default function Profile() {
             <span style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{v}</span>
           </div>
         ))}
+
+        {/* Breed Profile */}
+        {(() => {
+          const breedData = matchBreed(dogProfile?.breed);
+          if (!breedData) return null;
+          const traitLabels = getTraitLabels(lang);
+          const traitKeys = ["energy", "trainability", "stubbornness", "sociability", "preyDrive", "sensitivity", "barkTendency"];
+          const sizeLabel = breedData.size === "small" ? T("sizeSmall") : breedData.size === "large" ? T("sizeLarge") : T("sizeMedium");
+          const breedTipText = breedData.breedTips[lang] || breedData.breedTips.en;
+          return (
+            <div style={{ marginTop: 32 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("breedProfile")}</h3>
+              <div style={{ padding: "18px 20px", background: C.s1, borderRadius: 16, border: `1px solid ${C.b1}` }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                  <span style={{ fontSize: 22 }}>{"\uD83D\uDC36"}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{breedData.name[lang] || breedData.name.en}</div>
+                  </div>
+                  <span style={{ padding: "3px 10px", borderRadius: 8, background: "rgba(255,255,255,0.06)", fontSize: 11, fontWeight: 600, color: C.t3 }}>{sizeLabel}</span>
+                </div>
+                {traitKeys.map(key => (
+                  <div key={key} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                    <span style={{ fontSize: 12, color: C.t3, width: 90, flexShrink: 0, textAlign: lang === "he" ? "right" : "left" }}>{traitLabels[key]}</span>
+                    <div style={{ flex: 1, display: "flex", gap: 4 }}>
+                      {[1, 2, 3, 4, 5].map(n => (
+                        <div key={n} style={{ flex: 1, height: 6, borderRadius: 3, background: n <= breedData.traits[key] ? C.acc : C.b1, transition: "background 0.3s" }} />
+                      ))}
+                    </div>
+                    <span style={{ fontSize: 11, color: C.t3, width: 16, textAlign: "center" }}>{breedData.traits[key]}</span>
+                  </div>
+                ))}
+                <div style={{ marginTop: 14, padding: "12px 14px", background: "rgba(34,197,94,0.04)", borderRadius: 12, border: "1px solid rgba(34,197,94,0.08)" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: C.acc, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>{T("breedTips")}</div>
+                  <p style={{ fontSize: 13, color: C.t3, margin: 0, lineHeight: 1.6 }}>{breedTipText}</p>
+                </div>
+                <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {breedData.priorityPrograms.map(pid => (
+                    <span key={pid} style={{ padding: "3px 10px", borderRadius: 8, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)", fontSize: 11, fontWeight: 600, color: C.acc }}>{pid}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* My Dogs section */}
         <div style={{ marginTop: 32 }}>

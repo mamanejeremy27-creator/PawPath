@@ -15,7 +15,12 @@
       "Bash(npm run build:*)",
       "Bash(npx vercel:*)",
       "Bash(npm run dev:*)",
-      "Bash(powershell -Command \"$c = Get-Content ''C:\\\\Users\\\\User\\\\OneDrive\\\\Desktop\\\\PawPath\\\\src\\\\i18n\\\\he.js'' -Raw; $idx = $c.IndexOf\\(''whenBorn''\\); $c.Substring\\($idx, 100\\)\")"
+      "Bash(powershell -Command \"$c = Get-Content ''C:\\\\Users\\\\User\\\\OneDrive\\\\Desktop\\\\PawPath\\\\src\\\\i18n\\\\he.js'' -Raw; $idx = $c.IndexOf\\(''whenBorn''\\); $c.Substring\\($idx, 100\\)\")",
+      "Bash(git push:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 3A: Smart Difficulty Adjustment — difficulty tracking system\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 3A: Behavioral Issue Diagnostic\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

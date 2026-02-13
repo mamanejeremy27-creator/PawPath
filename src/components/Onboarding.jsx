@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { DOG_BREEDS } from "../data/breeds.js";
+import { matchBreed } from "../data/breedTraits.js";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t3: "#71717A", t4: "#52525B", s2: "#1A1A1F", acc: "#22C55E", r: 16 };
 
@@ -37,11 +38,20 @@ export default function Onboarding() {
           <input value={form.breed} onChange={e => handleBreedInput(e.target.value)} onFocus={() => form.breed && setShowBreeds(true)} placeholder={T("breedPlaceholder")} style={{ width: "100%", padding: "16px 20px", fontSize: 16, background: C.s1, border: `1px solid ${showBreeds ? C.acc : C.b2}`, borderRadius: C.r, color: C.t1, outline: "none", transition: "border 0.2s" }} />
           {showBreeds && breedSug.length > 0 && (
             <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: C.s2, border: `1px solid ${C.b2}`, borderRadius: C.r, marginTop: 4, zIndex: 50, maxHeight: 220, overflowY: "auto", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
-              {breedSug.map(b => (
-                <button key={b} onClick={() => { setForm(p => ({ ...p, breed: b })); setShowBreeds(false); }} style={{ display: "block", width: "100%", padding: "13px 20px", fontSize: 15, background: "none", border: "none", borderBottom: `1px solid ${C.b1}`, color: C.t1, textAlign: rtl ? "right" : "left", cursor: "pointer" }}>
-                  {b.toLowerCase().includes("mix") ? "🐕‍🦺 " : ""}{b}
-                </button>
-              ))}
+              {breedSug.map(b => {
+                const hasProfile = !!matchBreed(b);
+                return (
+                  <button key={b} onClick={() => { setForm(p => ({ ...p, breed: b })); setShowBreeds(false); }} style={{ display: "block", width: "100%", padding: "13px 20px", fontSize: 15, background: "none", border: "none", borderBottom: `1px solid ${C.b1}`, color: C.t1, textAlign: rtl ? "right" : "left", cursor: "pointer" }}>
+                    {hasProfile ? "\uD83D\uDC36 " : b.toLowerCase().includes("mix") ? "\uD83D\uDC15\u200D\uD83E\uDDBA " : ""}{b}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          {form.breed && !showBreeds && matchBreed(form.breed) && (
+            <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: C.acc }} />
+              <span style={{ fontSize: 12, color: C.acc, fontWeight: 600 }}>{T("breedProfileAvailable")}</span>
             </div>
           )}
         </div>
