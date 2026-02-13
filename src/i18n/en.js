@@ -400,6 +400,9 @@ export default {
   authCheckEmail: "Check your email for a confirmation link!",
   authPasswordMismatch: "Passwords don't match",
   authPasswordTooShort: "Password must be at least 6 characters",
+  continueWithGoogle: "Continue with Google",
+  continueWithFacebook: "Continue with Facebook",
+  authOrEmail: "or continue with email",
   signOut: "Sign Out",
   signingOut: "Signing out...",
 
