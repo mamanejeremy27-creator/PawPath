@@ -21,11 +21,12 @@ import MilestoneCards from "./components/MilestoneCards.jsx";
 import AddDogModal from "./components/AddDogModal.jsx";
 import MemoryDetail from "./components/MemoryDetail.jsx";
 import AnnualRecap from "./components/AnnualRecap.jsx";
+import ChallengeView from "./components/ChallengeView.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
 export default function App() {
-  const { screen, xpAnim, newBadge, rtl } = useApp();
+  const { screen, xpAnim, newBadge, rtl, challengeDayToast, T } = useApp();
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", background: C.bg, color: C.t1, minHeight: "100vh", maxWidth: 480, margin: "0 auto", position: "relative", WebkitFontSmoothing: "antialiased", direction: rtl ? "rtl" : "ltr", textAlign: rtl ? "right" : "left" }}>
@@ -61,6 +62,15 @@ export default function App() {
       {screen === "milestoneCards" && <MilestoneCards />}
       {screen === "memoryDetail" && <MemoryDetail />}
       {screen === "annualRecap" && <AnnualRecap />}
+      {screen === "challenge" && <ChallengeView />}
+
+      {/* Challenge Day Toast */}
+      {challengeDayToast && (
+        <div style={{ position: "fixed", bottom: 100, left: "50%", transform: "translateX(-50%)", zIndex: 400, background: "rgba(20,20,24,0.95)", border: "1px solid rgba(34,197,94,0.25)", padding: "12px 24px", borderRadius: 20, boxShadow: "0 8px 32px rgba(0,0,0,0.5)", backdropFilter: "blur(16px)", animation: "badgeDrop 0.4s ease", textAlign: "center" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("challengeDay")} {challengeDayToast.day} {"\u2705"}</div>
+          <div style={{ fontSize: 12, color: "#A1A1AA", marginTop: 4 }}>{challengeDayToast.remaining} {T("moreToGo")}</div>
+        </div>
+      )}
 
       {/* Stage Transition */}
       <StageTransitionModal />

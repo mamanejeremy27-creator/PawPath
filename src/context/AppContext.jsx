@@ -7,6 +7,7 @@ import { t, isRTL } from "../i18n/index.js";
 import { getTranslatedPrograms, getTranslatedGear, getTranslatedMessages, getTranslatedBadges } from "../i18n/content/index.js";
 import { calculateFreshness, getNextInterval, getFreshnessLabel, getFreshnessColor } from "../utils/freshness.js";
 import { calculateLifeStage, getNextStageInfo, getAllStages } from "../utils/lifeStage.js";
+import { CHALLENGES, getActiveChallenge, getChallengeDay, getWeekNumber, getWeekStartDate } from "../data/challenges.js";
 
 const STORAGE_KEY = "pawpath_v3";
 const FEEDBACK_KEY = "pawpath_feedback";
@@ -33,6 +34,7 @@ const DEFAULT_DOG_STATE = {
   skillFreshness: {},
   totalReviews: 0,
   lastKnownStage: null,
+  challenges: { active: null, history: [], stats: { totalCompleted: 0, currentStreak: 0, bestStreak: 0 } },
 };
 
 export function AppProvider({ children }) {
@@ -67,6 +69,8 @@ export function AppProvider({ children }) {
   const [journalTab, setJournalTab] = useState("entries");
   const [stageTransition, setStageTransition] = useState(null);
   const [showAddDog, setShowAddDog] = useState(false);
+  const [challengeCelebration, setChallengeCelebration] = useState(null);
+  const [challengeDayToast, setChallengeDayToast] = useState(null);
 
   const reminderCheckRef = useRef(null);
 
@@ -290,6 +294,120 @@ export function AppProvider({ children }) {
     }
   }, [lifeStageData, lastKnownStage, activeDogId, updateDogFields]);
 
+  // ─── Weekly Challenges ───
+  const challengeState = activeDog?.challenges || { active: null, history: [], stats: { totalCompleted: 0, currentStreak: 0, bestStreak: 0 } };
+
+  // Sync challenge: auto-start new week, archive previous
+  useEffect(() => {
+    if (!activeDogId || !dogs[activeDogId]) return;
+    const now = new Date();
+    const weekNum = getWeekNumber(now);
+    const challenge = getActiveChallenge(now);
+    const cs = dogs[activeDogId].challenges || { active: null, history: [], stats: { totalCompleted: 0, currentStreak: 0, bestStreak: 0 } };
+
+    if (cs.active && cs.active.weekNumber !== weekNum) {
+      // Week changed — archive old challenge
+      const old = cs.active;
+      const daysCompleted = old.completedDays.length;
+      const fullComplete = daysCompleted === 7;
+      const partial = daysCompleted >= 5;
+      const chDef = CHALLENGES.find(c => c.id === old.challengeId);
+      let xpEarned = 0;
+      if (fullComplete) xpEarned = chDef?.bonusXP || 200;
+      else if (partial) xpEarned = Math.round((chDef?.bonusXP || 200) * 0.75);
+      else xpEarned = daysCompleted * 25;
+
+      const entry = {
+        challengeId: old.challengeId,
+        weekNumber: old.weekNumber,
+        completedDays: old.completedDays,
+        completedAt: now.toISOString(),
+        badgeEarned: (fullComplete && chDef) ? chDef.badgeId : null,
+        xpEarned,
+        fullComplete,
+      };
+
+      const newHistory = [...cs.history, entry];
+      const newTotal = cs.stats.totalCompleted + (partial || fullComplete ? 1 : 0);
+      const newCurrentStreak = (partial || fullComplete) ? cs.stats.currentStreak + 1 : 0;
+      const newBestStreak = Math.max(cs.stats.bestStreak, newCurrentStreak);
+
+      updateDogFields({
+        challenges: {
+          active: { challengeId: challenge.id, weekNumber: weekNum, startDate: getWeekStartDate(now), completedDays: [] },
+          history: newHistory,
+          stats: { totalCompleted: newTotal, currentStreak: newCurrentStreak, bestStreak: newBestStreak },
+        },
+        totalXP: prev => prev + xpEarned,
+      });
+    } else if (!cs.active) {
+      // First time — init challenge
+      updateDogFields({
+        challenges: {
+          ...cs,
+          active: { challengeId: challenge.id, weekNumber: weekNum, startDate: getWeekStartDate(now), completedDays: [] },
+        },
+      });
+    }
+  }, [activeDogId, dogs, updateDogFields]);
+
+  // Compute active challenge data for UI
+  const challengeData = useMemo(() => {
+    const now = new Date();
+    const challenge = getActiveChallenge(now);
+    const todayDay = getChallengeDay(now);
+    const active = challengeState.active;
+    const completedDays = active?.completedDays || [];
+    const todayCompleted = completedDays.includes(todayDay);
+    const todayTask = challenge.days.find(d => d.day === todayDay);
+    const daysRemaining = 7 - todayDay;
+    const nextWeekChallenge = CHALLENGES[(getWeekNumber(now) + 1) % CHALLENGES.length];
+
+    return {
+      challenge,
+      todayDay,
+      todayTask,
+      completedDays,
+      todayCompleted,
+      daysRemaining,
+      progress: completedDays.length,
+      nextWeekChallenge,
+    };
+  }, [challengeState]);
+
+  // Complete a challenge day
+  const completeChallengeDay = useCallback((dayNum) => {
+    if (!activeDogId || !dogs[activeDogId]) return;
+    const cs = dogs[activeDogId].challenges;
+    if (!cs?.active) return;
+    if (cs.active.completedDays.includes(dayNum)) return;
+
+    const newDays = [...cs.active.completedDays, dayNum];
+    updateDogFields({
+      challenges: {
+        ...cs,
+        active: { ...cs.active, completedDays: newDays },
+      },
+    });
+
+    // Toast
+    const remaining = 7 - newDays.length;
+    setChallengeDayToast({ day: dayNum, remaining });
+    setTimeout(() => setChallengeDayToast(null), 3000);
+
+    // Check if all 7 days completed → celebration
+    if (newDays.length === 7) {
+      const chDef = CHALLENGES.find(c => c.id === cs.active.challengeId);
+      setTimeout(() => {
+        setChallengeCelebration({
+          challenge: chDef,
+          xp: chDef?.bonusXP || 200,
+          badgeId: chDef?.badgeId,
+        });
+      }, 500);
+    }
+  }, [activeDogId, dogs, updateDogFields]);
+
   // ─── Daily Plan ───
   const dailyPlan = useMemo(() => {
     const plan = [];
@@ -366,6 +484,8 @@ export function AppProvider({ children }) {
       dogCount,
       bothDogsTrainedToday,
       photoCount,
+      challengeHistory: dog.challenges?.history || [],
+      challengeStats: dog.challenges?.stats || { totalCompleted: 0, currentStreak: 0, bestStreak: 0 },
     };
     badges.forEach(b => {
       if (!dog.earnedBadges.includes(b.id) && checkBadgeCondition(b.id, state)) {
@@ -480,6 +600,15 @@ export function AppProvider({ children }) {
     // Apply all dog updates in one batch
     updateDogFields(updates);
 
+    // Auto-complete challenge day if exercise matches
+    const now = new Date();
+    const todayDay = getChallengeDay(now);
+    const activeChallenge = getActiveChallenge(now);
+    const todayTask = activeChallenge.days.find(d => d.day === todayDay);
+    if (todayTask && todayTask.exerciseId === exId) {
+      completeChallengeDay(todayDay);
+    }
+
     // Feedback prompt (every 5th new exercise, max once per week)
     if (!isReview) {
       const newTotal = currentDog.completedExercises.length + 1;
@@ -497,7 +626,7 @@ export function AppProvider({ children }) {
 
     setPendingComplete(null);
     setShowJournalEntry(false);
-  }, [pendingComplete, dogs, activeDogId, journalForm, programs, updateDogFields]);
+  }, [pendingComplete, dogs, activeDogId, journalForm, programs, updateDogFields, completeChallengeDay]);
 
   // ─── Notification Permission ───
   const requestNotifPermission = useCallback(async () => {
@@ -564,6 +693,9 @@ export function AppProvider({ children }) {
     dailyPlan, dailyMsg,
     skillHealthData, allSkillsFresh,
     lifeStageData, stageTransition, setStageTransition,
+    challengeData, challengeState, completeChallengeDay,
+    challengeCelebration, setChallengeCelebration,
+    challengeDayToast,
 
     // Actions
     triggerComplete, finalizeComplete,

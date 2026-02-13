@@ -52,6 +52,25 @@ export const BADGE_DEFS = [
   // ─── Special ───
   { id: "double_trouble", name: "Double Trouble", emoji: "\uD83D\uDC36\uD83D\uDC36", desc: "Add a second dog", category: "special" },
   { id: "pack_leader", name: "Pack Leader", emoji: "\uD83D\uDC3A", desc: "Train both dogs in the same day", category: "special" },
+
+  // ─── Challenge ───
+  { id: "challenge-recall-master", name: "Recall Master", emoji: "\uD83D\uDCE3", desc: "Completed Recall Master Week", category: "challenge" },
+  { id: "challenge-patience-guru", name: "Patience Guru", emoji: "\uD83E\uDDD8", desc: "Completed Patience & Impulse Control Week", category: "challenge" },
+  { id: "challenge-trick-star", name: "Trick Star", emoji: "\uD83C\uDFAA", desc: "Completed Trick Star Week", category: "challenge" },
+  { id: "challenge-leash-pro", name: "Leash Pro", emoji: "\uD83E\uDDAE", desc: "Completed Loose Leash Week", category: "challenge" },
+  { id: "challenge-puppy-grad", name: "Puppy Graduate", emoji: "\uD83D\uDC36", desc: "Completed Puppy Bootcamp", category: "challenge" },
+  { id: "challenge-social-butterfly", name: "Social Butterfly", emoji: "\uD83D\uDC15\u200D\uD83E\uDDBA", desc: "Completed Socialization Sprint", category: "challenge" },
+  { id: "challenge-fitness-champ", name: "Fitness Champ", emoji: "\uD83C\uDFCB\uFE0F", desc: "Completed Canine Fitness Week", category: "challenge" },
+  { id: "challenge-crate-lover", name: "Crate Lover", emoji: "\uD83C\uDFE0", desc: "Completed Crate Comfort Week", category: "challenge" },
+  { id: "challenge-behavior-boss", name: "Behavior Boss", emoji: "\uD83E\uDDE9", desc: "Completed Behavior Fix Week", category: "challenge" },
+  { id: "challenge-potty-pro", name: "Potty Pro", emoji: "\uD83D\uDEBD", desc: "Completed Potty Pro Week", category: "challenge" },
+  { id: "challenge-laser-focus", name: "Laser Focus", emoji: "\uD83C\uDFAF", desc: "Completed Focus & Attention Week", category: "challenge" },
+  { id: "challenge-adventurer", name: "Adventurer", emoji: "\uD83C\uDF0D", desc: "Completed Adventure Week", category: "challenge" },
+  // Challenge meta badges
+  { id: "challenge-first-complete", name: "First Challenge!", emoji: "\uD83C\uDFC6", desc: "Completed your first weekly challenge", category: "challenge" },
+  { id: "challenge-5-complete", name: "Challenge Veteran", emoji: "\u2B50", desc: "Completed 5 weekly challenges", category: "challenge" },
+  { id: "challenge-streak-3", name: "3 Weeks Strong", emoji: "\uD83D\uDD25", desc: "Completed 3 challenges in a row", category: "challenge" },
+  { id: "challenge-partial-hero", name: "Almost There!", emoji: "\uD83D\uDCAA", desc: "Completed 5+ days of a challenge", category: "challenge" },
 ];
 
 function isProgramComplete(progId, state) {
@@ -113,6 +132,30 @@ export function checkBadgeCondition(badgeId, state) {
     // Special
     case "double_trouble": return (state.dogCount || 1) >= 2;
     case "pack_leader": return state.bothDogsTrainedToday === true;
+    // Challenge — per-challenge badges (7/7 days completed)
+    case "challenge-recall-master":
+    case "challenge-patience-guru":
+    case "challenge-trick-star":
+    case "challenge-leash-pro":
+    case "challenge-puppy-grad":
+    case "challenge-social-butterfly":
+    case "challenge-fitness-champ":
+    case "challenge-crate-lover":
+    case "challenge-behavior-boss":
+    case "challenge-potty-pro":
+    case "challenge-laser-focus":
+    case "challenge-adventurer": {
+      const ch = state.challengeHistory || [];
+      return ch.some(h => h.badgeEarned === badgeId && h.fullComplete);
+    }
+    // Challenge meta badges
+    case "challenge-first-complete": return (state.challengeStats?.totalCompleted || 0) >= 1;
+    case "challenge-5-complete": return (state.challengeStats?.totalCompleted || 0) >= 5;
+    case "challenge-streak-3": return (state.challengeStats?.bestStreak || 0) >= 3;
+    case "challenge-partial-hero": {
+      const ch2 = state.challengeHistory || [];
+      return ch2.some(h => h.completedDays.length >= 5);
+    }
     default: return false;
   }
 }

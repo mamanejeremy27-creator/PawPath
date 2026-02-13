@@ -5,6 +5,7 @@ import SkillHealth from "./SkillHealth.jsx";
 import LifeStageBanner from "./LifeStageBanner.jsx";
 import MemoryCard from "./MemoryCard.jsx";
 import DogSwitcher from "./DogSwitcher.jsx";
+import ChallengeBanner from "./ChallengeBanner.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 
@@ -85,6 +86,7 @@ export default function Home() {
       <MemoryCard />
       <SkillHealth />
       <DailyPlan />
+      <ChallengeBanner />
 
       {/* Quick Actions */}
       <div style={{ display: "flex", gap: 10, padding: "20px 20px 0" }}>

@@ -53,4 +53,22 @@ export default {
   // Special
   double_trouble: { name: "צרות כפולות", desc: "הוסיפו כלב שני" },
   pack_leader: { name: "מוביל הלהקה", desc: "אמנו את שני הכלבים באותו יום" },
+
+  // Challenge
+  "challenge-recall-master": { name: "אלוף החזרה", desc: "השלמת שבוע שליטה בחזרה" },
+  "challenge-patience-guru": { name: "גורו הסבלנות", desc: "השלמת שבוע סבלנות ושליטה עצמית" },
+  "challenge-trick-star": { name: "כוכב הטריקים", desc: "השלמת שבוע כוכב הטריקים" },
+  "challenge-leash-pro": { name: "מקצוען רצועה", desc: "השלמת שבוע רצועה רופפת" },
+  "challenge-puppy-grad": { name: "בוגר גורים", desc: "השלמת מחנה אימונים לגורים" },
+  "challenge-social-butterfly": { name: "פרפר חברתי", desc: "השלמת ספרינט חיברות" },
+  "challenge-fitness-champ": { name: "אלוף כושר", desc: "השלמת שבוע כושר לכלבים" },
+  "challenge-crate-lover": { name: "אוהב הכלוב", desc: "השלמת שבוע נוחות בכלוב" },
+  "challenge-behavior-boss": { name: "בוס התנהגות", desc: "השלמת שבוע תיקון התנהגות" },
+  "challenge-potty-pro": { name: "מקצוען שירותים", desc: "השלמת שבוע מקצוען שירותים" },
+  "challenge-laser-focus": { name: "מיקוד לייזר", desc: "השלמת שבוע ריכוז ותשומת לב" },
+  "challenge-adventurer": { name: "הרפתקן", desc: "השלמת שבוע הרפתקאות" },
+  "challenge-first-complete": { name: "!אתגר ראשון", desc: "השלמת את האתגר השבועי הראשון שלך" },
+  "challenge-5-complete": { name: "ותיק אתגרים", desc: "השלמת 5 אתגרים שבועיים" },
+  "challenge-streak-3": { name: "3 שבועות חזק", desc: "השלמת 3 אתגרים ברצף" },
+  "challenge-partial-hero": { name: "!כמעט שם", desc: "השלמת 5+ ימים של אתגר" },
 };

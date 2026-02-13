@@ -1,12 +1,13 @@
 import { useState, useRef } from "react";
 import { useApp } from "../context/AppContext.jsx";
+import { CHALLENGES } from "../data/challenges.js";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16 };
 
 export default function Profile() {
-  const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog, nav } = useApp();
+  const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog, nav, challengeState, lang } = useApp();
   const uniqueActiveDays = new Set(journal.map(e => new Date(e.date).toDateString())).size;
   const hasEnoughForRecap = uniqueActiveDays >= 30;
   const [tapCount, setTapCount] = useState(0);
@@ -96,6 +97,48 @@ export default function Profile() {
               </button>
             )}
           </div>
+        </div>
+
+        {/* Challenge History */}
+        <div style={{ marginTop: 32 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("challengeHistory")}</h3>
+          {challengeState.history.length > 0 ? (
+            <>
+              <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
+                <div style={{ flex: 1, textAlign: "center", padding: "12px 6px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>{challengeState.stats.totalCompleted}</div>
+                  <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600 }}>{T("completed")}</div>
+                </div>
+                <div style={{ flex: 1, textAlign: "center", padding: "12px 6px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>{challengeState.stats.currentStreak}</div>
+                  <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600 }}>{T("weeks")}</div>
+                </div>
+                <div style={{ flex: 1, textAlign: "center", padding: "12px 6px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>{challengeState.stats.bestStreak}</div>
+                  <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600 }}>{T("challengeBestStreak")}</div>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {challengeState.history.slice().reverse().map((h, i) => {
+                  const chDef = CHALLENGES.find(c => c.id === h.challengeId);
+                  return (
+                    <div key={i} style={{ padding: "12px 16px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 12 }}>
+                      <span style={{ fontSize: 20 }}>{chDef?.emoji || "\uD83C\uDFC6"}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{lang === "he" ? chDef?.nameHe : chDef?.name}</div>
+                        <div style={{ fontSize: 11, color: C.t3, marginTop: 2 }}>
+                          {h.completedDays.length}/7 {T("challengeDay")}s · {h.fullComplete ? T("fullCompletion") : T("partialCompletion")} · +{h.xpEarned} XP
+                        </div>
+                      </div>
+                      {h.fullComplete && <span style={{ fontSize: 14 }}>{"\u2705"}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <p style={{ fontSize: 13, color: C.t3, lineHeight: 1.6 }}>{T("noChallengesYet")}</p>
+          )}
         </div>
 
         <div style={{ marginTop: 32 }}>
