@@ -284,4 +284,10 @@ export default {
   recapAvgRating: "Avg Rating",
   recapTopMood: "Top Mood",
   keepTrainingRecap: "Keep training! Your Year in Review will be ready once you have more data.",
+
+  // Exercise completion navigation
+  nextExercise: "Next Exercise",
+  backToProgram: "Back to Program",
+  programComplete: "Program Complete!",
+  backToPrograms: "Back to Programs",
 };

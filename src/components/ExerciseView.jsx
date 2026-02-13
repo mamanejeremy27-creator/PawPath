@@ -11,6 +11,23 @@ export default function ExerciseView() {
   if (!selExercise || !selLevel || !selProgram) return null;
   const ex = selExercise;
   const done = completedExercises.includes(ex.id);
+  const allProgramDone = done && selProgram.levels.every(l => l.exercises.every(e => completedExercises.includes(e.id)));
+
+  let nextExInfo = null;
+  if (done && !allProgramDone) {
+    for (let i = 0; i < selProgram.levels.length; i++) {
+      const lvl = selProgram.levels[i];
+      if (i > 0 && !selProgram.levels[i - 1].exercises.every(e => completedExercises.includes(e.id))) continue;
+      for (const exercise of lvl.exercises) {
+        if (!completedExercises.includes(exercise.id)) {
+          nextExInfo = { exercise, level: lvl };
+          break;
+        }
+      }
+      if (nextExInfo) break;
+    }
+  }
+
   const freshData = skillFreshness[ex.id];
   const daysSince = freshData ? Math.floor((Date.now() - new Date(freshData.lastCompleted).getTime()) / 86400000) : null;
   const gear = (ex.gear || []).map(id => gearData.find(g => g.id === id)).filter(Boolean);
@@ -93,10 +110,38 @@ export default function ExerciseView() {
             {T("markComplete")}
           </button>
         ) : (
-          <button onClick={() => triggerComplete(ex.id, selLevel.id, selProgram.id)}
-            style={{ width: "100%", padding: "20px", marginTop: 24, fontSize: 16, fontWeight: 800, background: "transparent", color: C.acc, border: `2px solid ${C.acc}`, borderRadius: 50, cursor: "pointer" }}>
-            {T("reviewRefresh")}
-          </button>
+          <>
+            <button onClick={() => triggerComplete(ex.id, selLevel.id, selProgram.id)}
+              style={{ width: "100%", padding: "20px", marginTop: 24, fontSize: 16, fontWeight: 800, background: "transparent", color: C.acc, border: `2px solid ${C.acc}`, borderRadius: 50, cursor: "pointer" }}>
+              {T("reviewRefresh")}
+            </button>
+
+            <div style={{ marginTop: 16 }}>
+              {allProgramDone ? (
+                <>
+                  <div style={{ textAlign: "center", padding: "16px 0" }}>
+                    <div style={{ fontSize: 48 }}>{"\uD83C\uDF89"}</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: C.acc, marginTop: 8 }}>{T("programComplete")}</div>
+                  </div>
+                  <button onClick={() => nav("home", { program: null, level: null, exercise: null })}
+                    style={{ width: "100%", padding: "18px", fontSize: 15, fontWeight: 700, background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
+                    {T("backToPrograms")}
+                  </button>
+                </>
+              ) : nextExInfo && (
+                <>
+                  <button onClick={() => nav("exercise", { exercise: nextExInfo.exercise, level: nextExInfo.level })}
+                    style={{ width: "100%", padding: "18px", fontSize: 15, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer", boxShadow: "0 8px 32px rgba(34,197,94,0.25)" }}>
+                    {T("nextExercise")}
+                  </button>
+                  <button onClick={() => nav("program", { level: null, exercise: null })}
+                    style={{ width: "100%", padding: "18px", marginTop: 10, fontSize: 15, fontWeight: 700, background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
+                    {T("backToProgram")}
+                  </button>
+                </>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
