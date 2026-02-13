@@ -93,6 +93,12 @@ export default {
   achievements: "Achievements",
   unlocked: "unlocked",
   of: "of",
+  badgeCatStreaks: "Streaks",
+  badgeCatTraining: "Training",
+  badgeCatPrograms: "Programs",
+  badgeCatJournal: "Journal",
+  badgeCatSkills: "Skills",
+  badgeCatSpecial: "Special",
 
   // Profile
   resetAllData: "Reset All Data",

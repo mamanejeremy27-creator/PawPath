@@ -11,11 +11,11 @@ const STAGE_THRESHOLDS = {
 const STAGES = ["puppy", "adolescent", "adult", "mature", "senior"];
 
 const STAGE_META = {
-  puppy:      { emoji: "🐾", color: "#22C55E" },
-  adolescent: { emoji: "⚡", color: "#F59E0B" },
-  adult:      { emoji: "🎯", color: "#3B82F6" },
-  mature:     { emoji: "🌟", color: "#8B5CF6" },
-  senior:     { emoji: "👑", color: "#EC4899" },
+  puppy:      { emoji: "\uD83D\uDC36", color: "#22C55E" },
+  adolescent: { emoji: "\uD83D\uDC15", color: "#F59E0B" },
+  adult:      { emoji: "\uD83D\uDC15", color: "#3B82F6" },
+  mature:     { emoji: "\uD83D\uDC15\u200D\uD83E\uDDBA", color: "#8B5CF6" },
+  senior:     { emoji: "\uD83D\uDC15\u200D\uD83E\uDDBA", color: "#EC4899" },
 };
 
 export function getAgeMonths(birthday) {

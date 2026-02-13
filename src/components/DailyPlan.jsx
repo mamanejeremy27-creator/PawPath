@@ -14,7 +14,7 @@ export default function DailyPlan() {
         </span>
       </div>
       <div style={{ padding: "14px 18px", background: "rgba(34,197,94,0.05)", borderRadius: C.r, border: "1px solid rgba(34,197,94,0.1)", marginBottom: 12 }}>
-        <p style={{ fontSize: 13, color: C.t2, margin: 0, lineHeight: 1.6, fontStyle: "italic" }}>💬 "{dailyMsg}"</p>
+        <p style={{ fontSize: 13, color: C.t2, margin: 0, lineHeight: 1.6, fontStyle: "italic" }}>💡 "{dailyMsg}"</p>
       </div>
       {dailyPlan.map((item, idx) => (
         <button key={idx} onClick={() => nav("exercise", { program: item.program, level: item.level, exercise: item.exercise })}

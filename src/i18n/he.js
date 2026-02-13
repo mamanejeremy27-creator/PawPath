@@ -93,6 +93,12 @@ export default {
   achievements: "\u05D4\u05D9\u05E9\u05D2\u05D9\u05DD",
   unlocked: "\u05E4\u05EA\u05D5\u05D7\u05D9\u05DD",
   of: "\u05DE\u05EA\u05D5\u05DA",
+  badgeCatStreaks: "\u05E8\u05E6\u05E4\u05D9\u05DD",
+  badgeCatTraining: "\u05D0\u05D9\u05DE\u05D5\u05E0\u05D9\u05DD",
+  badgeCatPrograms: "\u05EA\u05D5\u05DB\u05E0\u05D9\u05D5\u05EA",
+  badgeCatJournal: "\u05D9\u05D5\u05DE\u05DF",
+  badgeCatSkills: "\u05DE\u05D9\u05D5\u05DE\u05E0\u05D5\u05D9\u05D5\u05EA",
+  badgeCatSpecial: "\u05DE\u05D9\u05D5\u05D7\u05D3",
 
   // Profile
   resetAllData: "\u05D0\u05E4\u05E1 \u05D0\u05EA \u05DB\u05DC \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD",

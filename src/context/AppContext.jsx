@@ -348,6 +348,9 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (!activeDogId || !dogs[activeDogId]) return;
     const dog = dogs[activeDogId];
+    const today = new Date().toDateString();
+    const photoCount = dog.journal.reduce((c, e) => c + (e.photos ? e.photos.length : 0), 0);
+    const bothDogsTrainedToday = dogCount >= 2 && Object.values(dogs).every(d => d.lastTrainDate === today);
     const state = {
       totalSessions: dog.totalSessions,
       currentStreak: dog.currentStreak,
@@ -358,6 +361,11 @@ export function AppProvider({ children }) {
       journal: dog.journal,
       totalReviews: dog.totalReviews,
       allSkillsFresh,
+      programs: TRAINING_PROGRAMS,
+      playerLevel: playerLevel.level,
+      dogCount,
+      bothDogsTrainedToday,
+      photoCount,
     };
     badges.forEach(b => {
       if (!dog.earnedBadges.includes(b.id) && checkBadgeCondition(b.id, state)) {

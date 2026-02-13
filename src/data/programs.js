@@ -29,7 +29,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "potty", name: "Potty Training", emoji: "\uD83C\uDFE0",
+    id: "potty", name: "Potty Training", emoji: "\uD83D\uDEBD",
     description: "Housebreaking done right. A structured, no-punishment approach to teaching your dog where and when to go.",
     color: "#06B6D4", gradient: "linear-gradient(135deg, #06B6D4, #0891B2)",
     unlockLevel: 0, difficulty: "Beginner", duration: "2-6 weeks",
@@ -51,7 +51,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "crate", name: "Crate Training", emoji: "\uD83C\uDFE1",
+    id: "crate", name: "Crate Training", emoji: "\uD83C\uDFE0",
     description: "Make the crate your dog's favorite place. A safe space they choose to go to, not a punishment.",
     color: "#F472B6", gradient: "linear-gradient(135deg, #F472B6, #EC4899)",
     unlockLevel: 0, difficulty: "Beginner", duration: "1-3 weeks",
@@ -117,7 +117,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "obedience", name: "Core Obedience", emoji: "\uD83C\uDFAF",
+    id: "obedience", name: "Core Obedience", emoji: "\uD83C\uDF93",
     description: "Make your basics bulletproof. Real-world reliability with distance, distractions, and duration.",
     color: "#3B82F6", gradient: "linear-gradient(135deg, #3B82F6, #2563EB)",
     unlockLevel: 2, difficulty: "Intermediate", duration: "3-6 weeks",
@@ -146,7 +146,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "tricks", name: "Trick Training", emoji: "\u2728",
+    id: "tricks", name: "Trick Training", emoji: "\uD83C\uDFAA",
     description: "Fun tricks that build your bond and impress everyone at the park.",
     color: "#F59E0B", gradient: "linear-gradient(135deg, #F59E0B, #D97706)",
     unlockLevel: 3, difficulty: "Intermediate", duration: "Ongoing",
@@ -168,7 +168,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "reactivity", name: "Leash Reactivity", emoji: "\uD83D\uDD17",
+    id: "reactivity", name: "Leash Reactivity", emoji: "\uD83E\uDDAE",
     description: "Your dog barks, lunges, or loses their mind on leash at other dogs or people. There's a systematic fix.",
     color: "#F97316", gradient: "linear-gradient(135deg, #F97316, #EA580C)",
     unlockLevel: 2, difficulty: "Intermediate-Advanced", duration: "4-12 weeks",
@@ -190,7 +190,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "fitness", name: "Canine Fitness", emoji: "\uD83D\uDCAA",
+    id: "fitness", name: "Canine Fitness", emoji: "\uD83C\uDFCB\uFE0F",
     description: "Physical conditioning for a healthy, strong, injury-resistant dog.",
     color: "#EF4444", gradient: "linear-gradient(135deg, #EF4444, #DC2626)",
     unlockLevel: 4, difficulty: "Intermediate", duration: "Ongoing",
