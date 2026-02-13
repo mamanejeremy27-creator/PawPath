@@ -1,4 +1,6 @@
 import { useApp } from "./context/AppContext.jsx";
+import { useAuth } from "./hooks/useAuth.js";
+import Auth from "./components/Auth.jsx";
 import Splash from "./components/Splash.jsx";
 import Onboarding from "./components/Onboarding.jsx";
 import Home from "./components/Home.jsx";
@@ -31,6 +33,23 @@ const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
 export default function App() {
   const { screen, xpAnim, newBadge, rtl, challengeDayToast, T, streakFreezeNotif } = useApp();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: C.bg }}>
+        <div style={{ width: 40, height: 40, border: "3px solid rgba(255,255,255,0.1)", borderTopColor: C.acc, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div style={{ fontFamily: "'DM Sans', sans-serif", background: C.bg, color: C.t1, minHeight: "100vh", maxWidth: 480, margin: "0 auto", WebkitFontSmoothing: "antialiased", direction: rtl ? "rtl" : "ltr", textAlign: rtl ? "right" : "left" }}>
+        <Auth />
+      </div>
+    );
+  }
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", background: C.bg, color: C.t1, minHeight: "100vh", maxWidth: 480, margin: "0 auto", position: "relative", WebkitFontSmoothing: "antialiased", direction: rtl ? "rtl" : "ltr", textAlign: rtl ? "right" : "left" }}>

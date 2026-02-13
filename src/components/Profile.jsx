@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useApp } from "../context/AppContext.jsx";
+import { useAuth } from "../hooks/useAuth.js";
 import { CHALLENGES } from "../data/challenges.js";
 import { DIAGNOSTIC_CATEGORIES } from "../data/diagnostic.js";
 import { getDiagnosticHistory } from "./DiagnosticFlow.jsx";
@@ -13,6 +14,8 @@ const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5
 
 export default function Profile() {
   const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog, nav, challengeState, lang, appSettings, toggleAccessory, AVATAR_ACCESSORIES, streakData } = useApp();
+  const { signOut } = useAuth();
+  const [signingOut, setSigningOut] = useState(false);
   const uniqueActiveDays = new Set(journal.map(e => new Date(e.date).toDateString())).size;
   const hasEnoughForRecap = uniqueActiveDays >= 30;
   const [tapCount, setTapCount] = useState(0);
@@ -264,8 +267,13 @@ export default function Profile() {
           )}
         </div>
 
+        <button onClick={async () => { setSigningOut(true); await signOut(); }}
+          style={{ marginTop: 16, width: "100%", padding: "14px", fontSize: 14, fontWeight: 600, background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: C.r, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          {signingOut ? T("signingOut") : T("signOut")}
+        </button>
+
         <button onClick={resetAllData}
-          style={{ marginTop: 16, width: "100%", padding: "14px", fontSize: 14, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: C.danger, border: `1px solid rgba(239,68,68,0.2)`, borderRadius: C.r, cursor: "pointer" }}>{T("resetAllData")}</button>
+          style={{ marginTop: 10, width: "100%", padding: "14px", fontSize: 14, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: C.danger, border: `1px solid rgba(239,68,68,0.2)`, borderRadius: C.r, cursor: "pointer" }}>{T("resetAllData")}</button>
         <div
           onClick={handleVersionTap}
           style={{ textAlign: "center", marginTop: 24, padding: "12px 0", fontSize: 12, color: C.t3, cursor: "default", userSelect: "none" }}

@@ -387,6 +387,22 @@ export default {
   programComplete: "Program Complete!",
   backToPrograms: "Back to Programs",
 
+  // Auth
+  authWelcome: "Welcome to PawPath",
+  authSubtitle: "Train smarter \u00B7 Bond deeper",
+  signIn: "Sign In",
+  signUp: "Sign Up",
+  authEmail: "Email",
+  authPassword: "Password",
+  authConfirmPassword: "Confirm Password",
+  authNoAccount: "Don't have an account?",
+  authHasAccount: "Already have an account?",
+  authCheckEmail: "Check your email for a confirmation link!",
+  authPasswordMismatch: "Passwords don't match",
+  authPasswordTooShort: "Password must be at least 6 characters",
+  signOut: "Sign Out",
+  signingOut: "Signing out...",
+
   // Breed System
   breedProfile: "Breed Profile",
   breedTip: "Breed Tip",
