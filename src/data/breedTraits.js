@@ -464,7 +464,30 @@ export const BREED_TRAITS = [
     },
   },
 
-  // ── 21. Mixed Breed ──────────────────────────────────
+  // ── 21. American Pit Bull Terrier ───────────────────
+  {
+    id: "pit_bull",
+    name: { en: "American Pit Bull Terrier", he: "אמריקן פיט בול טרייר" },
+    aliases: ["pit bull", "pitbull", "american pit bull terrier", "american pit bull", "apbt", "american staffordshire terrier", "amstaff", "staffy", "staffordshire bull terrier", "staffordshire"],
+    size: "medium",
+    traits: {
+      energy: 4, trainability: 4, stubbornness: 3,
+      sociability: 3, preyDrive: 3, sensitivity: 3, barkTendency: 2,
+    },
+    priorityPrograms: ["obedience", "behavior", "foundations", "fitness"],
+    breedTips: {
+      en: "Pit Bulls are loyal, confident, and eager to please — they're one of the most trainable breeds when motivated. They respond brilliantly to positive reinforcement and bond deeply with their handler. Early socialization is essential: expose them to many dogs, people, and environments in a positive way. They're strong dogs, so leash manners are critical. Keep sessions upbeat and reward-heavy; they thrive on your enthusiasm. Channel their athleticism into structured exercise and training games.",
+      he: "פיט בולים נאמנים, בטוחים ומשתוקקים לרצות — הם מהגזעים הניתנים לאימון ביותר כשמונעים. הם מגיבים מצוין לחיזוק חיובי ויוצרים קשר עמוק עם המאלף. חברות מוקדמת חיונית: חשפו אותם לכלבים, אנשים וסביבות רבות בצורה חיובית. הם כלבים חזקים, אז נימוסי רצועה קריטיים. שמרו אימונים אנרגטיים ועשירים בפרסים; הם משגשגים מההתלהבות שלכם. תעלו את האתלטיות שלהם לפעילות גופנית מובנית ומשחקי אימון.",
+    },
+    exerciseTips: {
+      f1a: { en: "Pit Bulls are people-focused and learn name recognition fast. Use an excited, happy tone — they feed off your energy. Short, enthusiastic sessions work better than long ones.", he: "פיט בולים ממוקדי אנשים ולומדים זיהוי שם מהר. השתמשו בטון נלהב ושמח — הם ניזונים מהאנרגיה שלכם. אימונים קצרים ונלהבים עובדים טוב יותר מארוכים." },
+      f1b: { en: "Pit Bulls pick up Sit quickly — they're eager to please. Use it as a default behavior before meals, walks, and play. This channels their enthusiasm into polite habits.", he: "פיט בולים לומדים ישיבה מהר — הם משתוקקים לרצות. השתמשו בזה כהתנהגות ברירת מחדל לפני ארוחות, טיולים ומשחק. זה מתעל את ההתלהבות שלהם להרגלים מנומסים." },
+      f3b: { en: "Pit Bulls are strong pullers. A front-clip harness is essential. Start loose-leash training early and be consistent — their strength only grows. Reward walking beside you generously.", he: "פיט בולים מושכים חזק. רתמת קליפ קדמי חיונית. התחילו אימון רצועה רפויה מוקדם והיו עקביים — הכוח שלהם רק גדל. תגמלו הליכה לצדכם בנדיבות." },
+      b1c: { en: "Pit Bulls can be high-energy but learn to settle well with practice. 'Calm on Cue' is especially valuable for managing their strength and excitement around guests. Capture calm moments frequently.", he: "פיט בולים יכולים להיות אנרגטיים אבל לומדים להירגע טוב עם תרגול. 'רגוע לפי פקודה' חשוב במיוחד לניהול הכוח וההתרגשות שלהם סביב אורחים. תפסו רגעי רוגע לעיתים קרובות." },
+    },
+  },
+
+  // ── 23. Mixed Breed ──────────────────────────────────
   {
     id: "mixed",
     name: { en: "Mixed Breed", he: "מעורב" },
@@ -487,7 +510,7 @@ export const BREED_TRAITS = [
     },
   },
 
-  // ── 22. Unknown / Not Listed ─────────────────────────
+  // ── 24. Unknown / Not Listed ─────────────────────────
   {
     id: "unknown",
     name: { en: "Unknown / Other", he: "לא ידוע / אחר" },
@@ -527,11 +550,12 @@ export function matchBreed(input) {
     if (breed.aliases.some(a => q.includes(a) || a.includes(q))) return breed;
   }
 
-  // Word-level match (any alias word appears in input)
+  // Word-level match (ALL alias words must appear as whole words in input)
+  const inputWords = new Set(q.split(/\s+/));
   for (const breed of BREED_TRAITS) {
     for (const alias of breed.aliases) {
-      const aliasWords = alias.split(/\s+/);
-      if (aliasWords.some(w => w.length > 2 && q.includes(w))) return breed;
+      const aliasWords = alias.split(/\s+/).filter(w => w.length > 2);
+      if (aliasWords.length > 0 && aliasWords.every(w => inputWords.has(w))) return breed;
     }
   }
 
