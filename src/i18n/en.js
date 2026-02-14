@@ -502,6 +502,23 @@ export default {
   feedLoadMore: "Load more",
   feedAnon: "Anonymous",
 
+  // Smart Notifications
+  notifPreferences: "Smart Notifications",
+  notifStreak: "Streak Reminders",
+  notifStreakSub: "Alert when your streak is about to break",
+  notifSpacedRep: "Skill Refresh Reminders",
+  notifSpacedRepSub: "Remind when skills need a review session",
+  notifChallenge: "Challenge Reminders",
+  notifChallengeSub: "Alert when today's challenge day isn't done",
+  notifBuddy: "Buddy Nudges",
+  notifBuddySub: "Coming soon",
+  notifCommunity: "Community Activity",
+  notifCommunitySub: "Coming soon",
+  quietHours: "Quiet Hours",
+  quietHoursSub: "No notifications during these times",
+  to: "to",
+  maxNotifPerDay: "Max notifications per day",
+
   // Breed System
   breedProfile: "Breed Profile",
   breedTip: "Breed Tip",

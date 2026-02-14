@@ -10,6 +10,7 @@ import ThemeSelector from "./ThemeSelector.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 import { setLeaderboardOptIn } from "../lib/leaderboard.js";
+import NotificationPreferences from "./NotificationPreferences.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16 };
 
@@ -276,6 +277,9 @@ export default function Profile() {
             </button>
           </div>
         </div>
+
+        {/* Smart Notifications */}
+        <NotificationPreferences />
 
         <div style={{ marginTop: 32 }}>
           <button onClick={() => hasEnoughForRecap && nav("annualRecap")}

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { AppProvider } from './context/AppContext.jsx'
 import App from './App.jsx'
 import './index.css'
+import { registerServiceWorker } from './lib/pushNotifications.js'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -11,3 +12,5 @@ createRoot(document.getElementById('root')).render(
     </AppProvider>
   </StrictMode>,
 )
+
+registerServiceWorker()

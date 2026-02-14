@@ -22,6 +22,7 @@ import {
 } from "../lib/database.js";
 import { updateLeaderboardEntry } from "../lib/leaderboard.js";
 import { createPost as createCommunityPost } from "../lib/community.js";
+import { getSmartNotifications, isInQuietHours, canSendNotification, fireNotification } from "../lib/pushNotifications.js";
 
 export const DIFFICULTY_CONFIG = {
   incompleteThreshold: 3,
@@ -72,7 +73,12 @@ export function AppProvider({ children }) {
   const [dogs, setDogs] = useState({});
   const [activeDogId, setActiveDogId] = useState(null);
   const [lang, setLang] = useState("en");
-  const [reminders, setReminders] = useState({ enabled: false, times: ["09:00", "18:00"], notifPermission: "default" });
+  const [reminders, setReminders] = useState({
+    enabled: false, times: ["09:00", "18:00"], notifPermission: "default",
+    smart: { streakReminder: true, spacedRepDue: true, challengeIncomplete: true, buddyNudge: false, communityActivity: false },
+    quietHours: { start: "22:00", end: "07:00", enabled: false },
+    maxPerDay: 5, notifsSentToday: 0, lastNotifDate: null,
+  });
 
   // ─── Feedback State ───
   const [feedback, setFeedback] = useState([]);
@@ -884,21 +890,60 @@ export function AppProvider({ children }) {
     });
   }, [dogs, activeDogId, todayExercises, badges, allSkillsFresh, isAuthenticated]);
 
-  // ─── Reminder Check ───
+  // ─── Reminder Check (time-based + smart notifications) ───
   useEffect(() => {
     if (!reminders.enabled) return;
     const check = () => {
       const now = new Date();
       const hm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+      // Quiet hours guard
+      if (isInQuietHours(reminders.quietHours)) return;
+
+      // Daily cap guard — reset counter on new day
+      const today = now.toDateString();
+      if (reminders.lastNotifDate !== today) {
+        setReminders(r => ({ ...r, notifsSentToday: 0, lastNotifDate: today }));
+      }
+      if (!canSendNotification(reminders)) return;
+
+      // Original time-based reminders (check every second, fire on matching minute)
       if (reminders.times.includes(hm) && now.getSeconds() < 2) {
-        if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-          try { new Notification("\uD83D\uDC3E PawPath", { body: `Time to train${dogProfile ? ` with ${dogProfile.name}` : ""}! Your streak is ${currentStreak} days.` }); } catch (e) { /* ignore */ }
+        const sent = fireNotification(
+          "\uD83D\uDC3E PawPath",
+          `Time to train${dogProfile ? ` with ${dogProfile.name}` : ""}! Your streak is ${currentStreak} days.`,
+          "pawpath-reminder"
+        );
+        if (sent) {
+          setReminders(r => ({ ...r, notifsSentToday: (r.notifsSentToday || 0) + 1, lastNotifDate: today }));
+        }
+      }
+
+      // Smart notifications — check every 15 minutes (at :00 seconds of minutes 0, 15, 30, 45)
+      if (now.getMinutes() % 15 === 0 && now.getSeconds() < 2) {
+        const smartNotifs = getSmartNotifications({
+          reminders,
+          currentStreak,
+          lastTrainDate: activeDog?.lastTrainDate || null,
+          skillFreshness: activeDog?.skillFreshness || {},
+          challengeState: activeDog?.challenges || null,
+          dogName: dogProfile?.name,
+          todayExercises,
+        });
+        let sentCount = 0;
+        for (const n of smartNotifs) {
+          if (!canSendNotification({ ...reminders, notifsSentToday: (reminders.notifsSentToday || 0) + sentCount })) break;
+          const sent = fireNotification(n.title, n.body, n.tag);
+          if (sent) sentCount++;
+        }
+        if (sentCount > 0) {
+          setReminders(r => ({ ...r, notifsSentToday: (r.notifsSentToday || 0) + sentCount, lastNotifDate: today }));
         }
       }
     };
     reminderCheckRef.current = setInterval(check, 1000);
     return () => clearInterval(reminderCheckRef.current);
-  }, [reminders, dogProfile, currentStreak]);
+  }, [reminders, dogProfile, currentStreak, dogs, activeDogId, todayExercises]);
 
   // ─── Navigation ───
   const nav = useCallback((s, o = {}) => {
