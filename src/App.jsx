@@ -41,6 +41,11 @@ import BuddyNudgeNotification from "./components/BuddyNudgeNotification.jsx";
 import WalkTracker from "./components/WalkTracker.jsx";
 import WalkHistory from "./components/WalkHistory.jsx";
 import WalkDetail from "./components/WalkDetail.jsx";
+import HealthDashboard from "./components/HealthDashboard.jsx";
+import WeightTracker from "./components/WeightTracker.jsx";
+import VaccinationTracker from "./components/VaccinationTracker.jsx";
+import VetVisitLog from "./components/VetVisitLog.jsx";
+import MedicationTracker from "./components/MedicationTracker.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
@@ -113,6 +118,11 @@ export default function App() {
       {screen === "walkTracker" && <WalkTracker />}
       {screen === "walkHistory" && <WalkHistory />}
       {screen === "walkDetail" && <WalkDetail />}
+      {screen === "healthDashboard" && <HealthDashboard />}
+      {screen === "weightTracker" && <WeightTracker />}
+      {screen === "vaccinationTracker" && <VaccinationTracker />}
+      {screen === "vetVisitLog" && <VetVisitLog />}
+      {screen === "medicationTracker" && <MedicationTracker />}
 
       {/* Streak Freeze Notification */}
       {streakFreezeNotif && (

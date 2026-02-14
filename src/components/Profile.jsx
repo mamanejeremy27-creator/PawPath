@@ -385,6 +385,19 @@ export default function Profile() {
           );
         })()}
 
+        {/* Vet & Health */}
+        <div style={{ marginTop: 32 }}>
+          <button onClick={() => nav("healthDashboard")}
+            style={{ width: "100%", padding: "16px 20px", background: "linear-gradient(135deg, rgba(236,72,153,0.08), rgba(239,68,68,0.06))", border: "1px solid rgba(236,72,153,0.2)", borderRadius: C.r, cursor: "pointer", display: "flex", alignItems: "center", gap: 14, color: C.t1, textAlign: "start" }}>
+            <span style={{ fontSize: 24 }}>{"❤️"}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("healthDashboard")}</div>
+              <div style={{ fontSize: 12, color: "#EC4899", fontWeight: 600, marginTop: 2 }}>{T("healthDashboardSub")}</div>
+            </div>
+            <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+          </button>
+        </div>
+
         {/* Theme Selector */}
         <ThemeSelector />
 
