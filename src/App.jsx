@@ -31,6 +31,7 @@ import DiagnosticFlow from "./components/DiagnosticFlow.jsx";
 import EmergencyGuide from "./components/EmergencyGuide.jsx";
 import EmergencyDetail from "./components/EmergencyDetail.jsx";
 import VetDirectory from "./components/VetDirectory.jsx";
+import NutritionGuide from "./components/NutritionGuide.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
@@ -94,6 +95,7 @@ export default function App() {
       {screen === "emergency" && <EmergencyGuide />}
       {screen === "emergencyDetail" && <EmergencyDetail />}
       {screen === "vetDirectory" && <VetDirectory />}
+      {screen === "nutrition" && <NutritionGuide />}
 
       {/* Streak Freeze Notification */}
       {streakFreezeNotif && (

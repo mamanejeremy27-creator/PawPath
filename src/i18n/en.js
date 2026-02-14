@@ -438,6 +438,19 @@ export default {
   tapToCall: "Tap to call",
   byRegion: "By Region",
 
+  // Dog Nutrition Guide
+  nutritionTitle: "Food Safety Guide",
+  nutritionSubtitle: "What's safe (and what's not) for your dog",
+  nutritionSearch: "Search foods... (e.g., grape, chicken)",
+  nutritionSafe: "Safe",
+  nutritionCaution: "Caution",
+  nutritionDangerous: "Dangerous",
+  nutritionServingTip: "Serving Tip",
+  nutritionNoResults: "No foods found",
+  nutritionTryAnother: "Try a different search term",
+  nutritionCardTitle: "Food Safety Guide",
+  nutritionCardSub: "What can my dog eat? →",
+
   // Breed System
   breedProfile: "Breed Profile",
   breedTip: "Breed Tip",

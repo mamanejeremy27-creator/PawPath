@@ -140,6 +140,28 @@ export default function Home() {
         </button>
       </div>
 
+      {/* Dog Nutrition Guide Entry */}
+      <div style={{ padding: "12px 20px 0" }}>
+        <button
+          onClick={() => nav("nutrition")}
+          style={{
+            width: "100%", padding: "16px 20px",
+            background: "linear-gradient(135deg, rgba(34,197,94,0.08), rgba(16,185,129,0.06))",
+            border: "1px solid rgba(34,197,94,0.2)",
+            borderRadius: C.rL, cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 14,
+            color: C.t1, textAlign: "start",
+          }}
+        >
+          <span style={{ fontSize: 28 }}>{"\uD83E\uDD62"}</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("nutritionCardTitle")}</div>
+            <div style={{ fontSize: 12, color: C.acc, fontWeight: 600, marginTop: 2 }}>{T("nutritionCardSub")}</div>
+          </div>
+          <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+        </button>
+      </div>
+
       {/* Quick Actions */}
       <div style={{ display: "flex", gap: 10, padding: "20px 20px 0" }}>
         <button onClick={() => setShowGear(true)} style={{ flex: 1, padding: "14px", background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
