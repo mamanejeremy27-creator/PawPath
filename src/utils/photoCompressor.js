@@ -1,4 +1,5 @@
-const SIZE = 200;
+const LOCAL_SIZE = 200;   // Small for localStorage base64
+const UPLOAD_SIZE = 800;  // Larger for Supabase Storage uploads
 const QUALITY = 0.7;
 
 function loadImageFromFile(file) {
@@ -15,27 +16,27 @@ function loadImageFromFile(file) {
   });
 }
 
-function cropToCanvas(img) {
+function cropToCanvas(img, size) {
   const canvas = document.createElement("canvas");
-  canvas.width = SIZE;
-  canvas.height = SIZE;
+  canvas.width = size;
+  canvas.height = size;
   const ctx = canvas.getContext("2d");
   const min = Math.min(img.width, img.height);
   const sx = (img.width - min) / 2;
   const sy = (img.height - min) / 2;
-  ctx.drawImage(img, sx, sy, min, min, 0, 0, SIZE, SIZE);
+  ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
   return canvas;
 }
 
 export async function compressPhoto(file) {
   const img = await loadImageFromFile(file);
-  const canvas = cropToCanvas(img);
+  const canvas = cropToCanvas(img, LOCAL_SIZE);
   return canvas.toDataURL("image/jpeg", QUALITY);
 }
 
 export async function compressPhotoToBlob(file) {
   const img = await loadImageFromFile(file);
-  const canvas = cropToCanvas(img);
+  const canvas = cropToCanvas(img, UPLOAD_SIZE);
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => blob ? resolve(blob) : reject(new Error("Failed to create blob")),

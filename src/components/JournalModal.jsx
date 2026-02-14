@@ -15,6 +15,7 @@ export default function JournalModal() {
   const galleryRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(false);
+  const lastFileRef = useRef(null);
 
   if (!showJournalEntry) return null;
 
@@ -23,29 +24,52 @@ export default function JournalModal() {
   const atCapacity = !canAddPhotos(journal, 1);
   const nearCapacity = totalPhotos >= MAX_PHOTOS * 0.8;
 
-  const handleFile = async (e) => {
-    const file = e.target.files?.[0];
+  const processFile = async (file) => {
     if (!file) return;
     if (photos.length >= 3 || !canAddPhotos(journal, photos.length + 1)) return;
     setUploadError(false);
+    lastFileRef.current = file;
     try {
       if (user) {
         // Authenticated: compress to blob, upload to Supabase Storage, store path
         setUploading(true);
+        console.log("[PawPath] Compressing photo:", { name: file.name, type: file.type, size: file.size });
         const blob = await compressPhotoToBlob(file);
+        console.log("[PawPath] Compressed blob:", { type: blob.type, size: blob.size });
         const path = await uploadPhoto(user.id, activeDogId, blob);
         setJournalForm(f => ({ ...f, photos: [...(f.photos || []), path] }));
+        lastFileRef.current = null;
       } else {
         // Not authenticated: compress to base64 for localStorage
         const dataUrl = await compressPhoto(file);
         setJournalForm(f => ({ ...f, photos: [...(f.photos || []), dataUrl] }));
+        lastFileRef.current = null;
       }
     } catch (err) {
-      console.error("Photo upload failed:", err);
+      console.error("[PawPath] Photo upload failed:", {
+        message: err?.message,
+        statusCode: err?.statusCode,
+        name: err?.name,
+        userId: user?.id,
+        dogId: activeDogId,
+        fileType: file?.type,
+        fileSize: file?.size,
+        error: err,
+      });
       setUploadError(true);
+    } finally {
+      setUploading(false);
     }
-    finally { setUploading(false); }
+  };
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    await processFile(file);
     e.target.value = "";
+  };
+
+  const retryUpload = () => {
+    if (lastFileRef.current) processFile(lastFileRef.current);
   };
 
   const removePhoto = (idx) => {
@@ -125,7 +149,7 @@ export default function JournalModal() {
           <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: "none" }} />
           <input ref={galleryRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
           {uploadError && (
-            <div style={{ padding: "8px 12px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 10, marginBottom: 8, fontSize: 12, color: "#EF4444", fontWeight: 600 }}>
+            <div onClick={retryUpload} style={{ padding: "8px 12px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 10, marginBottom: 8, fontSize: 12, color: "#EF4444", fontWeight: 600, cursor: "pointer" }}>
               {T("photoUploadFailed")}
             </div>
           )}
