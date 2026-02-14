@@ -93,6 +93,7 @@ export function AppProvider({ children }) {
   const [selExercise, setSelExercise] = useState(null);
   const [selEmergency, setSelEmergency] = useState(null);
   const [walkData, setWalkData] = useState(null);
+  const [walkSavedToast, setWalkSavedToast] = useState(false);
 
   // ─── UI State ───
   const [loaded, setLoaded] = useState(false);
@@ -953,6 +954,7 @@ export function AppProvider({ children }) {
     if (o.exercise !== undefined) setSelExercise(o.exercise);
     if (o.emergency !== undefined) setSelEmergency(o.emergency);
     if (o.walkData !== undefined) setWalkData(o.walkData);
+    setWalkSavedToast(!!o.walkSavedToast);
     setScreen(s);
   }, []);
 
@@ -1262,6 +1264,7 @@ export function AppProvider({ children }) {
     selExercise, setSelExercise,
     selEmergency,
     walkData,
+    walkSavedToast,
 
     // UI
     loaded, todayExercises,

@@ -623,6 +623,17 @@ export default {
   noWalksYet: "אין עדיין הליכות",
   noWalksYetSub: "!התחילו הליכה ראשונה כדי לעקוב אחרי מרחק וקצב",
   saving: "...שומר",
+  walkDeleteConfirm: "למחוק את ההליכה הזו?",
+  walkDeleted: "ההליכה נמחקה",
+  walkThisWeek: "השבוע",
+  walkLastWeek: "שבוע שעבר",
+  walkThisMonth: "החודש",
+  walkOlder: "ישנים יותר",
+  walkLoadMore: "טען עוד",
+  walkWeekWalks: "הליכות השבוע",
+  walkWeekDist: 'ק"מ השבוע',
+  walkAvgDuration: "משך ממוצע",
+  walkCancel: "ביטול",
 
   // Health Tracking
   healthDashboard: "וטרינר ובריאות",

@@ -623,6 +623,17 @@ export default {
   noWalksYet: "No walks yet",
   noWalksYetSub: "Start your first walk to track distance and pace!",
   saving: "Saving...",
+  walkDeleteConfirm: "Delete this walk?",
+  walkDeleted: "Walk deleted",
+  walkThisWeek: "This Week",
+  walkLastWeek: "Last Week",
+  walkThisMonth: "This Month",
+  walkOlder: "Older",
+  walkLoadMore: "Load More",
+  walkWeekWalks: "walks this week",
+  walkWeekDist: "km this week",
+  walkAvgDuration: "Avg Duration",
+  walkCancel: "Cancel",
 
   // Health Tracking
   healthDashboard: "Vet & Health",

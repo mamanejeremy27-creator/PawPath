@@ -16,7 +16,6 @@ export default function WalkTracker() {
   const [elapsed, setElapsed] = useState(0);
   const [gpsError, setGpsError] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [notes, setNotes] = useState("");
 
   // Training walk prompt
@@ -85,7 +84,6 @@ export default function WalkTracker() {
     setElapsed(0);
     pausedElapsedRef.current = 0;
     setGpsError(null);
-    setSaved(false);
     setNotes("");
     startTracking(handleGpsPosition, (err) => setGpsError(err));
     schedulePrompt();
@@ -137,7 +135,8 @@ export default function WalkTracker() {
     } catch { /* silent */ }
 
     setSaving(false);
-    setSaved(true);
+    // Navigate to history with success toast flag
+    nav("walkHistory", { walkSavedToast: true });
   };
 
   const handleDiscard = () => {
@@ -145,7 +144,6 @@ export default function WalkTracker() {
     setCoords([]);
     setElapsed(0);
     pausedElapsedRef.current = 0;
-    setSaved(false);
     setNotes("");
   };
 
@@ -160,14 +158,25 @@ export default function WalkTracker() {
   return (
     <div style={{ minHeight: "100vh", background: C.bg, animation: "fadeIn 0.3s ease", display: "flex", flexDirection: "column" }}>
       {/* Header */}
-      <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => { if (status === "idle" || saved) { stopTracking(); nav("home"); } }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: C.t3, padding: 4, opacity: (status === "idle" || saved) ? 1 : 0.3 }}>
-          {"\u2190"}
-        </button>
-        <div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 2px", color: C.t1 }}>{T("walkTracker")}</h1>
-          <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{dogProfile?.name}</p>
+      <div style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button onClick={() => { if (status === "idle" || status === "done") { stopTracking(); nav("home"); } }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: C.t3, padding: 4, opacity: (status === "idle" || status === "done") ? 1 : 0.3 }}>
+            {"\u2190"}
+          </button>
+          <div>
+            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 2px", color: C.t1 }}>{T("walkTracker")}</h1>
+            <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{dogProfile?.name}</p>
+          </div>
         </div>
+        {/* Walk History button — always visible */}
+        <button onClick={() => nav("walkHistory")} style={{
+          padding: "10px 16px", borderRadius: 50,
+          background: C.s1, color: C.t1, border: `1px solid ${C.b1}`,
+          fontWeight: 700, fontSize: 13, cursor: "pointer",
+          display: "flex", alignItems: "center", gap: 6,
+        }}>
+          {"\uD83D\uDCCB"} {T("walkViewHistory")}
+        </button>
       </div>
 
       {/* Training Prompt Banner */}
@@ -306,46 +315,20 @@ export default function WalkTracker() {
 
         {status === "done" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {!saved ? (
-              <>
-                <button onClick={handleSave} disabled={saving} style={{
-                  width: "100%", padding: "16px", borderRadius: 50, border: "none",
-                  background: C.acc, color: "#000", fontSize: 16, fontWeight: 700,
-                  cursor: "pointer", opacity: saving ? 0.6 : 1,
-                }}>
-                  {saving ? T("saving") : T("walkSave")}
-                </button>
-                <button onClick={handleDiscard} style={{
-                  width: "100%", padding: "14px", borderRadius: 50,
-                  border: `1px solid ${C.b1}`, background: "transparent",
-                  color: C.t3, fontSize: 14, fontWeight: 600, cursor: "pointer",
-                }}>
-                  {T("walkDiscard")}
-                </button>
-              </>
-            ) : (
-              <>
-                <div style={{ textAlign: "center", padding: "12px", color: C.acc, fontSize: 15, fontWeight: 700 }}>
-                  {T("walkSaved")} {"\u2713"}
-                </div>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <button onClick={() => nav("walkHistory")} style={{
-                    flex: 1, padding: "14px", borderRadius: 50,
-                    border: `1px solid ${C.b1}`, background: C.s1,
-                    color: C.t1, fontSize: 14, fontWeight: 600, cursor: "pointer",
-                  }}>
-                    {T("walkViewHistory")}
-                  </button>
-                  <button onClick={handleDiscard} style={{
-                    flex: 1, padding: "14px", borderRadius: 50, border: "none",
-                    background: C.acc, color: "#000", fontSize: 14, fontWeight: 700,
-                    cursor: "pointer",
-                  }}>
-                    {T("walkNewWalk")}
-                  </button>
-                </div>
-              </>
-            )}
+            <button onClick={handleSave} disabled={saving} style={{
+              width: "100%", padding: "16px", borderRadius: 50, border: "none",
+              background: C.acc, color: "#000", fontSize: 16, fontWeight: 700,
+              cursor: "pointer", opacity: saving ? 0.6 : 1,
+            }}>
+              {saving ? T("saving") : T("walkSave")}
+            </button>
+            <button onClick={handleDiscard} style={{
+              width: "100%", padding: "14px", borderRadius: 50,
+              border: `1px solid ${C.b1}`, background: "transparent",
+              color: C.t3, fontSize: 14, fontWeight: 600, cursor: "pointer",
+            }}>
+              {T("walkDiscard")}
+            </button>
           </div>
         )}
       </div>
