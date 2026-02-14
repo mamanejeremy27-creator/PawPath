@@ -417,6 +417,27 @@ export default {
   voiceRepeat: "\u05D7\u05D6\u05D5\u05E8 \u05E2\u05DC \u05E9\u05DC\u05D1",
   voiceTapNext: "\u05DC\u05D7\u05E6\u05D5 \u05DC\u05D4\u05DE\u05E9\u05D9\u05DA \u05DB\u05E9\u05DE\u05D5\u05DB\u05E0\u05D9\u05DD",
 
+  // Emergency First Aid
+  emergencyGuide: "עזרה ראשונה לחירום",
+  emergencySubtitle: "מדריך מהיר למצבי חירום של כלבים",
+  callVetNow: "התקשרו לוטרינר עכשיו",
+  emergencyVetDirectory: "מדריך וטרינרים לחירום",
+  severityCritical: "קריטי — פעלו עכשיו",
+  severityModerate: "בינוני — דחוף",
+  severityLow: "נמוך — עקבו",
+  emergencySteps: "מה לעשות",
+  emergencyWarning: "אזהרה",
+  emergencyExtraInfo: "מידע נוסף",
+  commonToxins: "רעלים נפוצים",
+  poisonControl: "מרכז הרעלות",
+  israelSnakes: "נחשים בישראל",
+  emergencyCardTitle: "עזרה ראשונה לחירום",
+  emergencyCardSub: "מדריך מהיר ←",
+  vetDirectory: "מדריך וטרינרים",
+  vetHours: "שעות",
+  tapToCall: "לחצו להתקשר",
+  byRegion: "לפי אזור",
+
   // Breed System
   breedProfile: "\u05E4\u05E8\u05D5\u05E4\u05D9\u05DC \u05D2\u05D6\u05E2",
   breedTip: "\u05D8\u05D9\u05E4 \u05DC\u05D2\u05D6\u05E2",

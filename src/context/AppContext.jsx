@@ -83,6 +83,7 @@ export function AppProvider({ children }) {
   const [selProgram, setSelProgram] = useState(null);
   const [selLevel, setSelLevel] = useState(null);
   const [selExercise, setSelExercise] = useState(null);
+  const [selEmergency, setSelEmergency] = useState(null);
 
   // ─── UI State ───
   const [loaded, setLoaded] = useState(false);
@@ -890,6 +891,7 @@ export function AppProvider({ children }) {
     if (o.program !== undefined) setSelProgram(o.program);
     if (o.level !== undefined) setSelLevel(o.level);
     if (o.exercise !== undefined) setSelExercise(o.exercise);
+    if (o.emergency !== undefined) setSelEmergency(o.emergency);
     setScreen(s);
   }, []);
 
@@ -1181,6 +1183,7 @@ export function AppProvider({ children }) {
     selProgram, setSelProgram,
     selLevel, setSelLevel,
     selExercise, setSelExercise,
+    selEmergency,
 
     // UI
     loaded, todayExercises,

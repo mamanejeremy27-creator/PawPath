@@ -417,6 +417,27 @@ export default {
   voiceRepeat: "Repeat Step",
   voiceTapNext: "Tap next when ready",
 
+  // Emergency First Aid
+  emergencyGuide: "Emergency First Aid",
+  emergencySubtitle: "Quick reference guide for dog emergencies",
+  callVetNow: "Call Vet Now",
+  emergencyVetDirectory: "Emergency Vet Directory",
+  severityCritical: "Critical — Act Now",
+  severityModerate: "Moderate — Urgent",
+  severityLow: "Low — Monitor",
+  emergencySteps: "What to Do",
+  emergencyWarning: "Warning",
+  emergencyExtraInfo: "Additional Info",
+  commonToxins: "Common Toxins",
+  poisonControl: "Poison Control",
+  israelSnakes: "Snakes in Israel",
+  emergencyCardTitle: "Emergency First Aid",
+  emergencyCardSub: "Quick reference guide →",
+  vetDirectory: "Vet Directory",
+  vetHours: "Hours",
+  tapToCall: "Tap to call",
+  byRegion: "By Region",
+
   // Breed System
   breedProfile: "Breed Profile",
   breedTip: "Breed Tip",

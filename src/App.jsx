@@ -28,6 +28,9 @@ import StreakView from "./components/StreakView.jsx";
 import StreakBrokenScreen from "./components/StreakBrokenScreen.jsx";
 import MilestoneUnlockModal from "./components/MilestoneUnlockModal.jsx";
 import DiagnosticFlow from "./components/DiagnosticFlow.jsx";
+import EmergencyGuide from "./components/EmergencyGuide.jsx";
+import EmergencyDetail from "./components/EmergencyDetail.jsx";
+import VetDirectory from "./components/VetDirectory.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
@@ -88,6 +91,9 @@ export default function App() {
       {screen === "challenge" && <ChallengeView />}
       {screen === "streakView" && <StreakView />}
       {screen === "diagnostic" && <DiagnosticFlow />}
+      {screen === "emergency" && <EmergencyGuide />}
+      {screen === "emergencyDetail" && <EmergencyDetail />}
+      {screen === "vetDirectory" && <VetDirectory />}
 
       {/* Streak Freeze Notification */}
       {streakFreezeNotif && (
