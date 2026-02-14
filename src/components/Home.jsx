@@ -166,6 +166,28 @@ export default function Home() {
         </button>
       </div>
 
+      {/* Walk Tracker Entry */}
+      <div style={{ padding: "12px 20px 0" }}>
+        <button
+          onClick={() => nav("walkTracker")}
+          style={{
+            width: "100%", padding: "16px 20px",
+            background: "linear-gradient(135deg, rgba(59,130,246,0.08), rgba(34,197,94,0.06))",
+            border: "1px solid rgba(59,130,246,0.2)",
+            borderRadius: C.rL, cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 14,
+            color: C.t1, textAlign: "start",
+          }}
+        >
+          <span style={{ fontSize: 28 }}>{"\uD83D\uDEB6"}</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("walkTracker")}</div>
+            <div style={{ fontSize: 12, color: "#3B82F6", fontWeight: 600, marginTop: 2 }}>{T("walkTrackerSub")}</div>
+          </div>
+          <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+        </button>
+      </div>
+
       {/* Quick Actions */}
       <div style={{ display: "flex", gap: 10, padding: "20px 20px 0" }}>
         <button onClick={() => setShowGear(true)} style={{ flex: 1, padding: "14px", background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>

@@ -38,6 +38,9 @@ import CommunityFeed from "./components/CommunityFeed.jsx";
 import BuddyFinder from "./components/BuddyFinder.jsx";
 import BuddyDashboard from "./components/BuddyDashboard.jsx";
 import BuddyNudgeNotification from "./components/BuddyNudgeNotification.jsx";
+import WalkTracker from "./components/WalkTracker.jsx";
+import WalkHistory from "./components/WalkHistory.jsx";
+import WalkDetail from "./components/WalkDetail.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
@@ -107,6 +110,9 @@ export default function App() {
       {screen === "community" && <CommunityFeed />}
       {screen === "buddyFinder" && <BuddyFinder />}
       {screen === "buddyDashboard" && <BuddyDashboard />}
+      {screen === "walkTracker" && <WalkTracker />}
+      {screen === "walkHistory" && <WalkHistory />}
+      {screen === "walkDetail" && <WalkDetail />}
 
       {/* Streak Freeze Notification */}
       {streakFreezeNotif && (

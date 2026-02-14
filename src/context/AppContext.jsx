@@ -92,6 +92,7 @@ export function AppProvider({ children }) {
   const [selLevel, setSelLevel] = useState(null);
   const [selExercise, setSelExercise] = useState(null);
   const [selEmergency, setSelEmergency] = useState(null);
+  const [walkData, setWalkData] = useState(null);
 
   // ─── UI State ───
   const [loaded, setLoaded] = useState(false);
@@ -951,6 +952,7 @@ export function AppProvider({ children }) {
     if (o.level !== undefined) setSelLevel(o.level);
     if (o.exercise !== undefined) setSelExercise(o.exercise);
     if (o.emergency !== undefined) setSelEmergency(o.emergency);
+    if (o.walkData !== undefined) setWalkData(o.walkData);
     setScreen(s);
   }, []);
 
@@ -1259,6 +1261,7 @@ export function AppProvider({ children }) {
     selLevel, setSelLevel,
     selExercise, setSelExercise,
     selEmergency,
+    walkData,
 
     // UI
     loaded, todayExercises,
