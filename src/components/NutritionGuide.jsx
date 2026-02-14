@@ -29,7 +29,7 @@ export default function NutritionGuide() {
   }, [filtered]);
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 40, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div style={{ minHeight: "100vh", paddingBottom: 40, background: C.bg, animation: "fadeIn 0.3s ease", overflowX: "hidden" }}>
       {/* Header */}
       <div style={{ padding: "24px 20px 16px" }}>
         <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
@@ -102,9 +102,11 @@ export default function NutritionGuide() {
                     onClick={() => setExpanded(isOpen ? null : food.id)}
                     style={{
                       width: "100%", textAlign: "start", cursor: "pointer",
-                      padding: "14px 18px", background: C.s1, borderRadius: C.rL,
+                      padding: "14px 18px", boxSizing: "border-box",
+                      background: C.s1, borderRadius: C.rL,
                       border: isOpen ? `1px solid ${cfg.border}` : `1px solid ${C.b1}`,
-                      color: C.t1, transition: "border-color 0.2s ease",
+                      color: C.t1, fontFamily: "inherit", fontSize: "inherit",
+                      transition: "border-color 0.2s ease",
                     }}
                   >
                     {/* Food Header */}

@@ -188,7 +188,7 @@ export default function Leaderboard() {
         )}
       </div>
 
-      <BottomNav active="leaderboard" />
+      <BottomNav active="home" />
     </div>
   );
 }

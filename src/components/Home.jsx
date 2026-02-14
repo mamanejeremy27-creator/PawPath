@@ -203,18 +203,28 @@ export default function Home() {
           );
         })}
       </div>
-      {/* Community FAB */}
-      <button
-        onClick={() => nav("community")}
-        style={{
-          position: "fixed", bottom: 90, right: "calc(50% - 220px)",
-          width: 52, height: 52, borderRadius: 26,
-          background: C.acc, color: "#000", fontSize: 24, fontWeight: 800,
-          border: "none", cursor: "pointer",
-          boxShadow: "0 8px 32px rgba(34,197,94,0.3)",
-          zIndex: 99, display: "flex", alignItems: "center", justifyContent: "center",
-        }}
-      >+</button>
+      {/* Leaderboard Entry */}
+      <div style={{ padding: "12px 20px 0" }}>
+        <button
+          onClick={() => nav("leaderboard")}
+          style={{
+            width: "100%", padding: "16px 20px", boxSizing: "border-box",
+            background: "linear-gradient(135deg, rgba(255,215,0,0.08), rgba(245,158,11,0.06))",
+            border: "1px solid rgba(255,215,0,0.2)",
+            borderRadius: C.rL, cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 14,
+            color: C.t1, textAlign: "start",
+          }}
+        >
+          <span style={{ fontSize: 28 }}>{"\uD83C\uDFC6"}</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("leaderboard")}</div>
+            <div style={{ fontSize: 12, color: "#FFD700", fontWeight: 600, marginTop: 2 }}>{T("leaderboardSubtitle")}</div>
+          </div>
+          <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+        </button>
+      </div>
+
       <BottomNav active="home" />
     </div>
   );
