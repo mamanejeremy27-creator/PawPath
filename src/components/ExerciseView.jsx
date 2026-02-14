@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import Timer from "./Timer.jsx";
 import DifficultyCard from "./DifficultyCard.jsx";
 import MoodCheck from "./MoodCheck.jsx";
+import VoiceMode from "./VoiceMode.jsx";
 import { calculateFreshness, getFreshnessColor } from "../utils/freshness.js";
 import { matchBreed, getBreedExerciseTip } from "../data/breedTraits.js";
 
@@ -10,9 +11,12 @@ const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5
 const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
 const sectionLabel = (text) => <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{text}</div>;
 
+const HAS_SPEECH = typeof window !== "undefined" && "speechSynthesis" in window;
+
 export default function ExerciseView() {
   const { selExercise, selLevel, selProgram, completedExercises, journal, triggerComplete, nav, T, rtl, lang, gear: gearData, skillFreshness, incrementDifficultyField, moodCheck, dogProfile } = useApp();
   const enteredRef = useRef(null);
+  const [showVoice, setShowVoice] = useState(false);
 
   // Track incomplete sessions (user opens exercise, stays 10+ sec, leaves without completing)
   useEffect(() => {
@@ -75,6 +79,14 @@ export default function ExerciseView() {
         <p style={{ fontSize: 15, color: C.t2, marginTop: 14, lineHeight: 1.7 }}>{ex.description}</p>
 
         <Timer duration={ex.duration} />
+
+        {/* Voice Mode Button */}
+        {HAS_SPEECH && (
+          <button onClick={() => setShowVoice(true)}
+            style={{ width: "100%", marginTop: 14, padding: "16px", fontSize: 15, fontWeight: 700, background: "rgba(34,197,94,0.08)", color: C.acc, border: "1px solid rgba(34,197,94,0.2)", borderRadius: 50, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, transition: "all 0.2s" }}>
+            <span style={{ fontSize: 20 }}>{"\uD83C\uDF99\uFE0F"}</span> {T("voiceStart")}
+          </button>
+        )}
 
         {/* Steps */}
         <div style={{ marginTop: 20, ...cardStyle }}>
@@ -183,6 +195,17 @@ export default function ExerciseView() {
         )}
       </div>
       <MoodCheck />
+      {showVoice && (
+        <VoiceMode
+          exercise={ex}
+          programName={selProgram.name}
+          programEmoji={selProgram.emoji}
+          lang={lang}
+          rtl={rtl}
+          T={T}
+          onClose={() => setShowVoice(false)}
+        />
+      )}
     </div>
   );
 }

@@ -408,6 +408,15 @@ export default {
   authMigratePrompt: "Already have training data? Sign up to save it to the cloud!",
   authMigrating: "Migrating your data...",
 
+  // Voice Mode
+  voiceStart: "Start Voice Mode",
+  voiceStep: "Step",
+  voiceOf: "of",
+  voiceComplete: "Exercise Complete!",
+  voiceDone: "Done",
+  voiceRepeat: "Repeat Step",
+  voiceTapNext: "Tap next when ready",
+
   // Breed System
   breedProfile: "Breed Profile",
   breedTip: "Breed Tip",
