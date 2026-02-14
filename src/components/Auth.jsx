@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { supabase } from "../lib/supabase.js";
 import { useApp } from "../context/AppContext.jsx";
+import { hasLocalData } from "../lib/migrate.js";
 
 const C = {
   bg: "#0A0A0C", s1: "#131316", s2: "#1A1A1F",
@@ -11,6 +12,7 @@ const C = {
 
 export default function Auth() {
   const { lang, setLang, rtl, T } = useApp();
+  const showMigrateBanner = useMemo(() => hasLocalData(), []);
 
   const [mode, setMode] = useState("signin");
   const [email, setEmail] = useState("");
@@ -103,6 +105,14 @@ export default function Auth() {
             </button>
           ))}
         </div>
+
+        {/* Local data migration prompt */}
+        {showMigrateBanner && (
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 18px", marginBottom: 20, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 16 }}>
+            <span style={{ fontSize: 24, flexShrink: 0 }}>{"\uD83D\uDC3E"}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: C.acc, lineHeight: 1.5 }}>{T("authMigratePrompt")}</span>
+          </div>
+        )}
 
         {/* OAuth buttons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>

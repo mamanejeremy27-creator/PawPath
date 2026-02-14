@@ -1,14 +1,19 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useApp } from "../context/AppContext.jsx";
-import { compressPhoto, getPhotoCount, canAddPhotos, MAX_PHOTOS } from "../utils/photoCompressor.js";
+import { useAuth } from "../hooks/useAuth.js";
+import { compressPhoto, compressPhotoToBlob, getPhotoCount, canAddPhotos, MAX_PHOTOS } from "../utils/photoCompressor.js";
+import { uploadPhoto } from "../lib/storage.js";
+import PhotoImg from "./PhotoImg.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", warn: "#F59E0B", r: 16 };
 const sectionLabel = (text) => <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{text}</div>;
 
 export default function JournalModal() {
-  const { showJournalEntry, journalForm, setJournalForm, finalizeComplete, journal, T } = useApp();
+  const { showJournalEntry, journalForm, setJournalForm, finalizeComplete, journal, T, activeDogId } = useApp();
+  const { user } = useAuth();
   const cameraRef = useRef(null);
   const galleryRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
 
   if (!showJournalEntry) return null;
 
@@ -22,9 +27,19 @@ export default function JournalModal() {
     if (!file) return;
     if (photos.length >= 3 || !canAddPhotos(journal, photos.length + 1)) return;
     try {
-      const dataUrl = await compressPhoto(file);
-      setJournalForm(f => ({ ...f, photos: [...(f.photos || []), dataUrl] }));
-    } catch { /* ignore failed compression */ }
+      if (user) {
+        // Authenticated: compress to blob, upload to Supabase Storage, store path
+        setUploading(true);
+        const blob = await compressPhotoToBlob(file);
+        const path = await uploadPhoto(user.id, activeDogId, blob);
+        setJournalForm(f => ({ ...f, photos: [...(f.photos || []), path] }));
+      } else {
+        // Not authenticated: compress to base64 for localStorage
+        const dataUrl = await compressPhoto(file);
+        setJournalForm(f => ({ ...f, photos: [...(f.photos || []), dataUrl] }));
+      }
+    } catch { /* ignore failed compression/upload */ }
+    finally { setUploading(false); }
     e.target.value = "";
   };
 
@@ -33,11 +48,11 @@ export default function JournalModal() {
   };
 
   const moods = [
-    { id: "struggling", emoji: "😟", label: T("moodStruggling") },
-    { id: "okay", emoji: "😐", label: T("moodOkay") },
-    { id: "happy", emoji: "🙂", label: T("moodGood") },
-    { id: "great", emoji: "😊", label: T("moodGreat") },
-    { id: "amazing", emoji: "🤩", label: T("moodAmazing") },
+    { id: "struggling", emoji: "\uD83D\uDE1F", label: T("moodStruggling") },
+    { id: "okay", emoji: "\uD83D\uDE10", label: T("moodOkay") },
+    { id: "happy", emoji: "\uD83D\uDE42", label: T("moodGood") },
+    { id: "great", emoji: "\uD83D\uDE0A", label: T("moodGreat") },
+    { id: "amazing", emoji: "\uD83E\uDD29", label: T("moodAmazing") },
   ];
 
   return (
@@ -53,7 +68,7 @@ export default function JournalModal() {
           {[1, 2, 3, 4, 5].map(n => (
             <button key={n} onClick={() => setJournalForm(f => ({ ...f, rating: n }))}
               style={{ flex: 1, padding: "10px 0", background: journalForm.rating >= n ? "rgba(34,197,94,0.12)" : C.b1, border: `1px solid ${journalForm.rating >= n ? "rgba(34,197,94,0.3)" : "transparent"}`, borderRadius: 10, cursor: "pointer", fontSize: 20, transition: "all 0.15s" }}>
-              {n <= journalForm.rating ? "⭐" : "☆"}
+              {n <= journalForm.rating ? "\u2B50" : "\u2606"}
             </button>
           ))}
         </div>
@@ -75,23 +90,28 @@ export default function JournalModal() {
           <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
             {photos.map((src, i) => (
               <div key={i} style={{ position: "relative", width: 72, height: 72, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
-                <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <PhotoImg src={src} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 <button onClick={() => removePhoto(i)}
                   style={{ position: "absolute", top: 2, right: 2, width: 22, height: 22, borderRadius: "50%", background: "rgba(0,0,0,0.7)", border: "none", color: "#fff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
                   ✕
                 </button>
               </div>
             ))}
-            {photos.length < 3 && !atCapacity && (
+            {uploading && (
+              <div style={{ width: 72, height: 72, borderRadius: 12, background: C.bg, border: `1px dashed ${C.b2}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <div style={{ width: 24, height: 24, border: "2px solid rgba(255,255,255,0.1)", borderTopColor: C.acc, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+              </div>
+            )}
+            {photos.length < 3 && !atCapacity && !uploading && (
               <>
                 <button onClick={() => cameraRef.current?.click()}
                   style={{ width: 72, height: 72, borderRadius: 12, background: C.bg, border: `1px dashed ${C.b2}`, color: C.t3, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, flexShrink: 0 }}>
-                  <span style={{ fontSize: 20 }}>📷</span>
+                  <span style={{ fontSize: 20 }}>{"\uD83D\uDCF7"}</span>
                   <span style={{ fontSize: 9, fontWeight: 600 }}>{T("camera")}</span>
                 </button>
                 <button onClick={() => galleryRef.current?.click()}
                   style={{ width: 72, height: 72, borderRadius: 12, background: C.bg, border: `1px dashed ${C.b2}`, color: C.t3, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, flexShrink: 0 }}>
-                  <span style={{ fontSize: 20 }}>🖼️</span>
+                  <span style={{ fontSize: 20 }}>{"\uD83D\uDDBC\uFE0F"}</span>
                   <span style={{ fontSize: 9, fontWeight: 600 }}>{T("gallery")}</span>
                 </button>
               </>
@@ -101,7 +121,7 @@ export default function JournalModal() {
           <input ref={galleryRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
           <div style={{ fontSize: 11, color: nearCapacity ? C.warn : C.t3, fontWeight: 600 }}>
             {nearCapacity && totalPhotos >= MAX_PHOTOS
-              ? `⚠️ ${T("storageAlmostFull")}`
+              ? `\u26A0\uFE0F ${T("storageAlmostFull")}`
               : `${totalPhotos + photos.length}/${MAX_PHOTOS} ${T("photosStored")}`
             }
           </div>
@@ -112,9 +132,9 @@ export default function JournalModal() {
           placeholder={T("notesPlaceholder")} rows={3}
           style={{ width: "100%", padding: "14px 16px", fontSize: 14, background: C.bg, border: `1px solid ${C.b2}`, borderRadius: C.r, color: C.t1, outline: "none", lineHeight: 1.6, resize: "none" }} />
 
-        <button onClick={() => finalizeComplete(false)}
-          style={{ width: "100%", padding: "18px", marginTop: 20, fontSize: 16, fontWeight: 800, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer", boxShadow: "0 8px 32px rgba(34,197,94,0.25)" }}>
-          {T("saveComplete")}
+        <button onClick={() => finalizeComplete(false)} disabled={uploading}
+          style={{ width: "100%", padding: "18px", marginTop: 20, fontSize: 16, fontWeight: 800, background: uploading ? "#555" : C.acc, color: "#000", border: "none", borderRadius: 50, cursor: uploading ? "not-allowed" : "pointer", boxShadow: "0 8px 32px rgba(34,197,94,0.25)" }}>
+          {uploading ? T("uploading") || "Uploading..." : T("saveComplete")}
         </button>
       </div>
     </div>

@@ -11,7 +11,8 @@ import { CHALLENGES, getActiveChallenge, getChallengeDay, getWeekNumber, getWeek
 import { DEFAULT_STREAKS, DEFAULT_APP_SETTINGS, STREAK_MILESTONES, THEMES, AVATAR_ACCESSORIES, getNextMilestone, getMilestoneProgress, getStreakFire } from "../data/streakRewards.js";
 import { EXERCISE_PREREQUISITES } from "../data/exercisePrerequisites.js";
 import { useAuth } from "../hooks/useAuth.js";
-import { loadUserData, migrateLocalToSupabase } from "../lib/syncEngine.js";
+import { loadUserData } from "../lib/syncEngine.js";
+import { migrateLocalData } from "../lib/migrate.js";
 import {
   createDog as dbCreateDog, updateDog as dbUpdateDog, deleteDog as dbDeleteDog,
   updateDogProgress, saveCompletedExercise, createJournalEntry,
@@ -198,16 +199,23 @@ export function AppProvider({ children }) {
         setScreen("home");
       } else {
         // Supabase empty — check localStorage for migration
-        const localData = loadFromLocalStorage();
-        if (localData && localData.dogs && Object.keys(localData.dogs).length > 0) {
-          // Migrate localStorage to Supabase
-          const migrateResult = await migrateLocalToSupabase(localData);
-          if (!cancelled && migrateResult.idMap) {
-            supabaseIdMapRef.current = migrateResult.idMap;
+        const migrateResult = await migrateLocalData();
+        if (!cancelled && migrateResult.localState) {
+          // Set React state from normalized local data (photos updated to storage paths)
+          const d = migrateResult.localState;
+          const migratedDogs = {};
+          for (const [id, dog] of Object.entries(d.dogs)) {
+            migratedDogs[id] = { ...DEFAULT_DOG_STATE, ...dog };
           }
-          // State already set by loadFromLocalStorage
+          setDogs(migratedDogs);
+          setActiveDogId(d.activeDogId);
+          if (d.lang) setLang(d.lang);
+          if (d.reminders) setReminders(d.reminders);
+          if (d.appSettings) setAppSettings(prev => ({ ...prev, ...d.appSettings }));
+          if (migrateResult.idMap) supabaseIdMapRef.current = migrateResult.idMap;
+          setScreen("home");
         }
-        // If no local data either, stay on splash (default)
+        // If no local data, stay on splash (default)
       }
     }
 

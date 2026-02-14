@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext.jsx";
+import PhotoImg from "./PhotoImg.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", rL: 24 };
 
@@ -87,7 +88,7 @@ export default function Timeline() {
                   {j.photos && j.photos.length > 0 && (
                     <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
                       {j.photos.map((src, pi) => (
-                        <img key={pi} src={src} alt="" style={{ width: 48, height: 48, borderRadius: 8, objectFit: "cover" }} />
+                        <PhotoImg key={pi} src={src} style={{ width: 48, height: 48, borderRadius: 8, objectFit: "cover" }} />
                       ))}
                     </div>
                   )}
@@ -102,7 +103,7 @@ export default function Timeline() {
                       {j.photos && j.photos.length > 0 && (
                         <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
                           {j.photos.map((src, pi) => (
-                            <img key={pi} src={src} alt="" style={{ width: 80, height: 80, borderRadius: 12, objectFit: "cover" }} />
+                            <PhotoImg key={pi} src={src} style={{ width: 80, height: 80, borderRadius: 12, objectFit: "cover" }} />
                           ))}
                         </div>
                       )}

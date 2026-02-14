@@ -2,6 +2,7 @@ import { useApp } from "../context/AppContext.jsx";
 import BottomNav from "./BottomNav.jsx";
 import Timeline from "./Timeline.jsx";
 import GrowthView from "./GrowthView.jsx";
+import PhotoImg from "./PhotoImg.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", rL: 24 };
 const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
@@ -76,7 +77,7 @@ export default function JournalList() {
                     {j.photos && j.photos.length > 0 && (
                       <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
                         {j.photos.map((src, pi) => (
-                          <img key={pi} src={src} alt="" style={{ width: 64, height: 64, borderRadius: 10, objectFit: "cover" }} />
+                          <PhotoImg key={pi} src={src} style={{ width: 64, height: 64, borderRadius: 10, objectFit: "cover" }} />
                         ))}
                       </div>
                     )}

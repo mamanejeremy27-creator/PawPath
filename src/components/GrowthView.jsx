@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useApp } from "../context/AppContext.jsx";
+import PhotoImg from "./PhotoImg.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", rL: 24 };
 
@@ -48,12 +49,12 @@ export default function GrowthView() {
           <div style={{ fontSize: 11, fontWeight: 700, color: C.acc, letterSpacing: 2, textTransform: "uppercase", marginBottom: 14, textAlign: "center" }}>{T("thenVsNow")}</div>
           <div style={{ display: "flex", gap: 12 }}>
             <div style={{ flex: 1, textAlign: "center" }}>
-              <img src={first.photo} alt="" style={{ width: "100%", aspectRatio: "1", borderRadius: 14, objectFit: "cover" }} />
+              <PhotoImg src={first.photo} style={{ width: "100%", aspectRatio: "1", borderRadius: 14, objectFit: "cover" }} />
               <div style={{ fontSize: 11, color: C.t3, marginTop: 6, fontWeight: 600 }}>{first.label}</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", color: C.t3, fontSize: 20 }}>→</div>
             <div style={{ flex: 1, textAlign: "center" }}>
-              <img src={last.photo} alt="" style={{ width: "100%", aspectRatio: "1", borderRadius: 14, objectFit: "cover" }} />
+              <PhotoImg src={last.photo} style={{ width: "100%", aspectRatio: "1", borderRadius: 14, objectFit: "cover" }} />
               <div style={{ fontSize: 11, color: C.t3, marginTop: 6, fontWeight: 600 }}>{last.label}</div>
             </div>
           </div>
@@ -64,7 +65,7 @@ export default function GrowthView() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
         {monthlyPhotos.map(m => (
           <div key={m.key} style={{ background: C.s1, borderRadius: 14, border: `1px solid ${C.b1}`, overflow: "hidden" }}>
-            <img src={m.photo} alt="" style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} />
+            <PhotoImg src={m.photo} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} />
             <div style={{ padding: "8px 10px" }}>
               <div style={{ fontSize: 10, color: C.t3, fontWeight: 600 }}>{m.label}</div>
               <div style={{ fontSize: 11, color: C.t2, marginTop: 2 }}>{m.programEmoji} {m.exerciseName}</div>

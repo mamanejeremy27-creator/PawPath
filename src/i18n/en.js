@@ -405,6 +405,8 @@ export default {
   authOrEmail: "or continue with email",
   signOut: "Sign Out",
   signingOut: "Signing out...",
+  authMigratePrompt: "Already have training data? Sign up to save it to the cloud!",
+  authMigrating: "Migrating your data...",
 
   // Breed System
   breedProfile: "Breed Profile",
