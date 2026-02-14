@@ -125,6 +125,30 @@ export default function CommunityFeed() {
         >{T("createPost")}</button>
       </div>
 
+      {/* Training Buddy Card */}
+      {isAuthenticated && (
+        <div style={{ padding: "14px 20px 0" }}>
+          <button
+            onClick={() => nav("buddyDashboard")}
+            style={{
+              width: "100%", padding: "16px 20px",
+              background: "linear-gradient(135deg, rgba(34,197,94,0.08), rgba(139,92,246,0.08))",
+              border: "1px solid rgba(34,197,94,0.2)",
+              borderRadius: C.rL, cursor: "pointer",
+              display: "flex", alignItems: "center", gap: 14,
+              textAlign: "start",
+            }}
+          >
+            <span style={{ fontSize: 28 }}>{"\uD83E\uDD1D"}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("buddySection")}</div>
+              <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{T("buddySectionSub")}</div>
+            </div>
+            <span style={{ fontSize: 16, color: C.t3 }}>{"\u203A"}</span>
+          </button>
+        </div>
+      )}
+
       {/* Loading */}
       {loading && (
         <div style={{ textAlign: "center", padding: "60px 0" }}>

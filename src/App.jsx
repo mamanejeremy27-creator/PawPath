@@ -35,6 +35,9 @@ import NutritionGuide from "./components/NutritionGuide.jsx";
 import Leaderboard from "./components/Leaderboard.jsx";
 import CreatePost from "./components/CreatePost.jsx";
 import CommunityFeed from "./components/CommunityFeed.jsx";
+import BuddyFinder from "./components/BuddyFinder.jsx";
+import BuddyDashboard from "./components/BuddyDashboard.jsx";
+import BuddyNudgeNotification from "./components/BuddyNudgeNotification.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
@@ -102,6 +105,8 @@ export default function App() {
       {screen === "leaderboard" && <Leaderboard />}
       {screen === "createPost" && <CreatePost />}
       {screen === "community" && <CommunityFeed />}
+      {screen === "buddyFinder" && <BuddyFinder />}
+      {screen === "buddyDashboard" && <BuddyDashboard />}
 
       {/* Streak Freeze Notification */}
       {streakFreezeNotif && (
@@ -118,6 +123,9 @@ export default function App() {
           <div style={{ fontSize: 12, color: "#A1A1AA", marginTop: 4 }}>{challengeDayToast.remaining} {T("moreToGo")}</div>
         </div>
       )}
+
+      {/* Buddy Nudge Notification */}
+      <BuddyNudgeNotification />
 
       {/* Stage Transition */}
       <StageTransitionModal />
