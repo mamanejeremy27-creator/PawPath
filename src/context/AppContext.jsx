@@ -1109,7 +1109,12 @@ export function AppProvider({ children }) {
           const ms = STREAK_MILESTONES.find(m => milestoneXp === (m.xpBonus || 0));
           if (ms) supaPromises.push(saveUnlockedReward(ms.rewardId, ms.reward || "milestone"));
         }
-        Promise.allSettled(supaPromises);
+        Promise.allSettled(supaPromises).then(results => {
+          results.forEach((r, i) => {
+            if (r.status === "rejected") console.error("Supabase sync failed:", r.reason);
+            else if (r.value?.error) console.error("Supabase sync error:", r.value.error);
+          });
+        });
 
         // Leaderboard sync (fire-and-forget)
         if (appSettings.leaderboardOptIn) {

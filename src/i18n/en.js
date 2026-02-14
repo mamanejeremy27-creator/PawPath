@@ -224,6 +224,7 @@ export default {
   thenVsNow: "Then vs. Now",
   photosStored: "photos stored",
   storageAlmostFull: "No more room for photos",
+  photoUploadFailed: "Photo upload failed. Tap to try again.",
 
   // Milestone Cards
   milestoneCard: "Monthly Summary",

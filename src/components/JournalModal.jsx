@@ -14,6 +14,7 @@ export default function JournalModal() {
   const cameraRef = useRef(null);
   const galleryRef = useRef(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(false);
 
   if (!showJournalEntry) return null;
 
@@ -26,6 +27,7 @@ export default function JournalModal() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (photos.length >= 3 || !canAddPhotos(journal, photos.length + 1)) return;
+    setUploadError(false);
     try {
       if (user) {
         // Authenticated: compress to blob, upload to Supabase Storage, store path
@@ -38,7 +40,10 @@ export default function JournalModal() {
         const dataUrl = await compressPhoto(file);
         setJournalForm(f => ({ ...f, photos: [...(f.photos || []), dataUrl] }));
       }
-    } catch { /* ignore failed compression/upload */ }
+    } catch (err) {
+      console.error("Photo upload failed:", err);
+      setUploadError(true);
+    }
     finally { setUploading(false); }
     e.target.value = "";
   };
@@ -119,6 +124,11 @@ export default function JournalModal() {
           </div>
           <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: "none" }} />
           <input ref={galleryRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
+          {uploadError && (
+            <div style={{ padding: "8px 12px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 10, marginBottom: 8, fontSize: 12, color: "#EF4444", fontWeight: 600 }}>
+              {T("photoUploadFailed")}
+            </div>
+          )}
           <div style={{ fontSize: 11, color: nearCapacity ? C.warn : C.t3, fontWeight: 600 }}>
             {nearCapacity && totalPhotos >= MAX_PHOTOS
               ? `\u26A0\uFE0F ${T("storageAlmostFull")}`

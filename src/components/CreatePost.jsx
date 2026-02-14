@@ -34,15 +34,21 @@ export default function CreatePost() {
   const breed = selectedDog?.profile?.breed || "";
   const showPhotoUpload = postType === "photo" || postType === "progress";
 
+  const [uploadError, setUploadError] = useState(false);
+
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
+    setUploadError(false);
     try {
       setUploading(true);
       const blob = await compressPhotoToBlob(file);
       const path = await uploadPhoto(user.id, selectedDogId, blob);
       setPhotoPath(path);
-    } catch { /* ignore */ }
+    } catch (err) {
+      console.error("Photo upload failed:", err);
+      setUploadError(true);
+    }
     finally { setUploading(false); }
     e.target.value = "";
   };
@@ -168,6 +174,11 @@ export default function CreatePost() {
                 </>
               )}
             </div>
+            {uploadError && (
+              <div style={{ padding: "8px 12px", marginTop: 8, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 10, fontSize: 12, color: "#EF4444", fontWeight: 600 }}>
+                {T("photoUploadFailed")}
+              </div>
+            )}
             <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: "none" }} />
             <input ref={galleryRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
           </div>
