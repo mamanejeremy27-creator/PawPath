@@ -14,8 +14,7 @@ export default function JournalModal() {
   const cameraRef = useRef(null);
   const galleryRef = useRef(null);
   const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState(false);
-  const lastFileRef = useRef(null);
+  const [uploadWarning, setUploadWarning] = useState(null); // "storage_failed" | null
 
   if (!showJournalEntry) return null;
 
@@ -24,52 +23,46 @@ export default function JournalModal() {
   const atCapacity = !canAddPhotos(journal, 1);
   const nearCapacity = totalPhotos >= MAX_PHOTOS * 0.8;
 
-  const processFile = async (file) => {
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     if (photos.length >= 3 || !canAddPhotos(journal, photos.length + 1)) return;
-    setUploadError(false);
-    lastFileRef.current = file;
+    setUploadWarning(null);
+    setUploading(true);
+
     try {
       if (user) {
-        // Authenticated: compress to blob, upload to Supabase Storage, store path
-        setUploading(true);
-        console.log("[PawPath] Compressing photo:", { name: file.name, type: file.type, size: file.size });
-        const blob = await compressPhotoToBlob(file);
-        console.log("[PawPath] Compressed blob:", { type: blob.type, size: blob.size });
-        const path = await uploadPhoto(user.id, activeDogId, blob);
-        setJournalForm(f => ({ ...f, photos: [...(f.photos || []), path] }));
-        lastFileRef.current = null;
+        // Authenticated: try Storage first, fall back to base64
+        let photoValue;
+        try {
+          console.log("[PawPath] Compressing photo for Storage:", { name: file.name, type: file.type, size: file.size });
+          const blob = await compressPhotoToBlob(file);
+          console.log("[PawPath] Compressed blob:", { type: blob.type, size: blob.size });
+          const path = await uploadPhoto(user.id, activeDogId, blob);
+          photoValue = path; // Storage path
+          console.log("[PawPath] Photo stored via Supabase Storage:", path);
+        } catch (storageErr) {
+          console.warn("[PawPath] Storage upload failed, falling back to base64:", storageErr?.message || storageErr);
+          // FALLBACK: compress to base64 data URL instead
+          const dataUrl = await compressPhoto(file);
+          photoValue = dataUrl; // data:image/jpeg;base64,...
+          setUploadWarning("storage_failed");
+          console.log("[PawPath] Photo stored as base64 fallback, length:", dataUrl.length);
+        }
+        setJournalForm(f => ({ ...f, photos: [...(f.photos || []), photoValue] }));
       } else {
         // Not authenticated: compress to base64 for localStorage
         const dataUrl = await compressPhoto(file);
         setJournalForm(f => ({ ...f, photos: [...(f.photos || []), dataUrl] }));
-        lastFileRef.current = null;
       }
     } catch (err) {
-      console.error("[PawPath] Photo upload failed:", {
-        message: err?.message,
-        statusCode: err?.statusCode,
-        name: err?.name,
-        userId: user?.id,
-        dogId: activeDogId,
-        fileType: file?.type,
-        fileSize: file?.size,
-        error: err,
-      });
-      setUploadError(true);
+      // Both Storage and base64 fallback failed — compression itself broke
+      console.error("[PawPath] Photo processing completely failed:", err);
+      setUploadWarning("storage_failed");
     } finally {
       setUploading(false);
     }
-  };
-
-  const handleFile = async (e) => {
-    const file = e.target.files?.[0];
-    await processFile(file);
     e.target.value = "";
-  };
-
-  const retryUpload = () => {
-    if (lastFileRef.current) processFile(lastFileRef.current);
   };
 
   const removePhoto = (idx) => {
@@ -148,9 +141,9 @@ export default function JournalModal() {
           </div>
           <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: "none" }} />
           <input ref={galleryRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
-          {uploadError && (
-            <div onClick={retryUpload} style={{ padding: "8px 12px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 10, marginBottom: 8, fontSize: 12, color: "#EF4444", fontWeight: 600, cursor: "pointer" }}>
-              {T("photoUploadFailed")}
+          {uploadWarning === "storage_failed" && (
+            <div style={{ padding: "8px 12px", background: "rgba(234,179,8,0.08)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: 10, marginBottom: 8, fontSize: 12, color: "#EAB308", fontWeight: 600 }}>
+              Photo saved locally (cloud upload unavailable)
             </div>
           )}
           <div style={{ fontSize: 11, color: nearCapacity ? C.warn : C.t3, fontWeight: 600 }}>
@@ -166,9 +159,9 @@ export default function JournalModal() {
           placeholder={T("notesPlaceholder")} rows={3}
           style={{ width: "100%", padding: "14px 16px", fontSize: 14, background: C.bg, border: `1px solid ${C.b2}`, borderRadius: C.r, color: C.t1, outline: "none", lineHeight: 1.6, resize: "none" }} />
 
-        <button onClick={() => finalizeComplete(false)} disabled={uploading}
-          style={{ width: "100%", padding: "18px", marginTop: 20, fontSize: 16, fontWeight: 800, background: uploading ? "#555" : C.acc, color: "#000", border: "none", borderRadius: 50, cursor: uploading ? "not-allowed" : "pointer", boxShadow: "0 8px 32px rgba(34,197,94,0.25)" }}>
-          {uploading ? T("uploading") || "Uploading..." : T("saveComplete")}
+        <button onClick={() => finalizeComplete(false)}
+          style={{ width: "100%", padding: "18px", marginTop: 20, fontSize: 16, fontWeight: 800, background: uploading ? C.acc : C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer", boxShadow: "0 8px 32px rgba(34,197,94,0.25)", opacity: uploading ? 0.7 : 1 }}>
+          {T("saveComplete")}
         </button>
       </div>
     </div>
