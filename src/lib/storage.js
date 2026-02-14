@@ -143,6 +143,31 @@ export async function uploadPhoto(dogId, file) {
 }
 
 /**
+ * Upload a dog profile photo to Supabase Storage.
+ * Uses a fixed path so re-uploads overwrite the old photo.
+ */
+export async function uploadProfilePhoto(dogId, file) {
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError || !authData?.user) {
+    throw new Error("Not authenticated — cannot upload profile photo");
+  }
+
+  const uid = authData.user.id;
+  const path = `${uid}/${dogId}/profile.jpg`;
+
+  const { data, error } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, file, { contentType: "image/jpeg", upsert: true });
+
+  if (error) {
+    console.error("[PawPath] uploadProfilePhoto failed:", error);
+    throw error;
+  }
+
+  return data.path;
+}
+
+/**
  * Delete a photo from Supabase Storage.
  */
 export async function deletePhoto(path) {

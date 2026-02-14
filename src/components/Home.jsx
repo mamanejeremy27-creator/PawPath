@@ -6,6 +6,7 @@ import SkillHealth from "./SkillHealth.jsx";
 import LifeStageBanner from "./LifeStageBanner.jsx";
 import MemoryCard from "./MemoryCard.jsx";
 import DogSwitcher from "./DogSwitcher.jsx";
+import DogAvatar from "./DogAvatar.jsx";
 import ChallengeBanner from "./ChallengeBanner.jsx";
 import StreakWidget from "./StreakWidget.jsx";
 import BottomNav from "./BottomNav.jsx";
@@ -23,10 +24,13 @@ export default function Home() {
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
       {/* Header */}
       <div style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <div>
-          <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{T("welcomeBack")}</p>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: "4px 0 0", color: C.t1 }}>{dogProfile?.name}</h1>
-          <p style={{ fontSize: 13, color: C.t3, margin: "2px 0 0" }}>{dogProfile?.breed}</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <DogAvatar size="small" />
+          <div>
+            <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{T("welcomeBack")}</p>
+            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: "4px 0 0", color: C.t1 }}>{dogProfile?.name}</h1>
+            <p style={{ fontSize: 13, color: C.t3, margin: "2px 0 0" }}>{dogProfile?.breed}</p>
+          </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <LanguageToggle />

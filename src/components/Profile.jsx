@@ -5,17 +5,20 @@ import { CHALLENGES } from "../data/challenges.js";
 import { DIAGNOSTIC_CATEGORIES } from "../data/diagnostic.js";
 import { getDiagnosticHistory } from "./DiagnosticFlow.jsx";
 import { matchBreed, getTraitLabels } from "../data/breedTraits.js";
+import { DOG_BREEDS } from "../data/breeds.js";
 import DogAvatar from "./DogAvatar.jsx";
 import ThemeSelector from "./ThemeSelector.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 import { setLeaderboardOptIn } from "../lib/leaderboard.js";
 import NotificationPreferences from "./NotificationPreferences.jsx";
+import { uploadProfilePhoto } from "../lib/storage.js";
+import { compressPhotoToBlob, compressPhoto } from "../utils/photoCompressor.js";
 
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16 };
+const C = { bg: "#0A0A0C", s1: "#131316", s2: "#1A1A1F", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t3: "#71717A", t4: "#52525B", acc: "#22C55E", danger: "#EF4444", r: 16 };
 
 export default function Profile() {
-  const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog, nav, challengeState, lang, appSettings, setAppSettings, toggleAccessory, AVATAR_ACCESSORIES, streakData, isAuthenticated, getSupaId } = useApp();
+  const { dogProfile, setDogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog, nav, challengeState, lang, appSettings, setAppSettings, toggleAccessory, AVATAR_ACCESSORIES, streakData, isAuthenticated, getSupaId, rtl } = useApp();
   const { signOut } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
   const uniqueActiveDays = new Set(journal.map(e => new Date(e.date).toDateString())).size;
@@ -23,6 +26,65 @@ export default function Profile() {
   const [tapCount, setTapCount] = useState(0);
   const [confirmRemove, setConfirmRemove] = useState(null);
   const tapTimer = useRef(null);
+
+  // Editable fields state
+  const [editing, setEditing] = useState(null); // "name" | "breed" | "age" | "birthday" | null
+  const [editName, setEditName] = useState("");
+  const [editBreed, setEditBreed] = useState("");
+  const [editAge, setEditAge] = useState("");
+  const [editBirthday, setEditBirthday] = useState("");
+  const [breedSug, setBreedSug] = useState([]);
+  const [showBreeds, setShowBreeds] = useState(false);
+  const [toast, setToast] = useState(null);
+  const photoRef = useRef(null);
+
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 2000); };
+
+  const startEdit = (field) => {
+    setEditing(field);
+    setShowBreeds(false);
+    if (field === "name") setEditName(dogProfile?.name || "");
+    if (field === "breed") { setEditBreed(dogProfile?.breed || ""); setBreedSug([]); }
+    if (field === "age") setEditAge(dogProfile?.age || "");
+    if (field === "birthday") setEditBirthday(dogProfile?.birthday || "");
+  };
+
+  const saveField = (field, value) => {
+    if (!value && field === "name") return;
+    const updated = { ...dogProfile, [field]: value };
+    setDogProfile(updated);
+    setEditing(null);
+    setShowBreeds(false);
+    showToast(T("profileUpdated"));
+  };
+
+  const handleBreedInput = (val) => {
+    setEditBreed(val);
+    if (val.length >= 1) {
+      const l = val.toLowerCase();
+      setBreedSug(DOG_BREEDS.filter(b => b.toLowerCase().includes(l)).slice(0, 8));
+      setShowBreeds(true);
+    } else { setBreedSug([]); setShowBreeds(false); }
+  };
+
+  const handlePhotoSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      // Try Supabase upload first
+      const blob = await compressPhotoToBlob(file);
+      const path = await uploadProfilePhoto(activeDogId, blob);
+      setDogProfile({ ...dogProfile, photo: path });
+      showToast(T("profileUpdated"));
+    } catch {
+      // Fallback to base64 stored in profile
+      try {
+        const base64 = await compressPhoto(file);
+        setDogProfile({ ...dogProfile, photo: base64 });
+        showToast(T("profileUpdated"));
+      } catch { /* silent fail */ }
+    }
+  };
 
   const handleVersionTap = () => {
     const newCount = tapCount + 1;
@@ -36,17 +98,112 @@ export default function Profile() {
     }
   };
 
+  const ageOptions = [
+    { value: "Puppy (under 6mo)", label: T("agePuppy") },
+    { value: "Young (6-12mo)", label: T("ageYoung") },
+    { value: "Adolescent (1-2yr)", label: T("ageAdolescent") },
+    { value: "Adult (2-7yr)", label: T("ageAdult") },
+    { value: "Senior (7+yr)", label: T("ageSenior") },
+  ];
+
+  const pencil = (field) => (
+    <button onClick={() => startEdit(field)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, fontSize: 14, color: C.t3, opacity: 0.7 }}>
+      {"\u270F\uFE0F"}
+    </button>
+  );
+
   const dogEntries = Object.entries(dogs);
 
   return (
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+      {/* Toast */}
+      {toast && (
+        <div style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 10000, padding: "10px 24px", background: C.acc, color: "#000", fontSize: 14, fontWeight: 700, borderRadius: 50, boxShadow: "0 4px 20px rgba(34,197,94,0.4)", animation: "fadeIn 0.3s ease" }}>
+          {toast}
+        </div>
+      )}
+
+      <input ref={photoRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handlePhotoSelect} />
+
       <div style={{ textAlign: "center", padding: "40px 20px 24px", position: "relative" }}>
         <div style={{ position: "absolute", top: 20, insetInlineEnd: 20 }}>
           <LanguageToggle />
         </div>
-        <DogAvatar size="large" />
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: "16px 0 0", color: C.t1 }}>{dogProfile?.name}</h2>
-        <p style={{ fontSize: 14, color: C.t3, marginTop: 4 }}>{dogProfile?.breed} · {dogProfile?.age}</p>
+
+        {/* Tappable avatar for photo upload */}
+        <div onClick={() => photoRef.current?.click()} style={{ cursor: "pointer", display: "inline-block", position: "relative" }}>
+          <DogAvatar size="large" />
+          <div style={{ position: "absolute", bottom: -2, right: -2, width: 28, height: 28, borderRadius: "50%", background: C.acc, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
+            {"\uD83D\uDCF7"}
+          </div>
+        </div>
+        <div style={{ fontSize: 11, color: C.t3, marginTop: 6 }}>{T("tapToChangePhoto")}</div>
+
+        {/* Editable name */}
+        {editing === "name" ? (
+          <div style={{ marginTop: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <input autoFocus value={editName} onChange={e => setEditName(e.target.value)} onKeyDown={e => e.key === "Enter" && saveField("name", editName.trim())} style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Playfair Display', serif", background: C.s1, border: `1px solid ${C.acc}`, borderRadius: 12, color: C.t1, padding: "8px 14px", textAlign: "center", outline: "none", width: 200 }} />
+            <button onClick={() => saveField("name", editName.trim())} style={{ padding: "8px 16px", background: C.acc, color: "#000", border: "none", borderRadius: 20, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{"\u2713"}</button>
+            <button onClick={() => setEditing(null)} style={{ padding: "8px 12px", background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 20, fontSize: 13, cursor: "pointer" }}>{"\u2717"}</button>
+          </div>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 16 }}>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: 0, color: C.t1 }}>{dogProfile?.name}</h2>
+            {pencil("name")}
+          </div>
+        )}
+
+        {/* Editable breed + age */}
+        {editing === "breed" ? (
+          <div style={{ marginTop: 8, position: "relative", maxWidth: 280, margin: "8px auto 0" }}>
+            <input autoFocus value={editBreed} onChange={e => handleBreedInput(e.target.value)} onKeyDown={e => e.key === "Enter" && saveField("breed", editBreed.trim())} style={{ width: "100%", fontSize: 14, background: C.s1, border: `1px solid ${C.acc}`, borderRadius: 12, color: C.t1, padding: "10px 14px", textAlign: "center", outline: "none" }} placeholder={T("breedPlaceholder")} />
+            {showBreeds && breedSug.length > 0 && (
+              <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: C.s2, border: `1px solid ${C.b2}`, borderRadius: C.r, marginTop: 4, zIndex: 50, maxHeight: 220, overflowY: "auto", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+                {breedSug.map(b => {
+                  const hasProfile = !!matchBreed(b);
+                  return (
+                    <button key={b} onClick={() => { saveField("breed", b); }} style={{ display: "block", width: "100%", padding: "13px 20px", fontSize: 15, background: "none", border: "none", borderBottom: `1px solid ${C.b1}`, color: C.t1, textAlign: rtl ? "right" : "left", cursor: "pointer" }}>
+                      {hasProfile ? "\uD83D\uDC36 " : b.toLowerCase().includes("mix") ? "\uD83D\uDC15\u200D\uD83E\uDDBA " : ""}{b}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 8 }}>
+              <button onClick={() => saveField("breed", editBreed.trim())} style={{ padding: "6px 16px", background: C.acc, color: "#000", border: "none", borderRadius: 20, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{"\u2713"}</button>
+              <button onClick={() => { setEditing(null); setShowBreeds(false); }} style={{ padding: "6px 12px", background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 20, fontSize: 12, cursor: "pointer" }}>{"\u2717"}</button>
+            </div>
+          </div>
+        ) : editing === "age" ? (
+          <div style={{ marginTop: 8, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <select autoFocus value={editAge} onChange={e => saveField("age", e.target.value)} style={{ fontSize: 14, background: C.s1, border: `1px solid ${C.acc}`, borderRadius: 12, color: C.t1, padding: "10px 14px", outline: "none", appearance: "none" }}>
+              <option value="">{T("selectAge")}</option>
+              {ageOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+            <button onClick={() => setEditing(null)} style={{ padding: "6px 12px", background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 20, fontSize: 12, cursor: "pointer" }}>{"\u2717"}</button>
+          </div>
+        ) : editing === "birthday" ? (
+          <div style={{ marginTop: 8, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <input autoFocus type="date" value={editBirthday} onChange={e => saveField("birthday", e.target.value)} style={{ fontSize: 14, background: C.s1, border: `1px solid ${C.acc}`, borderRadius: 12, color: C.t1, padding: "10px 14px", outline: "none" }} />
+            <button onClick={() => setEditing(null)} style={{ padding: "6px 12px", background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 20, fontSize: 12, cursor: "pointer" }}>{"\u2717"}</button>
+          </div>
+        ) : (
+          <div style={{ marginTop: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 14, color: C.t3 }}>{dogProfile?.breed}</span>
+            {pencil("breed")}
+            <span style={{ fontSize: 14, color: C.t3 }}>{" · "}</span>
+            <span style={{ fontSize: 14, color: C.t3 }}>{dogProfile?.age}</span>
+            {pencil("age")}
+            {dogProfile?.birthday && (
+              <>
+                <span style={{ fontSize: 14, color: C.t3 }}>{" · "}</span>
+                <span style={{ fontSize: 14, color: C.t3 }}>{dogProfile.birthday}</span>
+              </>
+            )}
+            {pencil("birthday")}
+          </div>
+        )}
+
         <div style={{ marginTop: 12, display: "inline-block", padding: "8px 22px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 24, color: C.acc, fontSize: 14, fontWeight: 700 }}>{T("level")} {playerLevel.level} — {playerLevel.title}</div>
       </div>
 
@@ -119,8 +276,8 @@ export default function Profile() {
               const isActive = id === activeDogId;
               return (
                 <div key={id} style={{ padding: "16px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${isActive ? "rgba(34,197,94,0.3)" : C.b1}`, display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 14, background: isActive ? "rgba(34,197,94,0.1)" : C.b1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>
-                    {"\uD83D\uDC3E"}
+                  <div style={{ flexShrink: 0 }}>
+                    <DogAvatar size="small" photo={dog.profile?.photo} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{dog.profile?.name}</div>

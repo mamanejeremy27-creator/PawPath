@@ -101,6 +101,11 @@ export default {
   badgeCatSpecial: "Special",
 
   // Profile
+  editProfile: "Edit Profile",
+  tapToChangePhoto: "Tap to change photo",
+  profileUpdated: "Profile updated!",
+  changePhoto: "Change Photo",
+  saveChanges: "Save Changes",
   resetAllData: "Reset All Data",
   sessions: "Sessions",
   levels: "Levels",

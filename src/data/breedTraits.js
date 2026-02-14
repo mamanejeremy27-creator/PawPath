@@ -487,7 +487,30 @@ export const BREED_TRAITS = [
     },
   },
 
-  // ── 23. Mixed Breed ──────────────────────────────────
+  // ── 23. Miniature American Shepherd ─────────────────
+  {
+    id: "miniature_american_shepherd",
+    name: { en: "Miniature American Shepherd", he: "מיניאטורי אמריקן שפרד" },
+    aliases: ["miniature american shepherd", "mini aussie", "mini american shepherd", "mas", "miniature american", "mini australian shepherd"],
+    size: "small",
+    traits: {
+      energy: 4, trainability: 5, stubbornness: 2,
+      sociability: 3, preyDrive: 3, sensitivity: 4, barkTendency: 3,
+    },
+    priorityPrograms: ["tricks", "obedience", "fitness", "foundations"],
+    breedTips: {
+      en: "Miniature American Shepherds are big dogs in a small package — intensely smart, eager to work, and quick to learn. They need mental stimulation as much as physical exercise; puzzle toys and trick training keep them happy. They can be reserved with strangers, so early socialization is key. Their sensitivity means positive methods only — they shut down with harsh corrections. Channel their herding instinct into structured activities.",
+      he: "מיניאטורי אמריקן שפרד הם כלבים גדולים באריזה קטנה — חכמים מאוד, להוטים לעבוד ומהירי למידה. הם צריכים גירוי מנטלי לא פחות מפעילות גופנית; צעצועי חשיבה ואימון טריקים שומרים אותם מרוצים. הם יכולים להיות מסויגים מזרים, אז חברות מוקדמת חיונית. הרגישות שלהם אומרת שיטות חיוביות בלבד — הם נסגרים עם תיקונים חריפים. תעלו את אינסטינקט הרעייה שלהם לפעילויות מובנות.",
+    },
+    exerciseTips: {
+      f1a: { en: "Mini Americans are velcro dogs — they learn their name fast because they're always watching you. Use that attention to build a strong recall foundation early.", he: "מיני אמריקנים הם כלבי סקוטש — הם לומדים את השם מהר כי הם תמיד מסתכלים עליכם. השתמשו בתשומת הלב הזו לבניית בסיס החזרה חזק מוקדם." },
+      f1b: { en: "Their eagerness to please makes Sit almost effortless. Use it as a gateway to more complex tricks — they thrive on learning chains of behaviors.", he: "הלהיטות שלהם לרצות הופכת ישיבה לכמעט ללא מאמץ. השתמשו בזה כשער לטריקים מורכבים יותר — הם משגשגים בלמידת שרשראות התנהגויות." },
+      f3b: { en: "Mini Aussies walk well on leash when mentally engaged. If they pull, they're probably bored — add direction changes and reward check-ins to keep walks interesting.", he: "מיני אוסים הולכים טוב ברצועה כשהם מעורבים מנטלית. אם הם מושכים, כנראה שהם משועממים — הוסיפו שינויי כיוון ותגמלו בדיקות תשומת לב כדי לשמור על טיולים מעניינים." },
+      t1a: { en: "Spin is perfect for Mini Americans — they're naturally athletic and love to move. You can chain Spin into complex trick sequences quickly.", he: "סיבוב מושלם למיני אמריקנים — הם ספורטיביים מטבעם ואוהבים לזוז. אפשר לשרשר סיבוב לרצפי טריקים מורכבים במהירות." },
+    },
+  },
+
+  // ── 24. Mixed Breed ──────────────────────────────────
   {
     id: "mixed",
     name: { en: "Mixed Breed", he: "מעורב" },

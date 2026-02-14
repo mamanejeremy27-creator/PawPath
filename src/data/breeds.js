@@ -11,7 +11,7 @@ export const DOG_BREEDS = [
   "Jack Russell Terrier","Japanese Chin","Japanese Spitz",
   "Keeshond","Kerry Blue Terrier","King Charles Spaniel","Komondor","Kuvasz",
   "Labradoodle","Labrador Retriever","Lakeland Terrier","Lancashire Heeler","Leonberger","Lhasa Apso","Lowchen",
-  "Maltese","Maltipoo","Manchester Terrier","Maremma Sheepdog","Mastiff","Miniature Bull Terrier","Miniature Pinscher","Miniature Poodle","Miniature Schnauzer",
+  "Maltese","Maltipoo","Manchester Terrier","Maremma Sheepdog","Mastiff","Miniature American Shepherd","Miniature Bull Terrier","Miniature Pinscher","Miniature Poodle","Miniature Schnauzer",
   "Neapolitan Mastiff","Newfoundland","Norfolk Terrier","Norwegian Buhund","Norwegian Elkhound","Norwegian Lundehund","Norwich Terrier","Nova Scotia Duck Tolling Retriever",
   "Old English Sheepdog","Otterhound",
   "Papillon","Patterdale Terrier","Pekingese","Pembroke Welsh Corgi","Petit Basset Griffon Vendeen","Pharaoh Hound","Plott Hound","Pointer","Polish Lowland Sheepdog","Pomeranian","Pomsky","Poodle","Portuguese Water Dog","Presa Canario","Pug","Puggle","Puli","Pyrenean Shepherd",

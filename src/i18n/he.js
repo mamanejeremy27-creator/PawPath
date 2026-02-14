@@ -101,6 +101,11 @@ export default {
   badgeCatSpecial: "\u05DE\u05D9\u05D5\u05D7\u05D3",
 
   // Profile
+  editProfile: "עריכת פרופיל",
+  tapToChangePhoto: "לחץ לשינוי תמונה",
+  profileUpdated: "הפרופיל עודכן!",
+  changePhoto: "שינוי תמונה",
+  saveChanges: "שמירת שינויים",
   resetAllData: "\u05D0\u05E4\u05E1 \u05D0\u05EA \u05DB\u05DC \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD",
   sessions: "\u05D0\u05D9\u05DE\u05D5\u05E0\u05D9\u05DD",
   levels: "\u05E8\u05DE\u05D5\u05EA",

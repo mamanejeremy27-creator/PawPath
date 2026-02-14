@@ -364,7 +364,7 @@ export function AppProvider({ children }) {
 
   const setDogProfile = useCallback((profile) => {
     const dogIds = Object.keys(dogs);
-    const dbPayload = { name: profile.name, breed: profile.breed || null, birthday: profile.birthday || null, weight: profile.weight || null, avatar: profile.avatar || null };
+    const dbPayload = { name: profile.name, breed: profile.breed || null, birthday: profile.birthday || null, weight: profile.weight || null, avatar: profile.avatar || null, photo: profile.photo || null };
     if (dogIds.length === 0 || !activeDogId || !dogs[activeDogId]) {
       // First dog — create it
       const newId = dogIds.length === 0 ? "dog_1" : (!dogs.dog_1 ? "dog_1" : "dog_2");

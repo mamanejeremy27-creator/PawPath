@@ -1,4 +1,5 @@
 import { useApp } from "../context/AppContext.jsx";
+import PhotoImg from "./PhotoImg.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E" };
 
@@ -32,7 +33,11 @@ export default function DogSwitcher() {
               flexShrink: 0,
             }}
           >
-            <span style={{ fontSize: 14 }}>{"\uD83D\uDC3E"}</span>
+            {dog.profile?.photo ? (
+              <PhotoImg src={dog.profile.photo} alt="" style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+            ) : (
+              <span style={{ fontSize: 14 }}>{"\uD83D\uDC3E"}</span>
+            )}
             {dog.profile?.name || "Dog"}
             {isActive && <span style={{ fontSize: 9, opacity: 0.7 }}>{"\u2713"}</span>}
           </button>
