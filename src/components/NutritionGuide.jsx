@@ -48,15 +48,21 @@ export default function NutritionGuide() {
             onChange={e => setQuery(e.target.value)}
             placeholder={T("nutritionSearch")}
             style={{
-              width: "100%", padding: "14px 18px 14px 44px", boxSizing: "border-box",
+              width: "100%",
+              padding: query ? "14px 18px" : (rtl ? "14px 44px 14px 18px" : "14px 18px 14px 44px"),
+              boxSizing: "border-box",
               background: C.s1, border: `1px solid ${C.b1}`, borderRadius: C.rL,
               color: C.t1, fontSize: 15, outline: "none",
               fontFamily: "'DM Sans', sans-serif",
+              textAlign: rtl ? "right" : "left",
+              direction: rtl ? "rtl" : "ltr",
             }}
           />
-          <span style={{ position: "absolute", [rtl ? "right" : "left"]: 16, top: "50%", transform: "translateY(-50%)", fontSize: 18, pointerEvents: "none" }}>
-            {"\uD83D\uDD0D"}
-          </span>
+          {!query && (
+            <span style={{ position: "absolute", insetInlineStart: 16, top: "50%", transform: "translateY(-50%)", fontSize: 18, pointerEvents: "none" }}>
+              {"\uD83D\uDD0D"}
+            </span>
+          )}
         </div>
       </div>
 
