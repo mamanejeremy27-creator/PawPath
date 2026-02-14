@@ -43,7 +43,7 @@ export default function CreatePost() {
     try {
       setUploading(true);
       const blob = await compressPhotoToBlob(file);
-      const path = await uploadPhoto(user.id, selectedDogId, blob);
+      const path = await uploadPhoto(selectedDogId, blob);
       setPhotoPath(path);
     } catch (err) {
       console.error("Photo upload failed:", err);

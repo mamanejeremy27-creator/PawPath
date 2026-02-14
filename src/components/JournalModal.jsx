@@ -32,22 +32,21 @@ export default function JournalModal() {
 
     try {
       if (user) {
-        // Authenticated: try Storage first, fall back to base64
+        // Authenticated: try Supabase Storage first, fall back to base64
         let photoValue;
         try {
           console.log("[PawPath] Compressing photo for Storage:", { name: file.name, type: file.type, size: file.size });
           const blob = await compressPhotoToBlob(file);
           console.log("[PawPath] Compressed blob:", { type: blob.type, size: blob.size });
-          const path = await uploadPhoto(user.id, activeDogId, blob);
-          photoValue = path; // Storage path
-          console.log("[PawPath] Photo stored via Supabase Storage:", path);
+          const path = await uploadPhoto(activeDogId, blob);
+          photoValue = path; // Storage path like "uuid/dog_1/123.jpg"
+          setUploadWarning(null); // Clear any previous warning on success
         } catch (storageErr) {
           console.warn("[PawPath] Storage upload failed, falling back to base64:", storageErr?.message || storageErr);
           // FALLBACK: compress to base64 data URL instead
           const dataUrl = await compressPhoto(file);
           photoValue = dataUrl; // data:image/jpeg;base64,...
           setUploadWarning("storage_failed");
-          console.log("[PawPath] Photo stored as base64 fallback, length:", dataUrl.length);
         }
         setJournalForm(f => ({ ...f, photos: [...(f.photos || []), photoValue] }));
       } else {

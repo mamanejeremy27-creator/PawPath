@@ -125,7 +125,7 @@ async function migratePhotos(userId, dogId, photos) {
     if (typeof photo === "string" && photo.startsWith("data:")) {
       try {
         const blob = base64ToBlob(photo);
-        const path = await uploadPhoto(userId, dogId, blob);
+        const path = await uploadPhoto(dogId, blob);
         migrated.push(path);
       } catch {
         // Skip failed photo rather than failing entire migration

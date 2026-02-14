@@ -93,47 +93,52 @@ export async function diagnoseStorage() {
 
 /**
  * Upload a photo to Supabase Storage.
+ * The path is always {auth.uid()}/{dogId}/{timestamp}.jpg
+ * — the first folder MUST be the user's UUID for RLS to pass.
  * Returns the storage path on success.
  * Throws on failure — caller should catch and fall back to base64.
  */
-export async function uploadPhoto(userId, dogId, file) {
-  // Verify the user is authenticated before uploading (RLS requires valid session)
+export async function uploadPhoto(dogId, file) {
+  // Always get the UUID from supabase.auth.getUser() — never trust caller
   const { data: authData, error: authError } = await supabase.auth.getUser();
   if (authError || !authData?.user) {
-    console.error("[PawPath] Photo upload auth check failed:", authError);
+    console.error("[PawPath] uploadPhoto: auth check failed:", authError);
     throw new Error("Not authenticated — cannot upload photo");
   }
 
-  // RLS policy requires path to start with user's UUID
-  const actualUid = authData.user.id;
-  if (userId !== actualUid) {
-    console.warn("[PawPath] userId mismatch! Passed:", userId, "Actual:", actualUid, "— using actual UUID for path");
-    userId = actualUid;
-  }
-
+  const uid = authData.user.id;
   const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
-  const contentType = file.type || "image/jpeg";
-  const path = `${userId}/${dogId}/${Date.now()}.${ext}`;
+  const path = `${uid}/${dogId}/${Date.now()}.${ext}`;
 
-  console.log("[PawPath] Uploading photo:", { path, contentType, size: file.size, bucket: BUCKET });
+  // Log everything right before upload
+  console.log("[PawPath] uploadPhoto — PRE-UPLOAD DEBUG:", {
+    userUUID: uid,
+    path,
+    bucket: BUCKET,
+    fileType: file.type,
+    fileSize: file.size,
+    pathFirstFolder: path.split("/")[0],
+    uuidMatch: path.split("/")[0] === uid,
+  });
 
   const { data, error } = await supabase.storage
     .from(BUCKET)
-    .upload(path, file, { contentType, upsert: false });
+    .upload(path, file, { contentType: file.type });
 
   if (error) {
-    console.error("[PawPath] Supabase storage upload error:", {
+    console.error("[PawPath] uploadPhoto — UPLOAD FAILED:", {
       message: error.message,
       statusCode: error.statusCode,
       name: error.name,
       path,
-      userId,
+      userUUID: uid,
+      bucket: BUCKET,
       error,
     });
     throw error;
   }
 
-  console.log("[PawPath] Photo uploaded successfully:", data.path);
+  console.log("[PawPath] uploadPhoto — SUCCESS:", data.path);
   return data.path;
 }
 
