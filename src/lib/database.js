@@ -428,6 +428,7 @@ export async function updateUserSettings(settings) {
         unlocked_themes: settings.unlockedThemes,
         active_accessories: settings.activeAccessories,
         unlocked_accessories: settings.unlockedAccessories,
+        leaderboard_opt_in: settings.leaderboardOptIn ?? true,
         updated_at: new Date().toISOString(),
       }, { onConflict: "user_id" })
       .select()

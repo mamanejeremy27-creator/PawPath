@@ -116,4 +116,5 @@ export const DEFAULT_APP_SETTINGS = {
   unlockedThemes: ["default"],
   activeAccessories: [],
   unlockedAccessories: [],
+  leaderboardOptIn: true,
 };

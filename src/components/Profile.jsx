@@ -9,11 +9,12 @@ import DogAvatar from "./DogAvatar.jsx";
 import ThemeSelector from "./ThemeSelector.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
+import { setLeaderboardOptIn } from "../lib/leaderboard.js";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16 };
 
 export default function Profile() {
-  const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog, nav, challengeState, lang, appSettings, toggleAccessory, AVATAR_ACCESSORIES, streakData } = useApp();
+  const { dogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog, nav, challengeState, lang, appSettings, setAppSettings, toggleAccessory, AVATAR_ACCESSORIES, streakData, isAuthenticated, getSupaId } = useApp();
   const { signOut } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
   const uniqueActiveDays = new Set(journal.map(e => new Date(e.date).toDateString())).size;
@@ -254,6 +255,25 @@ export default function Profile() {
                 </div>
               );
             })}
+          </div>
+        </div>
+
+        {/* Leaderboard Opt-In */}
+        <div style={{ marginTop: 32 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("leaderboard")}</h3>
+          <div style={{ padding: "16px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontSize: 14, color: C.t1, fontWeight: 600 }}>{T("lbOptIn")}</span>
+            <button onClick={() => {
+              const newVal = !(appSettings.leaderboardOptIn !== false);
+              setAppSettings(prev => ({ ...prev, leaderboardOptIn: newVal }));
+              if (isAuthenticated) {
+                const supaId = getSupaId(activeDogId);
+                if (supaId) setLeaderboardOptIn(supaId, newVal);
+              }
+            }}
+              style={{ width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer", background: (appSettings.leaderboardOptIn !== false) ? C.acc : "rgba(255,255,255,0.1)", position: "relative", transition: "background 0.2s" }}>
+              <div style={{ width: 18, height: 18, borderRadius: 9, background: "#fff", position: "absolute", top: 3, left: (appSettings.leaderboardOptIn !== false) ? 23 : 3, transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.3)" }} />
+            </button>
           </div>
         </div>
 

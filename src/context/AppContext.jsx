@@ -20,6 +20,7 @@ import {
   saveStreakHistory, updateUserSettings, saveUnlockedReward,
   saveFeedback, deleteAllUserData,
 } from "../lib/database.js";
+import { updateLeaderboardEntry } from "../lib/leaderboard.js";
 
 export const DIFFICULTY_CONFIG = {
   incompleteThreshold: 3,
@@ -266,6 +267,7 @@ export function AppProvider({ children }) {
         unlockedThemes: appSettings.unlockedThemes,
         activeAccessories: appSettings.activeAccessories,
         unlockedAccessories: appSettings.unlockedAccessories,
+        leaderboardOptIn: appSettings.leaderboardOptIn,
       });
     }, 1000);
     return () => clearTimeout(timer);
@@ -1096,6 +1098,17 @@ export function AppProvider({ children }) {
           if (ms) supaPromises.push(saveUnlockedReward(ms.rewardId, ms.reward || "milestone"));
         }
         Promise.allSettled(supaPromises);
+
+        // Leaderboard sync (fire-and-forget)
+        if (appSettings.leaderboardOptIn) {
+          updateLeaderboardEntry(supaId, {
+            dogName: currentDog.profile?.name || "",
+            breed: currentDog.profile?.breed || "",
+            totalXp: newTotalXP,
+            weeklyXpGain: totalXpGain,
+            currentStreak: updates.streaks?.current ?? currentDog.currentStreak ?? 0,
+          });
+        }
       }
     }
 
@@ -1208,8 +1221,9 @@ export function AppProvider({ children }) {
     challengeDayToast,
 
     // Streak & Theme
-    streakData, activeTheme, appSettings,
+    streakData, activeTheme, appSettings, setAppSettings,
     setActiveTheme, toggleAccessory, startRecovery,
+    getSupaId,
     milestoneUnlock, setMilestoneUnlock,
     streakFreezeNotif, setStreakFreezeNotif,
     streakBrokenModal, setStreakBrokenModal,

@@ -451,6 +451,23 @@ export default {
   nutritionCardTitle: "Food Safety Guide",
   nutritionCardSub: "What can my dog eat? →",
 
+  // Leaderboard
+  leaderboard: "Leaderboard",
+  leaderboardSubtitle: "See how you rank",
+  lbWeekly: "Weekly",
+  lbAllTime: "All-Time",
+  lbBreed: "By Breed",
+  lbEmpty: "No trainers yet",
+  lbEmptySub: "Start training to join!",
+  lbYou: "You",
+  lbOptIn: "Show on leaderboard",
+  lbOptOut: "Hidden from leaderboard",
+  lbUnavailable: "Leaderboard unavailable",
+  lbSignIn: "Sign in to join the leaderboard",
+  lbThisWeek: "This week's top trainers",
+  lbAllTimeSub: "Top trainers of all time",
+  lbBreedSub: "Top {breed} trainers",
+
   // Breed System
   breedProfile: "Breed Profile",
   breedTip: "Breed Tip",
