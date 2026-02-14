@@ -21,6 +21,7 @@ import {
   saveFeedback, deleteAllUserData,
 } from "../lib/database.js";
 import { updateLeaderboardEntry } from "../lib/leaderboard.js";
+import { createPost as createCommunityPost } from "../lib/community.js";
 
 export const DIFFICULTY_CONFIG = {
   incompleteThreshold: 3,
@@ -864,7 +865,18 @@ export function AppProvider({ children }) {
         });
         if (isAuthenticated) {
           const supaId = getSupaId(activeDogId);
-          if (supaId) saveBadge(supaId, b.id);
+          if (supaId) {
+            saveBadge(supaId, b.id);
+            // Fire-and-forget community milestone post
+            createCommunityPost({
+              dogId: supaId,
+              dogName: dog.profile?.name || "",
+              breed: dog.profile?.breed || "",
+              postType: "milestone",
+              content: `\uD83C\uDFC5 ${dog.profile?.name} earned the ${b.name} badge!`,
+              badgeId: b.id,
+            });
+          }
         }
         setNewBadge(b);
         setTimeout(() => setNewBadge(null), 3500);

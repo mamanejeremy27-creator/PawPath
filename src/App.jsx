@@ -33,6 +33,8 @@ import EmergencyDetail from "./components/EmergencyDetail.jsx";
 import VetDirectory from "./components/VetDirectory.jsx";
 import NutritionGuide from "./components/NutritionGuide.jsx";
 import Leaderboard from "./components/Leaderboard.jsx";
+import CreatePost from "./components/CreatePost.jsx";
+import CommunityFeed from "./components/CommunityFeed.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
@@ -98,6 +100,8 @@ export default function App() {
       {screen === "vetDirectory" && <VetDirectory />}
       {screen === "nutrition" && <NutritionGuide />}
       {screen === "leaderboard" && <Leaderboard />}
+      {screen === "createPost" && <CreatePost />}
+      {screen === "community" && <CommunityFeed />}
 
       {/* Streak Freeze Notification */}
       {streakFreezeNotif && (

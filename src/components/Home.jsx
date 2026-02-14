@@ -203,6 +203,18 @@ export default function Home() {
           );
         })}
       </div>
+      {/* Community FAB */}
+      <button
+        onClick={() => nav("community")}
+        style={{
+          position: "fixed", bottom: 90, right: "calc(50% - 220px)",
+          width: 52, height: 52, borderRadius: 26,
+          background: C.acc, color: "#000", fontSize: 24, fontWeight: 800,
+          border: "none", cursor: "pointer",
+          boxShadow: "0 8px 32px rgba(34,197,94,0.3)",
+          zIndex: 99, display: "flex", alignItems: "center", justifyContent: "center",
+        }}
+      >+</button>
       <BottomNav active="home" />
     </div>
   );

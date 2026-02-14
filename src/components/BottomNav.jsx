@@ -7,9 +7,9 @@ export default function BottomNav({ active }) {
 
   const items = [
     { id: "home", icon: "🏠", label: T("home") },
+    { id: "community", icon: "💬", label: T("community") },
     { id: "journal", icon: "📝", label: T("journal") },
     { id: "badges", icon: "🏅", label: T("badges") },
-    { id: "leaderboard", icon: "🏆", label: T("leaderboard") },
     { id: "profile", icon: "👤", label: T("profile") },
   ];
 
