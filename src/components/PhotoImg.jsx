@@ -8,7 +8,7 @@ export function clearPhotoCache() {
   cache.clear();
 }
 
-export default function PhotoImg({ src, alt = "", ...props }) {
+export default function PhotoImg({ src, alt = "", fallback = null, ...props }) {
   const [url, setUrl] = useState(() => {
     if (!src) return null;
     if (src.startsWith("data:") || src.startsWith("http")) return src;
@@ -20,11 +20,10 @@ export default function PhotoImg({ src, alt = "", ...props }) {
     // When src changes, immediately clear stale URL so old image disappears
     if (src !== prevSrc.current) {
       prevSrc.current = src;
-      // If new src is already resolved (inline or cached), set it immediately
       if (!src) { setUrl(null); return; }
       if (src.startsWith("data:") || src.startsWith("http")) { setUrl(src); return; }
       if (cache.has(src)) { setUrl(cache.get(src)); return; }
-      // New storage path — clear old image, then fetch
+      // New storage path — clear old image, then fetch below
       setUrl(null);
     }
 
@@ -48,6 +47,6 @@ export default function PhotoImg({ src, alt = "", ...props }) {
     return () => { cancelled = true; };
   }, [src]);
 
-  if (!url) return null;
+  if (!url) return fallback;
   return <img src={url} alt={alt} {...props} />;
 }
