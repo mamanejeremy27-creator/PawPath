@@ -111,8 +111,8 @@ export default function Home() {
           onClick={() => nav("diagnostic")}
           style={{
             width: "100%", padding: "16px 20px",
-            background: "linear-gradient(135deg, rgba(245,158,11,0.08), rgba(239,68,68,0.06))",
-            border: "1px solid rgba(245,158,11,0.2)",
+            background: "linear-gradient(135deg, rgba(20,184,166,0.08), rgba(6,182,212,0.05))",
+            border: "1px solid rgba(20,184,166,0.2)",
             borderRadius: C.rL, cursor: "pointer",
             display: "flex", alignItems: "center", gap: 14,
             color: C.t1, textAlign: "start",
@@ -121,7 +121,7 @@ export default function Home() {
           <span style={{ fontSize: 28 }}>🩺</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("diagCardTitle")}</div>
-            <div style={{ fontSize: 12, color: "#F59E0B", fontWeight: 600, marginTop: 2 }}>{T("diagCardSub")}</div>
+            <div style={{ fontSize: 12, color: "#14B8A6", fontWeight: 600, marginTop: 2 }}>{T("diagCardSub")}</div>
           </div>
           <span style={{ color: C.t3, fontSize: 18 }}>›</span>
         </button>
@@ -140,7 +140,7 @@ export default function Home() {
             color: C.t1, textAlign: "start",
           }}
         >
-          <span style={{ fontSize: 28 }}>{"\uD83D\uDEA8"}</span>
+          <span style={{ fontSize: 28 }}>{"\u26D1\uFE0F"}</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("emergencyCardTitle")}</div>
             <div style={{ fontSize: 12, color: "#EF4444", fontWeight: 600, marginTop: 2 }}>{T("emergencyCardSub")}</div>
@@ -199,14 +199,14 @@ export default function Home() {
           onClick={() => nav("healthDashboard")}
           style={{
             width: "100%", padding: "16px 20px",
-            background: "linear-gradient(135deg, rgba(236,72,153,0.08), rgba(239,68,68,0.06))",
+            background: "linear-gradient(135deg, rgba(236,72,153,0.08), rgba(168,85,247,0.05))",
             border: "1px solid rgba(236,72,153,0.2)",
             borderRadius: C.rL, cursor: "pointer",
             display: "flex", alignItems: "center", gap: 14,
             color: C.t1, textAlign: "start",
           }}
         >
-          <span style={{ fontSize: 28 }}>{"❤️"}</span>
+          <span style={{ fontSize: 28 }}>{"💗"}</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("healthDashboard")}</div>
             <div style={{ fontSize: 12, color: "#EC4899", fontWeight: 600, marginTop: 2 }}>{T("healthDashboardSub")}</div>
@@ -224,16 +224,16 @@ export default function Home() {
           onClick={() => nav("reportLostDog")}
           style={{
             width: "100%", padding: "16px 20px",
-            background: "linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.04))",
-            border: "1px solid rgba(239,68,68,0.25)",
+            background: "linear-gradient(135deg, rgba(251,146,60,0.08), rgba(245,158,11,0.05))",
+            border: "1px solid rgba(251,146,60,0.2)",
             borderRadius: C.rL, cursor: "pointer",
             display: "flex", alignItems: "center", gap: 14,
             color: C.t1, textAlign: "start",
           }}
         >
-          <span style={{ fontSize: 28 }}>{"🚨"}</span>
+          <span style={{ fontSize: 28 }}>{"\uD83D\uDD0D"}</span>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: "#EF4444" }}>{T("lostReportDog")}</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#FB923C" }}>{T("lostReportDog")}</div>
             <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{T("lostReportDogSub")}</div>
           </div>
           <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
