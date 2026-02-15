@@ -331,6 +331,18 @@ export default function WalkTracker() {
             </button>
           </div>
         )}
+
+        {/* Emergency Lost Dog button — visible during active walk */}
+        {(status === "tracking" || status === "paused") && (
+          <button onClick={() => { stopTracking(); nav("reportLostDog"); }} style={{
+            width: "100%", marginTop: 16, padding: "12px", borderRadius: 50,
+            border: "1px solid rgba(239,68,68,0.25)", background: "rgba(239,68,68,0.06)",
+            color: C.danger, fontSize: 13, fontWeight: 700, cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          }}>
+            {"🚨"} {T("lostEmergency")}
+          </button>
+        )}
       </div>
     </div>
   );

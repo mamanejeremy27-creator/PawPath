@@ -46,12 +46,27 @@ import WeightTracker from "./components/WeightTracker.jsx";
 import VaccinationTracker from "./components/VaccinationTracker.jsx";
 import VetVisitLog from "./components/VetVisitLog.jsx";
 import MedicationTracker from "./components/MedicationTracker.jsx";
+import ReportLostDog from "./components/ReportLostDog.jsx";
+import LostDogTracker from "./components/LostDogTracker.jsx";
+import ReportSighting from "./components/ReportSighting.jsx";
+import LostDogPublicPage from "./components/LostDogPublicPage.jsx";
+import LostDogFeedList from "./components/LostDogFeedList.jsx";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
 
 export default function App() {
-  const { screen, xpAnim, newBadge, rtl, challengeDayToast, T, streakFreezeNotif } = useApp();
+  const { screen, xpAnim, newBadge, rtl, challengeDayToast, T, streakFreezeNotif, nav } = useApp();
   const { user, loading } = useAuth();
+
+  // Handle /lost/{shareToken} URL for public lost dog pages
+  const lostMatch = typeof window !== "undefined" && window.location.pathname.match(/^\/lost\/([A-Za-z0-9]+)$/);
+  if (lostMatch) {
+    return (
+      <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#0A0A0C", color: "#F5F5F7", minHeight: "100vh", maxWidth: 480, margin: "0 auto", WebkitFontSmoothing: "antialiased", direction: rtl ? "rtl" : "ltr", textAlign: rtl ? "right" : "left" }}>
+        <LostDogPublicPage shareTokenFromUrl={lostMatch[1]} />
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -123,6 +138,11 @@ export default function App() {
       {screen === "vaccinationTracker" && <VaccinationTracker />}
       {screen === "vetVisitLog" && <VetVisitLog />}
       {screen === "medicationTracker" && <MedicationTracker />}
+      {screen === "reportLostDog" && <ReportLostDog />}
+      {screen === "lostDogTracker" && <LostDogTracker />}
+      {screen === "reportSighting" && <ReportSighting />}
+      {screen === "lostDogPublic" && <LostDogPublicPage />}
+      {screen === "lostDogFeedList" && <LostDogFeedList />}
 
       {/* Streak Freeze Notification */}
       {streakFreezeNotif && (

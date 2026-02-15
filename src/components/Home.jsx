@@ -11,6 +11,8 @@ import ChallengeBanner from "./ChallengeBanner.jsx";
 import StreakWidget from "./StreakWidget.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
+import LostDogAlert from "./LostDogAlert.jsx";
+import LostDogFeed from "./LostDogFeed.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
 const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
@@ -42,6 +44,9 @@ export default function Home() {
       </div>
 
       {dogCount > 1 && <DogSwitcher />}
+
+      {/* Lost Dog Alert (appears if nearby lost dogs detected) */}
+      <LostDogAlert />
 
       {/* Level bar */}
       <div style={{ margin: "16px 20px 0", ...cardStyle }}>
@@ -205,6 +210,31 @@ export default function Home() {
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("healthDashboard")}</div>
             <div style={{ fontSize: 12, color: "#EC4899", fontWeight: 600, marginTop: 2 }}>{T("healthDashboardSub")}</div>
+          </div>
+          <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+        </button>
+      </div>
+
+      {/* Lost Dog Feed — nearby alerts */}
+      <LostDogFeed />
+
+      {/* Report Lost Dog */}
+      <div style={{ padding: "12px 20px 0" }}>
+        <button
+          onClick={() => nav("reportLostDog")}
+          style={{
+            width: "100%", padding: "16px 20px",
+            background: "linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.04))",
+            border: "1px solid rgba(239,68,68,0.25)",
+            borderRadius: C.rL, cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 14,
+            color: C.t1, textAlign: "start",
+          }}
+        >
+          <span style={{ fontSize: 28 }}>{"🚨"}</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#EF4444" }}>{T("lostReportDog")}</div>
+            <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{T("lostReportDogSub")}</div>
           </div>
           <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
         </button>

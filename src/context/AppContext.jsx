@@ -88,6 +88,7 @@ export function AppProvider({ children }) {
 
   // ─── Navigation State ───
   const [screen, setScreen] = useState("splash");
+  const [screenParams, setScreenParams] = useState({});
   const [selProgram, setSelProgram] = useState(null);
   const [selLevel, setSelLevel] = useState(null);
   const [selExercise, setSelExercise] = useState(null);
@@ -955,6 +956,7 @@ export function AppProvider({ children }) {
     if (o.emergency !== undefined) setSelEmergency(o.emergency);
     if (o.walkData !== undefined) setWalkData(o.walkData);
     setWalkSavedToast(!!o.walkSavedToast);
+    setScreenParams(o);
     setScreen(s);
   }, []);
 
@@ -1258,7 +1260,7 @@ export function AppProvider({ children }) {
     showAddDog, setShowAddDog,
 
     // Navigation
-    screen, setScreen, nav,
+    screen, setScreen, nav, screenParams,
     selProgram, setSelProgram,
     selLevel, setSelLevel,
     selExercise, setSelExercise,

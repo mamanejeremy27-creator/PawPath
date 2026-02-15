@@ -286,10 +286,15 @@ export default function Profile() {
                       {isActive && <span style={{ color: C.acc, marginInlineStart: 8, fontWeight: 600 }}>{T("activeDog")}</span>}
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: 6 }}>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                     {!isActive && (
                       <button onClick={() => switchDog(id)} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "rgba(34,197,94,0.1)", color: C.acc, border: "none", borderRadius: 20, cursor: "pointer" }}>
                         {T("switchDog")}
+                      </button>
+                    )}
+                    {isActive && (
+                      <button onClick={() => nav("reportLostDog")} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: C.danger, border: "none", borderRadius: 20, cursor: "pointer" }}>
+                        {"🚨"} {T("lostEmergency")}
                       </button>
                     )}
                     {dogCount > 1 && (
