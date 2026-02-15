@@ -3,6 +3,7 @@ import { useApp } from "../context/AppContext.jsx";
 import { getReport, getSightings, markAsFound, cancelReport, getShareUrl, getShareText } from "../lib/lostDog.js";
 import { haversine } from "../lib/walkTracker.js";
 import PhotoImg from "./PhotoImg.jsx";
+import LostDogMap from "./LostDogMap.jsx";
 import BottomNav from "./BottomNav.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
@@ -95,28 +96,10 @@ export default function LostDogTracker() {
     return `${Math.floor(hrs / 24)}d`;
   };
 
-  // SVG Map — plot last known + sightings
-  const allPoints = [
-    { lat: report.last_lat, lng: report.last_lng, label: T("lostLastKnown"), type: "origin" },
-    ...sightings.map((s, i) => ({ lat: s.lat, lng: s.lng, label: `#${i + 1}`, type: "sighting", time: s.created_at })),
-  ];
-
-  const svgW = 340, svgH = 200, pad = 30;
-  let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
-  for (const p of allPoints) {
-    if (p.lat < minLat) minLat = p.lat;
-    if (p.lat > maxLat) maxLat = p.lat;
-    if (p.lng < minLng) minLng = p.lng;
-    if (p.lng > maxLng) maxLng = p.lng;
-  }
-  // Add padding to bounds
-  const latSpan = Math.max(maxLat - minLat, 0.002);
-  const lngSpan = Math.max(maxLng - minLng, 0.002);
-  minLat -= latSpan * 0.15; maxLat += latSpan * 0.15;
-  minLng -= lngSpan * 0.15; maxLng += lngSpan * 0.15;
-
-  const toX = (lng) => pad + ((lng - minLng) / (maxLng - minLng)) * (svgW - 2 * pad);
-  const toY = (lat) => pad + ((maxLat - lat) / (maxLat - minLat)) * (svgH - 2 * pad);
+  const mapSightings = sightings.filter(s => s.lat && s.lng).map(s => ({
+    lat: s.lat, lng: s.lng, label: s.reporter_name || "Sighting",
+    time: s.created_at, notes: s.notes, photoUrl: s.photo || null,
+  }));
 
   return (
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
@@ -144,57 +127,18 @@ export default function LostDogTracker() {
         <span style={{ marginInlineStart: 8, fontSize: 13, color: C.t3 }}>{sightings.length} {T("lostSightingsCount")}</span>
       </div>
 
-      {/* SVG Map */}
-      {allPoints.length > 0 && (
+      {/* Interactive Map */}
+      {report.last_lat && report.last_lng && (
         <div style={{ margin: "16px 20px 0", padding: 16, background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 10 }}>{T("lostSightingMap")}</div>
-          <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: "auto" }}>
-            {/* Grid */}
-            {[0.25, 0.5, 0.75].map(f => (
-              <line key={`h${f}`} x1={pad} y1={pad + f * (svgH - 2 * pad)} x2={svgW - pad} y2={pad + f * (svgH - 2 * pad)} stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
-            ))}
-
-            {/* Search radius circle around origin */}
-            {(() => {
-              const originX = toX(report.last_lng);
-              const originY = toY(report.last_lat);
-              // Approximate radius in pixels
-              const km = report.search_radius_km || 10;
-              const degPerKm = 1 / 111; // rough approximation
-              const rPx = (km * degPerKm / (maxLng - minLng)) * (svgW - 2 * pad);
-              return <circle cx={originX} cy={originY} r={Math.min(rPx, 120)} fill="rgba(239,68,68,0.06)" stroke="rgba(239,68,68,0.15)" strokeWidth="1" strokeDasharray="4 4" />;
-            })()}
-
-            {/* Movement trail */}
-            {sightings.length > 0 && (
-              <polyline
-                points={allPoints.map(p => `${toX(p.lng)},${toY(p.lat)}`).join(" ")}
-                fill="none" stroke="rgba(239,68,68,0.3)" strokeWidth="2" strokeDasharray="6 4"
-              />
-            )}
-
-            {/* Sighting dots */}
-            {allPoints.map((p, i) => {
-              const x = toX(p.lng);
-              const y = toY(p.lat);
-              if (p.type === "origin") {
-                return (
-                  <g key={i}>
-                    <circle cx={x} cy={y} r={10} fill="rgba(239,68,68,0.2)" stroke={C.danger} strokeWidth="2" />
-                    <circle cx={x} cy={y} r={4} fill={C.danger} />
-                    <text x={x} y={y - 14} textAnchor="middle" fill={C.danger} fontSize="9" fontWeight="700">{p.label}</text>
-                  </g>
-                );
-              }
-              return (
-                <g key={i}>
-                  <circle cx={x} cy={y} r={7} fill="rgba(245,158,11,0.2)" stroke="#F59E0B" strokeWidth="1.5" />
-                  <text x={x} y={y + 3.5} textAnchor="middle" fill="#F59E0B" fontSize="8" fontWeight="700">{p.label}</text>
-                </g>
-              );
-            })}
-          </svg>
-
+          <LostDogMap
+            center={{ lat: report.last_lat, lng: report.last_lng }}
+            radiusKm={report.search_radius_km || 10}
+            sightings={mapSightings}
+            originLabel={T("lostLastKnown")}
+            fitAll={sightings.length > 0}
+            height={260}
+          />
           <div style={{ display: "flex", gap: 16, marginTop: 8, fontSize: 10, color: C.t3 }}>
             <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: C.danger, marginInlineEnd: 4, verticalAlign: "middle" }} />{T("lostLastKnown")}</span>
             <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "#F59E0B", marginInlineEnd: 4, verticalAlign: "middle" }} />{T("lostSightings")}</span>

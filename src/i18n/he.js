@@ -711,6 +711,7 @@ export default {
   lostGpsLoading: "מאתר את המיקום שלך...",
   lostGpsLocked: "GPS נעול",
   lostGpsError: "לא ניתן לקבל GPS. הקלידו כתובת למטה.",
+  lostTapToSetLocation: "הקישו על המפה לכוונון המיקום",
   lostLocationName: "שם המיקום (אופציונלי)",
   lostLocationPlaceholder: "לדוגמה: פארק הירקון, ליד המזרקה",
   lostContactName: "השם שלך",

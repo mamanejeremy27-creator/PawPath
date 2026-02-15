@@ -711,6 +711,7 @@ export default {
   lostGpsLoading: "Getting your location...",
   lostGpsLocked: "GPS locked",
   lostGpsError: "Could not get GPS. Please type address below.",
+  lostTapToSetLocation: "Tap map to adjust location",
   lostLocationName: "Location Name (optional)",
   lostLocationPlaceholder: "e.g., Central Park, near the fountain",
   lostContactName: "Your Name",

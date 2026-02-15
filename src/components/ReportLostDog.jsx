@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { reportLostDog, getShareUrl, getShareText } from "../lib/lostDog.js";
 import DogAvatar from "./DogAvatar.jsx";
+import LostDogMap from "./LostDogMap.jsx";
 import BottomNav from "./BottomNav.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", dangerBg: "rgba(239,68,68,0.08)", dangerBorder: "rgba(239,68,68,0.2)", r: 16, rL: 24 };
@@ -130,6 +131,23 @@ export default function ReportLostDog() {
             {gpsStatus === "error" && T("lostGpsError")}
           </div>
         </div>
+
+        {/* Tap-to-set location map */}
+        {(lat !== null && lng !== null) && (
+          <div>
+            <label style={lbl}>{T("lostTapToSetLocation") || "Tap map to adjust location"}</label>
+            <LostDogMap
+              center={{ lat, lng }}
+              zoom={15}
+              height={200}
+              interactive={true}
+              tappable={true}
+              onTap={(latlng) => { setLat(latlng.lat); setLng(latlng.lng); }}
+              markerPosition={{ lat, lng }}
+              originLabel={T("lostLastKnown")}
+            />
+          </div>
+        )}
 
         {/* Location name (optional) */}
         <div>

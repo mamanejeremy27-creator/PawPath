@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { getReportByToken } from "../lib/lostDog.js";
 import PhotoImg from "./PhotoImg.jsx";
+import LostDogMap from "./LostDogMap.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
 
@@ -101,6 +102,17 @@ export default function LostDogPublicPage({ shareTokenFromUrl }) {
               {report.last_location_name || `${report.last_lat?.toFixed(4)}, ${report.last_lng?.toFixed(4)}`}
             </div>
             <div style={{ fontSize: 12, color: C.t3, marginTop: 4 }}>{timeSince()} {T("lostAgo")}</div>
+            {report.last_lat && report.last_lng && (
+              <div style={{ marginTop: 10 }}>
+                <LostDogMap
+                  center={{ lat: report.last_lat, lng: report.last_lng }}
+                  zoom={14}
+                  height={180}
+                  interactive={false}
+                  originLabel={T("lostLastKnown")}
+                />
+              </div>
+            )}
           </div>
 
           {report.contact_phone && isActive && (
