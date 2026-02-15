@@ -16,7 +16,7 @@ const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5
 const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
 
 export default function Home() {
-  const { dogProfile, totalXP, playerLevel, xpProgress, completedExercises, earnedBadges, journal, nav, setShowGear, setShowReminders, T, programs, dogCount } = useApp();
+  const { dogProfile, totalXP, playerLevel, xpProgress, completedExercises, earnedBadges, journal, nav, setShowGear, setShowReminders, T, programs, dogCount, activeDogId } = useApp();
   const showReportBanner = hasPreviousMonthReport(journal);
   const breedData = matchBreed(dogProfile?.breed);
 
@@ -25,7 +25,7 @@ export default function Home() {
       {/* Header */}
       <div style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <DogAvatar size="small" />
+          <DogAvatar key={activeDogId} size="small" dogId={activeDogId} />
           <div>
             <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{T("welcomeBack")}</p>
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: "4px 0 0", color: C.t1 }}>{dogProfile?.name}</h1>

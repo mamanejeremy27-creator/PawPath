@@ -1,8 +1,8 @@
 import { useApp } from "../context/AppContext.jsx";
 import PhotoImg from "./PhotoImg.jsx";
 
-export default function DogAvatar({ size = "medium", photo }) {
-  const { appSettings, AVATAR_ACCESSORIES, dogProfile } = useApp();
+export default function DogAvatar({ size = "medium", photo, dogId }) {
+  const { appSettings, AVATAR_ACCESSORIES, dogProfile, activeDogId } = useApp();
   const activeAcc = appSettings.activeAccessories || [];
 
   const sizes = { small: 44, medium: 64, large: 90 };
@@ -10,7 +10,10 @@ export default function DogAvatar({ size = "medium", photo }) {
   const dogEmoji = s >= 64 ? "\uD83D\uDC15" : "\uD83D\uDC3E";
   const fontSize = s * 0.55;
 
-  const photoSrc = photo || dogProfile?.photo;
+  // Use explicit photo prop, otherwise fall back to active dog's photo
+  const photoSrc = photo ?? dogProfile?.photo ?? null;
+  // Use explicit dogId or active dog's ID — for keying the PhotoImg
+  const effectiveDogId = dogId || activeDogId;
 
   const topAcc = AVATAR_ACCESSORIES.find(a => a.position === "top" && activeAcc.includes(a.id));
   const faceAcc = AVATAR_ACCESSORIES.find(a => a.position === "face" && activeAcc.includes(a.id));
@@ -24,9 +27,10 @@ export default function DogAvatar({ size = "medium", photo }) {
           {backAcc.emoji}
         </span>
       )}
-      {/* Base avatar */}
+      {/* Base avatar — key by dogId+photo to force remount on dog switch */}
       {photoSrc ? (
         <PhotoImg
+          key={`${effectiveDogId}-${photoSrc}`}
           src={photoSrc}
           alt="Dog"
           style={{

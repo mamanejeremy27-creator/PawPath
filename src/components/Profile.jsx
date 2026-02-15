@@ -132,7 +132,7 @@ export default function Profile() {
 
         {/* Tappable avatar for photo upload */}
         <div onClick={() => photoRef.current?.click()} style={{ cursor: "pointer", display: "inline-block", position: "relative" }}>
-          <DogAvatar size="large" />
+          <DogAvatar key={activeDogId} size="large" dogId={activeDogId} />
           <div style={{ position: "absolute", bottom: -2, right: -2, width: 28, height: 28, borderRadius: "50%", background: C.acc, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
             {"\uD83D\uDCF7"}
           </div>
@@ -277,7 +277,7 @@ export default function Profile() {
               return (
                 <div key={id} style={{ padding: "16px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${isActive ? "rgba(34,197,94,0.3)" : C.b1}`, display: "flex", alignItems: "center", gap: 12 }}>
                   <div style={{ flexShrink: 0 }}>
-                    <DogAvatar size="small" photo={dog.profile?.photo} />
+                    <DogAvatar size="small" photo={dog.profile?.photo} dogId={id} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{dog.profile?.name}</div>

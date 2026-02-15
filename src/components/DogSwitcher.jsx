@@ -34,7 +34,7 @@ export default function DogSwitcher() {
             }}
           >
             {dog.profile?.photo ? (
-              <PhotoImg src={dog.profile.photo} alt="" style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+              <PhotoImg key={`${id}-${dog.profile.photo}`} src={dog.profile.photo} alt="" style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
             ) : (
               <span style={{ fontSize: 14 }}>{"\uD83D\uDC3E"}</span>
             )}
