@@ -25,6 +25,16 @@ export default function LostDogAlert() {
     );
   }, []);
 
+  // Remove report immediately when marked found/cancelled
+  useEffect(() => {
+    const handler = (e) => {
+      const { reportId } = e.detail || {};
+      if (reportId) setAlerts(prev => prev.filter(a => a.id !== reportId));
+    };
+    window.addEventListener("pawpath-lost-dog-updated", handler);
+    return () => window.removeEventListener("pawpath-lost-dog-updated", handler);
+  }, []);
+
   const visible = alerts.filter(a => !dismissed.includes(a.id));
   if (visible.length === 0) return null;
 

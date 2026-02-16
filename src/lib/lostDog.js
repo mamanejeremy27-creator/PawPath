@@ -294,11 +294,13 @@ export async function markAsFound(reportId) {
     if (idx >= 0) local[idx].status = "found";
     setLocalReports(local);
 
+    window.dispatchEvent(new CustomEvent("pawpath-lost-dog-updated", { detail: { reportId, status: "found" } }));
     return ok(data);
   } catch {
     const local = getLocalReports();
     const idx = local.findIndex(r => r.id === reportId);
     if (idx >= 0) { local[idx].status = "found"; setLocalReports(local); }
+    window.dispatchEvent(new CustomEvent("pawpath-lost-dog-updated", { detail: { reportId, status: "found" } }));
     return ok({ id: reportId, status: "found" });
   }
 }
@@ -323,11 +325,13 @@ export async function cancelReport(reportId) {
     if (idx >= 0) local[idx].status = "cancelled";
     setLocalReports(local);
 
+    window.dispatchEvent(new CustomEvent("pawpath-lost-dog-updated", { detail: { reportId, status: "cancelled" } }));
     return ok(data);
   } catch {
     const local = getLocalReports();
     const idx = local.findIndex(r => r.id === reportId);
     if (idx >= 0) { local[idx].status = "cancelled"; setLocalReports(local); }
+    window.dispatchEvent(new CustomEvent("pawpath-lost-dog-updated", { detail: { reportId, status: "cancelled" } }));
     return ok({ id: reportId, status: "cancelled" });
   }
 }
