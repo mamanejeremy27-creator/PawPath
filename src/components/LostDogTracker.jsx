@@ -41,8 +41,8 @@ export default function LostDogTracker() {
 
   const handleCancel = async () => {
     await cancelReport(reportId);
-    setReport(prev => prev ? { ...prev, status: "cancelled" } : prev);
     setConfirmCancel(false);
+    nav("home");
   };
 
   const handleShare = () => {

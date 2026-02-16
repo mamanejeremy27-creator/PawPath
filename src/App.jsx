@@ -51,8 +51,12 @@ import LostDogTracker from "./components/LostDogTracker.jsx";
 import ReportSighting from "./components/ReportSighting.jsx";
 import LostDogPublicPage from "./components/LostDogPublicPage.jsx";
 import LostDogFeedList from "./components/LostDogFeedList.jsx";
+import { clearStaleLostDogData } from "./lib/lostDog.js";
 
 const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
+
+// Clear stale localStorage lost dog data on app load — Supabase is the source of truth
+clearStaleLostDogData();
 
 export default function App() {
   const { screen, xpAnim, newBadge, rtl, challengeDayToast, T, streakFreezeNotif, nav } = useApp();

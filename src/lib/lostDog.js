@@ -18,21 +18,25 @@ function generateToken() {
   return token;
 }
 
-// ── localStorage keys ────────────────────────────────
+// ── localStorage cache (write-through only) ──────────
 const LS_REPORTS = "pawpath_lost_dog_reports";
 const LS_SIGHTINGS = "pawpath_lost_dog_sightings";
 
-function getLocalReports() {
-  try { return JSON.parse(localStorage.getItem(LS_REPORTS) || "[]"); } catch { return []; }
-}
 function setLocalReports(reports) {
   localStorage.setItem(LS_REPORTS, JSON.stringify(reports));
 }
-function getLocalSightings() {
-  try { return JSON.parse(localStorage.getItem(LS_SIGHTINGS) || "[]"); } catch { return []; }
-}
 function setLocalSightings(sightings) {
   localStorage.setItem(LS_SIGHTINGS, JSON.stringify(sightings));
+}
+
+/**
+ * Clear all stale lost dog data from localStorage.
+ * Call on app init to ensure Supabase is the single source of truth.
+ */
+export function clearStaleLostDogData() {
+  localStorage.removeItem(LS_REPORTS);
+  localStorage.removeItem(LS_SIGHTINGS);
+  console.log("[LostDog] Cleared stale localStorage cache");
 }
 
 // ══════════════════════════════════════════════════════
@@ -41,24 +45,6 @@ function setLocalSightings(sightings) {
 
 export async function reportLostDog(dogId, data) {
   const shareToken = generateToken();
-  const report = {
-    id: crypto.randomUUID ? crypto.randomUUID() : `local_${Date.now()}`,
-    dog_id: dogId,
-    dog_name: data.dogName,
-    dog_breed: data.dogBreed,
-    dog_photo: data.dogPhoto || null,
-    last_lat: data.lastLat,
-    last_lng: data.lastLng,
-    last_location_name: data.lastLocationName || null,
-    contact_name: data.contactName,
-    contact_phone: data.contactPhone,
-    description: data.description || null,
-    search_radius_km: data.searchRadiusKm || 10,
-    share_token: shareToken,
-    status: "active",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
 
   try {
     const userId = await getUserId();
@@ -66,24 +52,32 @@ export async function reportLostDog(dogId, data) {
 
     const { data: row, error } = await supabase
       .from("lost_dog_reports")
-      .insert({ ...report, user_id: userId })
+      .insert({
+        user_id: userId,
+        dog_id: dogId,
+        dog_name: data.dogName,
+        dog_breed: data.dogBreed,
+        dog_photo: data.dogPhoto || null,
+        last_lat: data.lastLat,
+        last_lng: data.lastLng,
+        last_location_name: data.lastLocationName || null,
+        contact_name: data.contactName,
+        contact_phone: data.contactPhone,
+        description: data.description || null,
+        search_radius_km: data.searchRadiusKm || 10,
+        share_token: shareToken,
+        status: "active",
+      })
       .select()
       .single();
 
     if (error) throw error;
 
-    // Also save locally for offline access
-    const local = getLocalReports();
-    local.push(row);
-    setLocalReports(local);
-
+    console.log("[LostDog] Report saved to Supabase:", row.id);
     return ok(row);
   } catch (e) {
-    // Fallback to localStorage
-    const local = getLocalReports();
-    local.push(report);
-    setLocalReports(local);
-    return ok(report);
+    console.error("[LostDog] Failed to insert report:", e);
+    return fail(e);
   }
 }
 
@@ -93,9 +87,6 @@ export async function reportLostDog(dogId, data) {
 
 export async function getActiveLostDogs(lat, lng, radiusKm = 15) {
   try {
-    const userId = await getUserId();
-    if (!userId) throw new Error("Not authenticated");
-
     const { data, error } = await supabase
       .from("lost_dog_reports")
       .select("*")
@@ -112,30 +103,10 @@ export async function getActiveLostDogs(lat, lng, radiusKm = 15) {
       return dist <= radiusKm;
     }).sort((a, b) => a._distance - b._distance);
 
-    // Merge with local reports
-    const local = getLocalReports().filter(r => r.status === "active");
-    const ids = new Set(nearby.map(r => r.id));
-    for (const lr of local) {
-      if (!ids.has(lr.id) && lr.last_lat && lr.last_lng) {
-        const dist = haversine(lat, lng, lr.last_lat, lr.last_lng);
-        if (dist <= radiusKm) {
-          lr._distance = dist;
-          nearby.push(lr);
-        }
-      }
-    }
-
     return ok(nearby);
   } catch (e) {
-    // Fallback to localStorage only
-    const local = getLocalReports().filter(r => r.status === "active");
-    const nearby = local.filter(r => {
-      if (!r.last_lat || !r.last_lng) return false;
-      const dist = haversine(lat, lng, r.last_lat, r.last_lng);
-      r._distance = dist;
-      return dist <= radiusKm;
-    });
-    return ok(nearby);
+    console.error("[LostDog] Failed to fetch active reports:", e);
+    return ok([]);
   }
 }
 
@@ -155,17 +126,10 @@ export async function getMyReports() {
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-
-    // Merge localStorage
-    const local = getLocalReports();
-    const ids = new Set((data || []).map(r => r.id));
-    const merged = [...(data || [])];
-    for (const lr of local) {
-      if (!ids.has(lr.id)) merged.push(lr);
-    }
-    return ok(merged);
-  } catch {
-    return ok(getLocalReports());
+    return ok(data || []);
+  } catch (e) {
+    console.error("[LostDog] Failed to fetch my reports:", e);
+    return ok([]);
   }
 }
 
@@ -182,9 +146,9 @@ export async function getReport(reportId) {
       .single();
     if (error) throw error;
     return ok(data);
-  } catch {
-    const local = getLocalReports().find(r => r.id === reportId);
-    return local ? ok(local) : fail("Report not found");
+  } catch (e) {
+    console.error("[LostDog] Failed to fetch report:", reportId, e);
+    return fail("Report not found");
   }
 }
 
@@ -197,9 +161,9 @@ export async function getReportByToken(shareToken) {
       .single();
     if (error) throw error;
     return ok(data);
-  } catch {
-    const local = getLocalReports().find(r => r.share_token === shareToken);
-    return local ? ok(local) : fail("Report not found");
+  } catch (e) {
+    console.error("[LostDog] Failed to fetch report by token:", shareToken, e);
+    return fail("Report not found");
   }
 }
 
@@ -208,22 +172,20 @@ export async function getReportByToken(shareToken) {
 // ══════════════════════════════════════════════════════
 
 export async function reportSighting(reportId, sightingData) {
-  const sighting = {
-    id: crypto.randomUUID ? crypto.randomUUID() : `local_${Date.now()}`,
-    report_id: reportId,
-    lat: sightingData.lat,
-    lng: sightingData.lng,
-    notes: sightingData.notes || null,
-    photo: sightingData.photo || null,
-    reporter_name: sightingData.reporterName || "Anonymous",
-    created_at: new Date().toISOString(),
-  };
-
   try {
     const userId = await getUserId();
+
     const { data, error } = await supabase
       .from("lost_dog_sightings")
-      .insert({ ...sighting, user_id: userId })
+      .insert({
+        report_id: reportId,
+        user_id: userId,
+        lat: sightingData.lat,
+        lng: sightingData.lng,
+        notes: sightingData.notes || null,
+        photo: sightingData.photo || null,
+        reporter_name: sightingData.reporterName || "Anonymous",
+      })
       .select()
       .single();
 
@@ -235,15 +197,11 @@ export async function reportSighting(reportId, sightingData) {
       .update({ updated_at: new Date().toISOString() })
       .eq("id", reportId);
 
-    const local = getLocalSightings();
-    local.push(data);
-    setLocalSightings(local);
+    console.log("[LostDog] Sighting saved to Supabase:", data.id);
     return ok(data);
-  } catch {
-    const local = getLocalSightings();
-    local.push(sighting);
-    setLocalSightings(local);
-    return ok(sighting);
+  } catch (e) {
+    console.error("[LostDog] Failed to insert sighting:", e);
+    return fail(e);
   }
 }
 
@@ -256,16 +214,10 @@ export async function getSightings(reportId) {
       .order("created_at", { ascending: true });
 
     if (error) throw error;
-
-    const local = getLocalSightings().filter(s => s.report_id === reportId);
-    const ids = new Set((data || []).map(s => s.id));
-    const merged = [...(data || [])];
-    for (const ls of local) {
-      if (!ids.has(ls.id)) merged.push(ls);
-    }
-    return ok(merged);
-  } catch {
-    return ok(getLocalSightings().filter(s => s.report_id === reportId));
+    return ok(data || []);
+  } catch (e) {
+    console.error("[LostDog] Failed to fetch sightings:", e);
+    return ok([]);
   }
 }
 
@@ -288,20 +240,14 @@ export async function markAsFound(reportId) {
 
     if (error) throw error;
 
-    // Update local
-    const local = getLocalReports();
-    const idx = local.findIndex(r => r.id === reportId);
-    if (idx >= 0) local[idx].status = "found";
-    setLocalReports(local);
-
+    console.log("[LostDog] Report marked as found:", reportId);
     window.dispatchEvent(new CustomEvent("pawpath-lost-dog-updated", { detail: { reportId, status: "found" } }));
     return ok(data);
-  } catch {
-    const local = getLocalReports();
-    const idx = local.findIndex(r => r.id === reportId);
-    if (idx >= 0) { local[idx].status = "found"; setLocalReports(local); }
+  } catch (e) {
+    console.error("[LostDog] Failed to mark as found:", reportId, e);
+    // Still dispatch event to clear UI even if Supabase update failed
     window.dispatchEvent(new CustomEvent("pawpath-lost-dog-updated", { detail: { reportId, status: "found" } }));
-    return ok({ id: reportId, status: "found" });
+    return fail(e);
   }
 }
 
@@ -320,19 +266,13 @@ export async function cancelReport(reportId) {
 
     if (error) throw error;
 
-    const local = getLocalReports();
-    const idx = local.findIndex(r => r.id === reportId);
-    if (idx >= 0) local[idx].status = "cancelled";
-    setLocalReports(local);
-
+    console.log("[LostDog] Report cancelled:", reportId);
     window.dispatchEvent(new CustomEvent("pawpath-lost-dog-updated", { detail: { reportId, status: "cancelled" } }));
     return ok(data);
-  } catch {
-    const local = getLocalReports();
-    const idx = local.findIndex(r => r.id === reportId);
-    if (idx >= 0) { local[idx].status = "cancelled"; setLocalReports(local); }
+  } catch (e) {
+    console.error("[LostDog] Failed to cancel report:", reportId, e);
     window.dispatchEvent(new CustomEvent("pawpath-lost-dog-updated", { detail: { reportId, status: "cancelled" } }));
-    return ok({ id: reportId, status: "cancelled" });
+    return fail(e);
   }
 }
 

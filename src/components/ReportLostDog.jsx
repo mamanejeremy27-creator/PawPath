@@ -20,6 +20,7 @@ export default function ReportLostDog() {
   const [radius, setRadius] = useState(10);
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState(null);
+  const [submitError, setSubmitError] = useState(null);
 
   // Auto-get GPS
   useEffect(() => {
@@ -36,6 +37,7 @@ export default function ReportLostDog() {
   const handleSubmit = async () => {
     if (!canSubmit || sending) return;
     setSending(true);
+    setSubmitError(null);
     const res = await reportLostDog(activeDogId, {
       dogName: dogProfile?.name || "Dog",
       dogBreed: dogProfile?.breed || "",
@@ -49,7 +51,12 @@ export default function ReportLostDog() {
       searchRadiusKm: radius,
     });
     setSending(false);
-    if (res.data) setResult(res.data);
+    if (res.data) {
+      setResult(res.data);
+    } else {
+      console.error("[ReportLostDog] Submit failed:", res.error);
+      setSubmitError(res.error || "Failed to send alert. Please try again.");
+    }
   };
 
   const handleShare = () => {
@@ -182,6 +189,13 @@ export default function ReportLostDog() {
             <span>5 km</span><span>20 km</span>
           </div>
         </div>
+
+        {/* Error message */}
+        {submitError && (
+          <div style={{ padding: "12px 16px", background: C.dangerBg, border: `1px solid ${C.dangerBorder}`, borderRadius: 12, fontSize: 13, color: C.danger }}>
+            {submitError}
+          </div>
+        )}
 
         {/* Submit */}
         <button onClick={handleSubmit} disabled={!canSubmit || sending}
