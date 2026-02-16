@@ -64,7 +64,7 @@ const DEFAULT_DOG_STATE = {
 
 export function AppProvider({ children }) {
   // ─── Auth ───
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const isAuthenticated = !!user;
   const supabaseIdMapRef = useRef({});
   const getSupaId = (localId) => supabaseIdMapRef.current[localId];
@@ -1233,10 +1233,13 @@ export function AppProvider({ children }) {
       deleteAllUserData();
       supabaseIdMapRef.current = {};
     }
+    localStorage.removeItem(STORAGE_KEY);
     setDogs({});
     setActiveDogId(null);
     setScreen("splash");
-  }, [isAuthenticated]);
+    // Sign out so the auth gate in App.jsx forces re-authentication
+    signOut();
+  }, [isAuthenticated, signOut]);
 
   // ─── Translation helper ───
   const T = useCallback((key) => t(lang, key), [lang]);
