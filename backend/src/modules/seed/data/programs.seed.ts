@@ -1,4 +1,6 @@
-export const TRAINING_PROGRAMS = [
+import type { TrainingProgram } from '../../../entities';
+
+export const PROGRAMS_SEED: Partial<TrainingProgram>[] = [
   {
     id: "foundations", name: "Puppy Foundations", emoji: "\uD83D\uDC3E",
     description: "Essential skills every puppy needs. Build trust, focus, and the basics that everything else is built on.",
@@ -204,4 +206,4 @@ export const TRAINING_PROGRAMS = [
       }
     ]
   }
-] as const;
+];

@@ -2,7 +2,7 @@ import {
   Controller, Get, Post, Patch, Delete, Body, Param, UseGuards,
 } from '@nestjs/common';
 import { BuddiesService } from './buddies.service';
-import type { SendBuddyRequestDto } from './dto';
+import { SendBuddyRequestDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards';
 import { CurrentUser } from '../auth/decorators';
 import type { User } from '../../entities/user.entity';

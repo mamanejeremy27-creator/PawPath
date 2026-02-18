@@ -2,7 +2,7 @@ import {
   Controller, Get, Post, Delete, Body, Param, UseGuards,
 } from '@nestjs/common';
 import { WalksService } from './walks.service';
-import type { CreateWalkDto } from './dto';
+import { CreateWalkDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards';
 import { CurrentUser } from '../auth/decorators';
 import type { User } from '../../entities/user.entity';

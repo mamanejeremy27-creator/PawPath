@@ -14,7 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { DogsService } from './dogs.service';
-import type { CreateDogDto, UpdateDogDto } from './dto';
+import { CreateDogDto, UpdateDogDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards';
 import { CurrentUser } from '../auth/decorators';
 import type { User } from '../../entities/user.entity';

@@ -9,6 +9,10 @@ import { ChallengeProgress } from '../../entities/challenge-progress.entity';
 import { LeaderboardEntry } from '../../entities/leaderboard-entry.entity';
 import { JournalEntry } from '../../entities/journal-entry.entity';
 import { UnlockedReward } from '../../entities/unlocked-reward.entity';
+import { TrainingProgram } from '../../entities/training-program.entity';
+import { BadgeDefinition } from '../../entities/badge-definition.entity';
+import { ChallengeDefinition } from '../../entities/challenge-definition.entity';
+import { StreakMilestone } from '../../entities/streak-milestone.entity';
 import { TrainingController } from './training.controller';
 import { TrainingService } from './training.service';
 
@@ -18,6 +22,7 @@ import { TrainingService } from './training.service';
       Dog, DogProgress, CompletedExercise, SkillFreshness,
       EarnedBadge, ChallengeProgress, LeaderboardEntry,
       JournalEntry, UnlockedReward,
+      TrainingProgram, BadgeDefinition, ChallengeDefinition, StreakMilestone,
     ]),
   ],
   controllers: [TrainingController],

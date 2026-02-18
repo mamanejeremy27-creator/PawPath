@@ -6,7 +6,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import type { RegisterDto } from './dto';
+import { RegisterDto } from './dto';
 import { LocalAuthGuard, JwtAuthGuard } from './guards';
 import { CurrentUser } from './decorators';
 import type { User } from '../../entities/user.entity';

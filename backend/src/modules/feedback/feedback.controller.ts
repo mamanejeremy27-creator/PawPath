@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { FeedbackService } from './feedback.service';
-import type { CreateFeedbackDto } from './dto';
+import { CreateFeedbackDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards';
 import { CurrentUser } from '../auth/decorators';
 import type { User } from '../../entities/user.entity';

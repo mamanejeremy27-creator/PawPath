@@ -1,4 +1,6 @@
-export const CHALLENGES = [
+import type { ChallengeDefinition } from '../../../entities';
+
+export const CHALLENGES_SEED: Partial<ChallengeDefinition>[] = [
   {
     id: "recall-week",
     name: "Recall Master Week",
@@ -215,22 +217,4 @@ export const CHALLENGES = [
       { day: 7, exerciseId: "o2c", task: "Full adventure: 3 locations, 3 commands each" }
     ]
   }
-] as const;
-
-export function getWeekNumber(date: Date): number {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil(((((d as any) - (yearStart as any)) / 86400000) + 1) / 7);
-}
-
-export function getActiveChallenge(date = new Date()) {
-  const week = getWeekNumber(date);
-  return CHALLENGES[week % CHALLENGES.length];
-}
-
-export function getChallengeDay(date = new Date()): number {
-  const day = date.getDay();
-  return day === 0 ? 7 : day;
-}
+];

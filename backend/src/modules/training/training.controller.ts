@@ -1,6 +1,6 @@
 import { Controller, Post, Get, Body, Param, UseGuards } from '@nestjs/common';
 import { TrainingService } from './training.service';
-import type { CompleteExerciseDto } from './dto';
+import { CompleteExerciseDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards';
 import { CurrentUser } from '../auth/decorators';
 import type { User } from '../../entities/user.entity';

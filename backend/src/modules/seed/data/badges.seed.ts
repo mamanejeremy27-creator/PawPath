@@ -1,4 +1,6 @@
-export const BADGE_DEFS = [
+import type { BadgeDefinition } from '../../../entities';
+
+export const BADGES_SEED: Partial<BadgeDefinition>[] = [
   // Streaks
   { id: "first_session", name: "First Steps", emoji: "\uD83D\uDC63", desc: "Complete your first training session", category: "streaks" },
   { id: "streak_3", name: "On a Roll", emoji: "\uD83D\uDD25", desc: "3-day training streak", category: "streaks" },
@@ -76,102 +78,4 @@ export const BADGE_DEFS = [
   { id: "challenge-5-complete", name: "Challenge Veteran", emoji: "\u2B50", desc: "Completed 5 weekly challenges", category: "challenge" },
   { id: "challenge-streak-3", name: "3 Weeks Strong", emoji: "\uD83D\uDD25", desc: "Completed 3 challenges in a row", category: "challenge" },
   { id: "challenge-partial-hero", name: "Almost There!", emoji: "\uD83D\uDCAA", desc: "Completed 5+ days of a challenge", category: "challenge" },
-] as const;
-
-function isProgramComplete(progId: string, state: any): boolean {
-  if (!state.programs) return false;
-  const prog = state.programs.find((p: any) => p.id === progId);
-  if (!prog) return false;
-  return prog.levels.every((l: any) => l.exercises.every((e: any) => state.completedExercises.includes(e.id)));
-}
-
-export function checkBadgeCondition(badgeId: string, state: any): boolean {
-  switch (badgeId) {
-    // Streaks
-    case "first_session": return state.totalSessions >= 1;
-    case "streak_3": return state.currentStreak >= 3;
-    case "streak_7": return state.currentStreak >= 7;
-    case "streak_14": return state.currentStreak >= 14;
-    case "streak_30": return state.currentStreak >= 30;
-    case "streak_60": return state.currentStreak >= 60;
-    case "streak_90": return state.currentStreak >= 90;
-    case "streak_365": return state.currentStreak >= 365;
-    // Training - exercises
-    case "exercises_5": return state.completedExercises.length >= 5;
-    case "exercises_25": return state.completedExercises.length >= 25;
-    case "exercises_50": return state.completedExercises.length >= 50;
-    case "exercises_100": return state.completedExercises.length >= 100;
-    // Training - levels & XP
-    case "level_complete": return state.completedLevels.length >= 1;
-    case "level_5": return (state.playerLevel || 1) >= 5;
-    case "level_10": return (state.playerLevel || 1) >= 10;
-    case "xp_500": return state.totalXP >= 500;
-    case "xp_1000": return state.totalXP >= 1000;
-    case "xp_2500": return state.totalXP >= 2500;
-    case "xp_5000": return state.totalXP >= 5000;
-    case "xp_10000": return state.totalXP >= 10000;
-    // Training - sessions
-    case "sessions_10": return state.totalSessions >= 10;
-    case "quick_learner": return state.todayExercises >= 3;
-    // Programs
-    case "prog_foundations": return isProgramComplete("foundations", state);
-    case "prog_potty": return isProgramComplete("potty", state);
-    case "prog_crate": return isProgramComplete("crate", state);
-    case "prog_social": return isProgramComplete("social", state);
-    case "prog_behavior": return isProgramComplete("behavior", state);
-    case "prog_obedience": return isProgramComplete("obedience", state);
-    case "prog_tricks": return isProgramComplete("tricks", state);
-    case "prog_reactivity": return isProgramComplete("reactivity", state);
-    case "prog_fitness": return isProgramComplete("fitness", state);
-    // Journal
-    case "journal_5": return state.journal.length >= 5;
-    case "journal_20": return state.journal.length >= 20;
-    case "journal_50": return state.journal.length >= 50;
-    case "first_photo": return (state.photoCount || 0) >= 1;
-    case "photos_10": return (state.photoCount || 0) >= 10;
-    case "photos_25": return (state.photoCount || 0) >= 25;
-    // Skills
-    case "caretaker": return (state.totalReviews || 0) >= 10;
-    case "maintenance_master": return state.allSkillsFresh && state.completedExercises.length >= 5;
-    case "skill_guardian": return state.allSkillsFresh && (state.totalReviews || 0) >= 30;
-    // Special
-    case "double_trouble": return (state.dogCount || 1) >= 2;
-    case "pack_leader": return state.bothDogsTrainedToday === true;
-    // Streak rewards
-    case "streak-3-days": return (state.streakBest || state.currentStreak) >= 3;
-    case "streak-7-days": return (state.streakBest || state.currentStreak) >= 7;
-    case "streak-14-days": return (state.streakBest || state.currentStreak) >= 14;
-    case "streak-30-days": return (state.streakBest || state.currentStreak) >= 30;
-    case "streak-60-days": return (state.streakBest || state.currentStreak) >= 60;
-    case "streak-90-days": return (state.streakBest || state.currentStreak) >= 90;
-    case "streak-180-days": return (state.streakBest || state.currentStreak) >= 180;
-    case "streak-365-days": return (state.streakBest || state.currentStreak) >= 365;
-    case "streak-recovered": return state.streakRecovered === true;
-    case "streak-freeze-used": return (state.streakFreezesUsed || 0) >= 1;
-    // Challenge per-challenge badges
-    case "challenge-recall-master":
-    case "challenge-patience-guru":
-    case "challenge-trick-star":
-    case "challenge-leash-pro":
-    case "challenge-puppy-grad":
-    case "challenge-social-butterfly":
-    case "challenge-fitness-champ":
-    case "challenge-crate-lover":
-    case "challenge-behavior-boss":
-    case "challenge-potty-pro":
-    case "challenge-laser-focus":
-    case "challenge-adventurer": {
-      const ch = state.challengeHistory || [];
-      return ch.some((h: any) => h.badgeEarned === badgeId && h.fullComplete);
-    }
-    // Challenge meta badges
-    case "challenge-first-complete": return (state.challengeStats?.totalCompleted || 0) >= 1;
-    case "challenge-5-complete": return (state.challengeStats?.totalCompleted || 0) >= 5;
-    case "challenge-streak-3": return (state.challengeStats?.bestStreak || 0) >= 3;
-    case "challenge-partial-hero": {
-      const ch2 = state.challengeHistory || [];
-      return ch2.some((h: any) => h.completedDays.length >= 5);
-    }
-    default: return false;
-  }
-}
+];

@@ -10,6 +10,7 @@ import {
   UserSettings, WeightRecord, Vaccination, VetVisit, Medication,
   Walk, Post, PostLike, Comment, BuddyRequest,
   LostDogReport, Sighting, Feedback,
+  TrainingProgram, BadgeDefinition, ChallengeDefinition, StreakMilestone,
 } from './entities';
 import { AuthModule } from './modules/auth/auth.module';
 import { DogsModule } from './modules/dogs/dogs.module';
@@ -22,6 +23,7 @@ import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
 import { BuddiesModule } from './modules/buddies/buddies.module';
 import { LostDogsModule } from './modules/lost-dogs/lost-dogs.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
+import { SeedModule } from './modules/seed/seed.module';
 
 @Module({
   imports: [
@@ -47,6 +49,7 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
           UserSettings, WeightRecord, Vaccination, VetVisit, Medication,
           Walk, Post, PostLike, Comment, BuddyRequest,
           LostDogReport, Sighting, Feedback,
+          TrainingProgram, BadgeDefinition, ChallengeDefinition, StreakMilestone,
         ],
         migrations: ['dist/migrations/*.js'],
         migrationsRun: true,
@@ -65,6 +68,7 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
     BuddiesModule,
     LostDogsModule,
     FeedbackModule,
+    SeedModule,
   ],
   controllers: [],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

@@ -22,3 +22,7 @@ export * from './buddy-request.entity';
 export * from './lost-dog-report.entity';
 export * from './sighting.entity';
 export * from './feedback.entity';
+export * from './training-program.entity';
+export * from './badge-definition.entity';
+export * from './challenge-definition.entity';
+export * from './streak-milestone.entity';

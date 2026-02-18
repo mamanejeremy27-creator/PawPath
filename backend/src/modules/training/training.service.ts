@@ -10,10 +10,10 @@ import { ChallengeProgress } from '../../entities/challenge-progress.entity';
 import { LeaderboardEntry } from '../../entities/leaderboard-entry.entity';
 import { JournalEntry } from '../../entities/journal-entry.entity';
 import { UnlockedReward } from '../../entities/unlocked-reward.entity';
-import { TRAINING_PROGRAMS } from '../../data/programs';
-import { BADGE_DEFS, checkBadgeCondition } from '../../data/badges';
-import { getActiveChallenge, getChallengeDay, getWeekNumber } from '../../data/challenges';
-import { STREAK_MILESTONES } from '../../data/streakRewards';
+import { TrainingProgram } from '../../entities/training-program.entity';
+import { BadgeDefinition } from '../../entities/badge-definition.entity';
+import { ChallengeDefinition } from '../../entities/challenge-definition.entity';
+import { StreakMilestone } from '../../entities/streak-milestone.entity';
 import type { CompleteExerciseDto } from './dto';
 
 @Injectable()
@@ -28,6 +28,10 @@ export class TrainingService {
     @InjectRepository(JournalEntry) private journalRepo: Repository<JournalEntry>,
     @InjectRepository(UnlockedReward) private rewardRepo: Repository<UnlockedReward>,
     @InjectRepository(Dog) private dogRepo: Repository<Dog>,
+    @InjectRepository(TrainingProgram) private programRepo: Repository<TrainingProgram>,
+    @InjectRepository(BadgeDefinition) private badgeDefRepo: Repository<BadgeDefinition>,
+    @InjectRepository(ChallengeDefinition) private challengeDefRepo: Repository<ChallengeDefinition>,
+    @InjectRepository(StreakMilestone) private milestoneRepo: Repository<StreakMilestone>,
   ) {}
 
   async getOrCreateProgress(dogId: string, userId: string): Promise<DogProgress> {
@@ -48,7 +52,7 @@ export class TrainingService {
     const dog = await this.dogRepo.findOne({ where: { id: dogId, userId } });
     if (!dog) throw new NotFoundException('Dog not found');
 
-    const program = TRAINING_PROGRAMS.find(p => p.id === programId);
+    const program = await this.programRepo.findOne({ where: { id: programId } });
     if (!program) throw new BadRequestException('Program not found');
     const level = program.levels.find(l => l.id === levelId);
     if (!level) throw new BadRequestException('Level not found');
@@ -67,7 +71,7 @@ export class TrainingService {
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
     let newStreak = progress.currentStreak;
     let milestoneXp = 0;
-    let milestoneUnlock: (typeof STREAK_MILESTONES)[number] | null = null;
+    let milestoneUnlock: StreakMilestone | null = null;
     const newBadges: string[] = [];
 
     if (progress.lastTrainDate !== today) {
@@ -78,7 +82,8 @@ export class TrainingService {
       // Check streak milestones
       const existingRewards = await this.rewardRepo.find({ where: { userId } });
       const unlockedIds = existingRewards.map(r => r.rewardId);
-      const milestone = STREAK_MILESTONES.find(
+      const allMilestones = await this.milestoneRepo.find({ order: { days: 'ASC' } });
+      const milestone = allMilestones.find(
         m => newStreak >= m.days && !unlockedIds.includes(m.rewardId),
       );
       if (milestone) {
@@ -148,6 +153,7 @@ export class TrainingService {
       return Math.exp(-daysSince / f.interval) > 0.6;
     });
 
+    const allPrograms = await this.programRepo.find();
     const badgeState = {
       totalSessions: progress.totalSessions,
       currentStreak: progress.currentStreak,
@@ -166,14 +172,15 @@ export class TrainingService {
       streakBest: progress.bestStreak,
       streakRecovered: false,
       streakFreezesUsed: 0,
-      programs: TRAINING_PROGRAMS,
+      programs: allPrograms,
       challengeHistory: [],
       challengeStats: { totalCompleted: 0, bestStreak: 0 },
       bothDogsTrainedToday: false,
     };
 
-    for (const badge of BADGE_DEFS) {
-      if (!earnedBadgeIds.includes(badge.id) && checkBadgeCondition(badge.id, badgeState)) {
+    const badgeDefs = await this.badgeDefRepo.find();
+    for (const badge of badgeDefs) {
+      if (!earnedBadgeIds.includes(badge.id) && this.checkBadgeCondition(badge.id, badgeState)) {
         await this.badgeRepo.save(this.badgeRepo.create({ dogId, badgeId: badge.id }));
         newBadges.push(badge.id);
       }
@@ -183,12 +190,12 @@ export class TrainingService {
     let challengeDayDone = false;
     try {
       const now = new Date();
-      const todayDay = getChallengeDay(now);
-      const activeChallenge = getActiveChallenge(now);
+      const todayDay = this.getChallengeDay(now);
+      const activeChallenge = await this.getActiveChallenge(now);
       if (activeChallenge) {
         const todayTask = activeChallenge.days.find(d => d.day === todayDay);
         if (todayTask && todayTask.exerciseId === exerciseId) {
-          const weekNum = getWeekNumber(now);
+          const weekNum = this.getWeekNumber(now);
           let cp = await this.challengeRepo.findOne({
             where: { dogId, challengeId: activeChallenge.id, weekNumber: weekNum },
           });
@@ -267,6 +274,124 @@ export class TrainingService {
     if (rating >= 4) return Math.round(currentInterval * 2.0);
     if (rating === 3) return Math.round(currentInterval * 1.2);
     return 1;
+  }
+
+  private getWeekNumber(date: Date): number {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil(((((d as any) - (yearStart as any)) / 86400000) + 1) / 7);
+  }
+
+  private getChallengeDay(date: Date): number {
+    const day = date.getDay();
+    return day === 0 ? 7 : day;
+  }
+
+  private async getActiveChallenge(date: Date): Promise<ChallengeDefinition | null> {
+    const week = this.getWeekNumber(date);
+    const challenges = await this.challengeDefRepo.find();
+    if (challenges.length === 0) return null;
+    return challenges[week % challenges.length];
+  }
+
+  private isProgramComplete(progId: string, state: any): boolean {
+    if (!state.programs) return false;
+    const prog = state.programs.find((p: any) => p.id === progId);
+    if (!prog) return false;
+    return prog.levels.every((l: any) => l.exercises.every((e: any) => state.completedExercises.includes(e.id)));
+  }
+
+  private checkBadgeCondition(badgeId: string, state: any): boolean {
+    switch (badgeId) {
+      // Streaks
+      case "first_session": return state.totalSessions >= 1;
+      case "streak_3": return state.currentStreak >= 3;
+      case "streak_7": return state.currentStreak >= 7;
+      case "streak_14": return state.currentStreak >= 14;
+      case "streak_30": return state.currentStreak >= 30;
+      case "streak_60": return state.currentStreak >= 60;
+      case "streak_90": return state.currentStreak >= 90;
+      case "streak_365": return state.currentStreak >= 365;
+      // Training - exercises
+      case "exercises_5": return state.completedExercises.length >= 5;
+      case "exercises_25": return state.completedExercises.length >= 25;
+      case "exercises_50": return state.completedExercises.length >= 50;
+      case "exercises_100": return state.completedExercises.length >= 100;
+      // Training - levels & XP
+      case "level_complete": return state.completedLevels.length >= 1;
+      case "level_5": return (state.playerLevel || 1) >= 5;
+      case "level_10": return (state.playerLevel || 1) >= 10;
+      case "xp_500": return state.totalXP >= 500;
+      case "xp_1000": return state.totalXP >= 1000;
+      case "xp_2500": return state.totalXP >= 2500;
+      case "xp_5000": return state.totalXP >= 5000;
+      case "xp_10000": return state.totalXP >= 10000;
+      // Training - sessions
+      case "sessions_10": return state.totalSessions >= 10;
+      case "quick_learner": return state.todayExercises >= 3;
+      // Programs
+      case "prog_foundations": return this.isProgramComplete("foundations", state);
+      case "prog_potty": return this.isProgramComplete("potty", state);
+      case "prog_crate": return this.isProgramComplete("crate", state);
+      case "prog_social": return this.isProgramComplete("social", state);
+      case "prog_behavior": return this.isProgramComplete("behavior", state);
+      case "prog_obedience": return this.isProgramComplete("obedience", state);
+      case "prog_tricks": return this.isProgramComplete("tricks", state);
+      case "prog_reactivity": return this.isProgramComplete("reactivity", state);
+      case "prog_fitness": return this.isProgramComplete("fitness", state);
+      // Journal
+      case "journal_5": return state.journal.length >= 5;
+      case "journal_20": return state.journal.length >= 20;
+      case "journal_50": return state.journal.length >= 50;
+      case "first_photo": return (state.photoCount || 0) >= 1;
+      case "photos_10": return (state.photoCount || 0) >= 10;
+      case "photos_25": return (state.photoCount || 0) >= 25;
+      // Skills
+      case "caretaker": return (state.totalReviews || 0) >= 10;
+      case "maintenance_master": return state.allSkillsFresh && state.completedExercises.length >= 5;
+      case "skill_guardian": return state.allSkillsFresh && (state.totalReviews || 0) >= 30;
+      // Special
+      case "double_trouble": return (state.dogCount || 1) >= 2;
+      case "pack_leader": return state.bothDogsTrainedToday === true;
+      // Streak rewards
+      case "streak-3-days": return (state.streakBest || state.currentStreak) >= 3;
+      case "streak-7-days": return (state.streakBest || state.currentStreak) >= 7;
+      case "streak-14-days": return (state.streakBest || state.currentStreak) >= 14;
+      case "streak-30-days": return (state.streakBest || state.currentStreak) >= 30;
+      case "streak-60-days": return (state.streakBest || state.currentStreak) >= 60;
+      case "streak-90-days": return (state.streakBest || state.currentStreak) >= 90;
+      case "streak-180-days": return (state.streakBest || state.currentStreak) >= 180;
+      case "streak-365-days": return (state.streakBest || state.currentStreak) >= 365;
+      case "streak-recovered": return state.streakRecovered === true;
+      case "streak-freeze-used": return (state.streakFreezesUsed || 0) >= 1;
+      // Challenge per-challenge badges
+      case "challenge-recall-master":
+      case "challenge-patience-guru":
+      case "challenge-trick-star":
+      case "challenge-leash-pro":
+      case "challenge-puppy-grad":
+      case "challenge-social-butterfly":
+      case "challenge-fitness-champ":
+      case "challenge-crate-lover":
+      case "challenge-behavior-boss":
+      case "challenge-potty-pro":
+      case "challenge-laser-focus":
+      case "challenge-adventurer": {
+        const ch = state.challengeHistory || [];
+        return ch.some((h: any) => h.badgeEarned === badgeId && h.fullComplete);
+      }
+      // Challenge meta badges
+      case "challenge-first-complete": return (state.challengeStats?.totalCompleted || 0) >= 1;
+      case "challenge-5-complete": return (state.challengeStats?.totalCompleted || 0) >= 5;
+      case "challenge-streak-3": return (state.challengeStats?.bestStreak || 0) >= 3;
+      case "challenge-partial-hero": {
+        const ch2 = state.challengeHistory || [];
+        return ch2.some((h: any) => h.completedDays.length >= 5);
+      }
+      default: return false;
+    }
   }
 
   async getProgress(dogId: string, userId: string) {

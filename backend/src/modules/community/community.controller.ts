@@ -2,7 +2,7 @@ import {
   Controller, Get, Post, Body, Param, Query, UseGuards,
 } from '@nestjs/common';
 import { CommunityService } from './community.service';
-import type { CreatePostDto, CreateCommentDto } from './dto';
+import { CreatePostDto, CreateCommentDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards';
 import { CurrentUser } from '../auth/decorators';
 import type { User } from '../../entities/user.entity';
