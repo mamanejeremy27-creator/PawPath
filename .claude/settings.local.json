@@ -22,7 +22,15 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 3A: Smart Difficulty Adjustment — difficulty tracking system\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 3A: Behavioral Issue Diagnostic\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(wc:*)",
+      "Bash(git mv:*)",
+      "Bash(npx nest build:*)",
+      "Bash(/Users/tsufbarkai/Projects/PawPath/frontend/src/lib/supabase.js:*)",
+      "Bash(/Users/tsufbarkai/Projects/PawPath/frontend/src/lib/migrate.js:*)",
+      "Bash(ls:*)",
+      "Bash(npm i:*)",
+      "Bash(npx jest:*)"
     ]
   }
 }
