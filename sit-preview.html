@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PawPath | Foundation Drills</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --bg: #0A0A0C;
+            --s1: #131316;
+            --b1: rgba(255,255,255,0.06);
+            --t1: #F5F5F7;
+            --t2: #A1A1AA;
+            --t3: #71717A;
+            --acc: #22C55E;
+            --rL: 32px;
+        }
+
+        body { 
+            background: var(--bg); 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0;
+            color: var(--t1);
+            font-family: 'Inter', sans-serif;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scrollbar-width: none;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            background: var(--s1);
+            border: 1px solid var(--b1);
+            border-radius: 50px;
+            color: var(--t2);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: var(--acc);
+            color: #000;
+            border-color: var(--acc);
+        }
+
+        /* Content Card */
+        .card {
+            background: var(--s1);
+            padding: 32px;
+            border-radius: var(--rL);
+            border: 1px solid var(--b1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            display: none;
+        }
+        .card.active { display: block; }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(34,197,94,0.1);
+            color: var(--acc);
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        h2 { margin: 0 0 20px; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+
+        .viewport {
+            width: 100%;
+            aspect-ratio: 1.5;
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            border: 1px solid var(--b1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .instr-list {
+            margin-top: 24px;
+            padding: 0;
+            list-style: none;
+        }
+        .instr-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: var(--t2);
+            line-height: 1.5;
+        }
+        .instr-num {
+            width: 24px;
+            height: 24px;
+            background: rgba(34,197,94,0.15);
+            color: var(--acc);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        /* ANIMATION GLOBALS */
+        @keyframes tailWag { 0%, 75% { transform: rotate(0deg); } 80%, 90%, 100% { transform: rotate(-30deg); } 85%, 95% { transform: rotate(10deg); } }
+        @keyframes markYes { 0%, 72% { opacity: 0; transform: scale(0.5); } 75%, 85% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0; } }
+        .tail { animation: tailWag 8s infinite ease-in-out; transform-origin: 75px 75px; }
+        .yes-text { animation: markYes 8s infinite; fill: var(--acc); font-weight: 900; font-size: 14px; }
+
+        /* SIT ANIMATION */
+        @keyframes sitBody { 0%, 50% { transform: rotate(0deg); } 65%, 100% { transform: rotate(-25deg); } }
+        @keyframes sitHead { 0%, 20% { transform: rotate(0deg); } 25% { transform: rotate(10deg); } 50% { transform: rotate(-35deg); } 65%, 80% { transform: rotate(-30deg); } 85%, 100% { transform: rotate(-5deg); } }
+        @keyframes sitHand { 0% { transform: translate(60px, 0); opacity: 0; } 15%, 25% { transform: translate(0, 0); opacity: 1; } 50%, 75% { transform: translate(-30px, -35px); opacity: 1; } 85% { transform: translate(0, 0); opacity: 1; } 95%, 100% { transform: translate(60px, 0); opacity: 0; } }
+
+        /* STAY ANIMATION */
+        @keyframes stayTrainer { 0%, 30% { transform: translateX(0); } 70%, 95% { transform: translateX(50px); } 100% { transform: translateX(0); } }
+        @keyframes stayHand { 0%, 20% { opacity: 0; transform: scale(0.5); } 30%, 90% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
+        
+        /* TOUCH ANIMATION */
+        @keyframes touchDog { 0%, 30% { transform: translateX(0); } 55%, 80% { transform: translateX(25px); } 100% { transform: translateX(0); } }
+        @keyframes touchHand { 0%, 15% { opacity: 0; transform: translateX(10px); } 25%, 85% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; } }
+        @keyframes touchHead { 0%, 45% { transform: rotate(0deg); } 55%, 80% { transform: rotate(10deg); } 100% { transform: rotate(0deg); } }
+
+        /* LOOK ANIMATION */
+        @keyframes lookHead { 0%, 30% { transform: rotate(0deg); } 45%, 80% { transform: rotate(-40deg); } 100% { transform: rotate(0deg); } }
+        @keyframes lookHand { 0% { opacity: 0; transform: translate(40px, 20px); } 20%, 30% { opacity: 1; transform: translate(15px, 15px); } 45%, 80% { opacity: 1; transform: translate(-10px, -20px); } 90%, 100% { opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('sit')">SIT</button>
+            <button class="tab-btn" onclick="showTab('stay')">STAY</button>
+            <button class="tab-btn" onclick="showTab('touch')">TOUCH</button>
+            <button class="tab-btn" onclick="showTab('look')">LOOK</button>
+        </div>
+
+        <!-- SIT DRILL -->
+        <div id="sit" class="card active">
+            <div class="tag">Foundation</div>
+            <h2>The Sit Drill</h2>
+            <div class="viewport">
+                <svg viewBox="0 0 200 120">
+                    <ellipse cx="100" cy="105" rx="80" ry="10" fill="rgba(255,255,255,0.03)" />
+                    <rect x="105" y="85" width="8" height="18" rx="4" fill="#E5E7EB" />
+                    <g style="animation: sitBody 8s infinite ease-in-out; transform-origin: 110px 85px;">
+                        <path class="tail" d="M75 75 Q60 70 55 50" stroke="#E5E7EB" stroke-width="5" fill="none" stroke-linecap="round" />
+                        <rect x="75" y="85" width="8" height="15" rx="4" fill="#D1D5DB" />
+                        <rect x="70" y="65" width="50" height="28" rx="14" fill="#E5E7EB" />
+                        <g style="animation: sitHead 8s infinite ease-in-out; transform-origin: 110px 65px;">
+                            <path d="M107 67 L110 50 L120 50 L123 67 Z" fill="#E5E7EB" />
+                            <rect x="105" y="44" width="30" height="22" rx="10" fill="#E5E7EB" />
+                            <rect x="125" y="52" width="15" height="12" rx="5" fill="#E5E7EB" />
+                            <path d="M115 47 Q100 45 102 70" fill="#9CA3AF" />
+                            <circle cx="125" cy="53" r="1.8" fill="#374151" />
+                            <circle cx="140" cy="55" r="2.5" fill="#1F2937" />
+                        </g>
+                    </g>
+                    <text x="135" y="40" class="yes-text">YES!</text>
+                    <g style="animation: sitHand 8s infinite ease-in-out;">
+                        <circle cx="150" cy="55" r="8" fill="#FDBA74" />
+                        <circle cx="140" cy="55" r="3" fill="var(--acc)" />
+                    </g>
+                </svg>
+            </div>
+            <ul class="instr-list">
+                <li class="instr-item"><div class="instr-num">1</div><span>Hold a treat right at your dog's nose level.</span></li>
+                <li class="instr-item"><div class="instr-num">2</div><span>Slowly move the treat up and back over their head.</span></li>
+                <li class="instr-item"><div class="instr-num">3</div><span>As they look up, their bottom will naturally drop.</span></li>
+                <li class="instr-item"><div class="instr-num">4</div><span>Mark "YES!" and reward the moment they sit.</span></li>
+            </ul>
+        </div>
+
+        <!-- STAY DRILL -->
+        <div id="stay" class="card">
+            <div class="tag">Impulse Control</div>
+            <h2>The Stay Drill</h2>
+            <div class="viewport">
+                <svg viewBox="0 0 200 120">
+                    <ellipse cx="100" cy="105" rx="80" ry="10" fill="rgba(255,255,255,0.03)" />
+                    <!-- Sitting Dog -->
+                    <g transform="rotate(-25 110 85)">
+                        <rect x="105" y="85" width="8" height="18" rx="4" fill="#E5E7EB" />
+                        <path class="tail" d="M75 75 Q60 70 55 50" stroke="#E5E7EB" stroke-width="5" fill="none" stroke-linecap="round" />
+                        <rect x="75" y="85" width="8" height="15" rx="4" fill="#D1D5DB" />
+                        <rect x="70" y="65" width="50" height="28" rx="14" fill="#E5E7EB" />
+                        <g transform="rotate(-10 110 65)">
+                            <path d="M107 67 L110 50 L120 50 L123 67 Z" fill="#E5E7EB" />
+                            <rect x="105" y="44" width="30" height="22" rx="10" fill="#E5E7EB" />
+                            <rect x="125" y="52" width="15" height="12" rx="5" fill="#E5E7EB" />
+                            <path d="M115 47 Q100 45 102 70" fill="#9CA3AF" />
+                            <circle cx="125" cy="53" r="1.8" fill="#374151" />
+                            <circle cx="140" cy="55" r="2.5" fill="#1F2937" />
+                        </g>
+                    </g>
+                    <!-- Trainer -->
+                    <g style="animation: stayTrainer 8s infinite ease-in-out;">
+                        <circle cx="155" cy="40" r="10" fill="#6366F1" />
+                        <rect x="145" y="52" width="20" height="35" rx="10" fill="#6366F1" />
+                        <g style="animation: stayHand 8s infinite;">
+                            <rect x="135" y="60" width="12" height="4" rx="2" fill="#FDBA74" />
+                            <rect x="135" y="56" width="4" height="8" rx="2" fill="#FDBA74" transform="rotate(-20 135 60)" />
+                        </g>
+                    </g>
+                    <text x="80" y="40" class="yes-text">YES!</text>
+                </svg>
+            </div>
+            <ul class="instr-list">
+                <li class="instr-item"><div class="instr-num">1</div><span>Ask your dog to sit and hold your palm out.</span></li>
+                <li class="instr-item"><div class="instr-num">2</div><span>Say "Stay" and take one small step back.</span></li>
+                <li class="instr-item"><div class="instr-num">3</div><span>If they stay, return immediately to their side.</span></li>
+                <li class="instr-item"><div class="instr-num">4</div><span>Mark "YES!" and reward for holding position.</span></li>
+            </ul>
+        </div>
+
+        <!-- TOUCH DRILL -->
+        <div id="touch" class="card">
+            <div class="tag">Utility</div>
+            <h2>Hand Targeting</h2>
+            <div class="viewport">
+                <svg viewBox="0 0 200 120">
+                    <ellipse cx="100" cy="105" rx="80" ry="10" fill="rgba(255,255,255,0.03)" />
+                    <g style="animation: touchDog 8s infinite ease-in-out;">
+                        <rect x="105" y="85" width="8" height="18" rx="4" fill="#E5E7EB" />
+                        <rect x="85" y="85" width="8" height="18" rx="4" fill="#E5E7EB" />
+                        <path class="tail" d="M75 75 Q60 70 55 50" stroke="#E5E7EB" stroke-width="5" fill="none" stroke-linecap="round" />
+                        <rect x="70" y="65" width="50" height="28" rx="14" fill="#E5E7EB" />
+                        <g style="animation: touchHead 8s infinite ease-in-out; transform-origin: 110px 65px;">
+                            <path d="M107 67 L110 50 L120 50 L123 67 Z" fill="#E5E7EB" />
+                            <rect x="105" y="44" width="30" height="22" rx="10" fill="#E5E7EB" />
+                            <rect x="125" y="52" width="15" height="12" rx="5" fill="#E5E7EB" />
+                            <path d="M115 47 Q100 45 102 70" fill="#9CA3AF" />
+                            <circle cx="125" cy="53" r="1.8" fill="#374151" />
+                            <circle cx="140" cy="55" r="2.5" fill="#1F2937" />
+                        </g>
+                    </g>
+                    <!-- Target Hand -->
+                    <g transform="translate(160, 60)" style="animation: touchHand 8s infinite ease-in-out;">
+                        <rect x="0" y="0" width="18" height="10" rx="5" fill="#FDBA74" transform="rotate(-90)" />
+                        <circle cx="5" cy="-8" r="4" fill="#FDBA74" />
+                    </g>
+                    <text x="135" y="40" class="yes-text">YES!</text>
+                </svg>
+            </div>
+            <ul class="instr-list">
+                <li class="instr-item"><div class="instr-num">1</div><span>Present your flat palm a few inches away.</span></li>
+                <li class="instr-item"><div class="instr-num">2</div><span>Wait for your dog to sniff or boop your hand.</span></li>
+                <li class="instr-item"><div class="instr-num">3</div><span>The moment their nose touches skin, mark "YES!"</span></li>
+                <li class="instr-item"><div class="instr-num">4</div><span>Reward from your OTHER hand.</span></li>
+            </ul>
+        </div>
+
+        <!-- LOOK DRILL -->
+        <div id="look" class="card">
+            <div class="tag">Focus</div>
+            <h2>Eye Contact</h2>
+            <div class="viewport">
+                <svg viewBox="0 0 200 120">
+                    <ellipse cx="100" cy="105" rx="80" ry="10" fill="rgba(255,255,255,0.03)" />
+                    <rect x="105" y="85" width="8" height="18" rx="4" fill="#E5E7EB" />
+                    <rect x="85" y="85" width="8" height="18" rx="4" fill="#E5E7EB" />
+                    <path class="tail" d="M75 75 Q60 70 55 50" stroke="#E5E7EB" stroke-width="5" fill="none" stroke-linecap="round" />
+                    <rect x="70" y="65" width="50" height="28" rx="14" fill="#E5E7EB" />
+                    <g style="animation: lookHead 8s infinite ease-in-out; transform-origin: 110px 65px;">
+                        <path d="M107 67 L110 50 L120 50 L123 67 Z" fill="#E5E7EB" />
+                        <rect x="105" y="44" width="30" height="22" rx="10" fill="#E5E7EB" />
+                        <rect x="125" y="52" width="15" height="12" rx="5" fill="#E5E7EB" />
+                        <path d="M115 47 Q100 45 102 70" fill="#9CA3AF" />
+                        <circle cx="125" cy="53" r="1.8" fill="#374151" />
+                        <circle cx="140" cy="55" r="2.5" fill="#1F2937" />
+                    </g>
+                    <!-- Pointer Hand -->
+                    <g style="animation: lookHand 8s infinite ease-in-out;">
+                        <circle cx="150" cy="55" r="7" fill="#FDBA74" />
+                        <path d="M150 55 L135 60" stroke="#FDBA74" stroke-width="4" stroke-linecap="round" />
+                    </g>
+                    <text x="135" y="40" class="yes-text">YES!</text>
+                </svg>
+            </div>
+            <ul class="instr-list">
+                <li class="instr-item"><div class="instr-num">1</div><span>Hold a treat to your dog's nose to get interest.</span></li>
+                <li class="instr-item"><div class="instr-num">2</div><span>Slowly bring the hand up towards your eyes.</span></li>
+                <li class="instr-item"><div class="instr-num">3</div><span>The moment they make eye contact, mark "YES!"</span></li>
+                <li class="instr-item"><div class="instr-num">4</div><span>Reward generously to build focus.</span></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
