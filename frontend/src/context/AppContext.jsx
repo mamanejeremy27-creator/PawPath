@@ -338,11 +338,19 @@ export function AppProvider({ children }) {
     setShowAddDog(false);
     if (isAuthenticated) {
       api.createDog({ name: profile.name, breed: profile.breed || null, birthday: profile.birthday || null, weight: profile.weight || null, avatar: profile.avatar || null })
-        .then(data => { if (data) idMapRef.current[newId] = data.id; })
+        .then(data => {
+          if (data) {
+            idMapRef.current[newId] = data.id;
+            if (data.newBadges?.length > 0) {
+              const badgeDef = badges.find(b => b.id === data.newBadges[0]);
+              if (badgeDef) { setNewBadge(badgeDef); setTimeout(() => setNewBadge(null), 4000); }
+            }
+          }
+        })
         .catch(err => console.error('Failed to create dog:', err.message));
     }
     return newId;
-  }, [dogs, isAuthenticated]);
+  }, [dogs, isAuthenticated, badges]);
 
   const removeDog = useCallback((dogId) => {
     const dogIds = Object.keys(dogs);
@@ -383,7 +391,15 @@ export function AppProvider({ children }) {
       setActiveDogId(newId);
       if (isAuthenticated) {
         api.createDog(dbPayload)
-          .then(data => { if (data) idMapRef.current[newId] = data.id; })
+          .then(data => {
+            if (data) {
+              idMapRef.current[newId] = data.id;
+              if (data.newBadges?.length > 0) {
+                const badgeDef = badges.find(b => b.id === data.newBadges[0]);
+                if (badgeDef) { setNewBadge(badgeDef); setTimeout(() => setNewBadge(null), 4000); }
+              }
+            }
+          })
           .catch(err => console.error('Failed to create dog:', err.message));
       }
     } else {

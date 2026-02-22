@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Dog } from '../../entities/dog.entity';
+import { EarnedBadge } from '../../entities/earned-badge.entity';
 import type { CreateDogDto, UpdateDogDto } from './dto';
 
 @Injectable()
@@ -9,6 +10,8 @@ export class DogsService {
   constructor(
     @InjectRepository(Dog)
     private dogRepository: Repository<Dog>,
+    @InjectRepository(EarnedBadge)
+    private badgeRepo: Repository<EarnedBadge>,
   ) {}
 
   async findAll(userId: string): Promise<Dog[]> {
@@ -24,9 +27,26 @@ export class DogsService {
     return dog;
   }
 
-  async create(userId: string, createDogDto: CreateDogDto): Promise<Dog> {
+  async create(userId: string, createDogDto: CreateDogDto) {
     const dog = this.dogRepository.create({ ...createDogDto, userId });
-    return this.dogRepository.save(dog);
+    const saved = await this.dogRepository.save(dog);
+    const newBadges: string[] = [];
+
+    // Award double_trouble badge if user now has 2+ dogs
+    const dogCount = await this.dogRepository.count({ where: { userId } });
+    if (dogCount >= 2) {
+      const existing = await this.badgeRepo.findOne({
+        where: { dogId: saved.id, badgeId: 'double_trouble' },
+      });
+      if (!existing) {
+        await this.badgeRepo.save(
+          this.badgeRepo.create({ dogId: saved.id, badgeId: 'double_trouble' }),
+        );
+        newBadges.push('double_trouble');
+      }
+    }
+
+    return { ...saved, newBadges };
   }
 
   async update(id: string, userId: string, updateDogDto: UpdateDogDto): Promise<Dog> {
