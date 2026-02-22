@@ -2,7 +2,7 @@ import {
   Controller, Get, Post, Delete, Body, Param, UseGuards,
 } from '@nestjs/common';
 import { HealthService } from './health.service';
-import type {
+import {
   CreateWeightRecordDto,
   CreateVaccinationDto,
   CreateVetVisitDto,

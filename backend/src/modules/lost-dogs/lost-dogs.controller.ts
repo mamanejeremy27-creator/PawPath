@@ -2,7 +2,7 @@ import {
   Controller, Get, Post, Patch, Body, Param, UseGuards,
 } from '@nestjs/common';
 import { LostDogsService } from './lost-dogs.service';
-import type {
+import {
   CreateLostDogReportDto,
   UpdateLostDogReportDto,
   CreateSightingDto,
