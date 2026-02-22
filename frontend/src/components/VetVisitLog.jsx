@@ -146,7 +146,7 @@ export default function VetVisitLog() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 700 }}>{v.reason || formatDate(v.date)}</div>
                     <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>
-                      {formatDate(v.date)}{v.vet_name ? ` · ${v.vet_name}` : ""}
+                      {formatDate(v.date)}{(v.vet || v.vet_name) ? ` · ${v.vet || v.vet_name}` : ""}
                     </div>
                   </div>
                   {v.cost > 0 && <div style={{ fontSize: 14, fontWeight: 800, color: C.acc, flexShrink: 0 }}>₪{v.cost}</div>}

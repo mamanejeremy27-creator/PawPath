@@ -53,7 +53,7 @@ export default function VaccinationTracker() {
         const ids = new Set(data.map(x => x.id));
         for (const x of local) if (!ids.has(x.id)) data.push(x);
       } catch { /* silent */ }
-      data.sort((a, b) => new Date(b.date_given) - new Date(a.date_given));
+      data.sort((a, b) => new Date(b.date || b.date_given) - new Date(a.date || a.date_given));
       if (!cancelled) { setVacc(data); setLoading(false); }
     }
 
@@ -65,7 +65,9 @@ export default function VaccinationTracker() {
     if (!form.vaccine_name || !form.date_given) return;
     setSaving(true);
 
-    const entry = { name: form.vaccine_name, date: form.date_given, nextDue: form.next_due || undefined, notes: form.notes || undefined };
+    const vetNote = form.vet_name ? `Vet: ${form.vet_name}` : "";
+    const combinedNotes = [vetNote, form.notes].filter(Boolean).join(" | ") || undefined;
+    const entry = { name: form.vaccine_name, date: form.date_given, nextDue: form.next_due || undefined, notes: combinedNotes };
     let saved = null;
 
     if (isAuthenticated) {
@@ -104,7 +106,7 @@ export default function VaccinationTracker() {
 
   // Status summary
   const counts = vacc.reduce((a, v) => {
-    const s = vaccineStatus(v.next_due);
+    const s = vaccineStatus(v.nextDue || v.next_due);
     a[s.key] = (a[s.key] || 0) + 1;
     return a;
   }, {});
@@ -166,18 +168,18 @@ export default function VaccinationTracker() {
       {!loading && vacc.length > 0 && (
         <div style={{ padding: "16px 20px 0", display: "flex", flexDirection: "column", gap: 8 }}>
           {vacc.map((v, i) => {
-            const st = vaccineStatus(v.next_due);
+            const st = vaccineStatus(v.nextDue || v.next_due);
             return (
               <div key={v.id || i} style={{ padding: "14px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{v.vaccine_name}</span>
+                      <span style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{v.name || v.vaccine_name}</span>
                       <span style={{ padding: "2px 10px", borderRadius: 10, background: st.bg, color: st.color, fontSize: 11, fontWeight: 700 }}>{statusLabel(T, st.key)}</span>
                     </div>
                     <div style={{ fontSize: 12, color: C.t3, marginTop: 4 }}>
-                      {T("healthDateGiven")}: {formatDate(v.date_given)}
-                      {v.next_due && <span> · {T("healthNextDue")}: {formatDate(v.next_due)}</span>}
+                      {T("healthDateGiven")}: {formatDate(v.date || v.date_given)}
+                      {(v.nextDue || v.next_due) && <span> · {T("healthNextDue")}: {formatDate(v.nextDue || v.next_due)}</span>}
                     </div>
                     {v.vet_name && <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{T("healthVetName")}: {v.vet_name}</div>}
                     {v.notes && <div style={{ fontSize: 12, color: C.t2, marginTop: 2 }}>{v.notes}</div>}

@@ -89,17 +89,20 @@ export default function WeightTracker() {
   // SVG Chart
   const chartW = 340, chartH = 200, pad = 40;
   const sorted = [...weights].sort((a, b) => new Date(a.date) - new Date(b.date));
-  const vals = sorted.map(w => w.weight_kg);
+  const vals = sorted.map(w => w.weight || w.weight_kg);
   const minV = vals.length ? Math.min(...vals) - 1 : 0;
   const maxV = vals.length ? Math.max(...vals) + 1 : 10;
   const rangeV = maxV - minV || 1;
 
-  const points = sorted.map((w, i) => ({
-    x: pad + (sorted.length > 1 ? (i / (sorted.length - 1)) * (chartW - pad * 2) : (chartW - pad * 2) / 2),
-    y: pad + (1 - (w.weight_kg - minV) / rangeV) * (chartH - pad * 2),
-    label: w.weight_kg,
-    date: w.date,
-  }));
+  const points = sorted.map((w, i) => {
+    const wt = w.weight || w.weight_kg;
+    return {
+      x: pad + (sorted.length > 1 ? (i / (sorted.length - 1)) * (chartW - pad * 2) : (chartW - pad * 2) / 2),
+      y: pad + (1 - (wt - minV) / rangeV) * (chartH - pad * 2),
+      label: wt,
+      date: w.date,
+    };
+  });
 
   const pathD = points.length >= 2
     ? `M ${points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" L ")}`
@@ -232,9 +235,9 @@ export default function WeightTracker() {
             <div key={w.id || i} style={{ padding: "14px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 14 }}>
               <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                  <span style={{ fontSize: 18, fontWeight: 800, color: C.t1 }}>{w.weight_kg} {T("healthKg")}</span>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: C.t1 }}>{w.weight || w.weight_kg} {T("healthKg")}</span>
                   {i < weights.length - 1 && (() => {
-                    const diff = w.weight_kg - weights[i + 1].weight_kg;
+                    const diff = (w.weight || w.weight_kg) - (weights[i + 1].weight || weights[i + 1].weight_kg);
                     if (Math.abs(diff) < 0.1) return null;
                     return <span style={{ fontSize: 12, color: diff > 0 ? "#F59E0B" : "#3B82F6", fontWeight: 600 }}>{diff > 0 ? "+" : ""}{diff.toFixed(1)}</span>;
                   })()}

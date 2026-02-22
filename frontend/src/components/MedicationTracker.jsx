@@ -37,7 +37,7 @@ export default function MedicationTracker() {
         const ids = new Set(data.map(x => x.id));
         for (const x of local) if (!ids.has(x.id)) data.push(x);
       } catch { /* silent */ }
-      data.sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
+      data.sort((a, b) => new Date(b.startDate || b.start_date) - new Date(a.startDate || a.start_date));
       if (!cancelled) { setMeds(data); setLoading(false); }
     }
 
@@ -46,8 +46,8 @@ export default function MedicationTracker() {
   }, [isAuthenticated, activeDogId]);
 
   const now = new Date();
-  const active = meds.filter(m => !m.end_date || new Date(m.end_date) >= now);
-  const completed = meds.filter(m => m.end_date && new Date(m.end_date) < now);
+  const active = meds.filter(m => !(m.endDate || m.end_date) || new Date(m.endDate || m.end_date) >= now);
+  const completed = meds.filter(m => (m.endDate || m.end_date) && new Date(m.endDate || m.end_date) < now);
 
   const handleAdd = async () => {
     if (!form.name || !form.start_date) return;
@@ -95,7 +95,7 @@ export default function MedicationTracker() {
   };
 
   const MedCard = ({ m, i }) => {
-    const isActive = !m.end_date || new Date(m.end_date) >= now;
+    const isActive = !(m.endDate || m.end_date) || new Date(m.endDate || m.end_date) >= now;
     return (
       <div key={m.id || i} style={{ padding: "14px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 14 }}>
         <div style={{ width: 40, height: 40, borderRadius: 12, background: isActive ? "rgba(139,92,246,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${isActive ? "rgba(139,92,246,0.15)" : C.b1}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>💊</div>
@@ -111,7 +111,7 @@ export default function MedicationTracker() {
             {freqLabel(m.frequency)}
           </div>
           <div style={{ fontSize: 11, color: C.t3, marginTop: 2 }}>
-            {formatDate(m.start_date)}{m.end_date ? ` — ${formatDate(m.end_date)}` : ""}
+            {formatDate(m.startDate || m.start_date)}{(m.endDate || m.end_date) ? ` — ${formatDate(m.endDate || m.end_date)}` : ""}
           </div>
           {m.notes && <div style={{ fontSize: 12, color: C.t2, marginTop: 4 }}>{m.notes}</div>}
         </div>
