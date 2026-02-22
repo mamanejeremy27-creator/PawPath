@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { getTodaysMemory, recordMemoryShown } from "../utils/memories.js";
+import { ChevronRight } from "lucide-react";
 
 const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", rL: 24 };
 
@@ -65,7 +66,7 @@ export default function MemoryCard() {
             </div>
           )}
         </div>
-        <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+        <ChevronRight size={18} color={C.t3} />
       </button>
     </div>
   );

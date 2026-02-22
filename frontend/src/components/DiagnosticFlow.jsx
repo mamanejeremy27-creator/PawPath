@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { DIAGNOSTIC_CATEGORIES, getDiagnosticExercises } from "../data/diagnostic.js";
+import { ArrowLeft, AlertTriangle, CheckCircle2, Circle, ChevronRight } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", s2: "#1F1F23", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", amber: "#F59E0B", danger: "#EF4444", r: 16, rL: 24 };
 const DIAG_STORAGE_KEY = "pawpath_diagnosticHistory";
@@ -41,7 +43,7 @@ export default function DiagnosticFlow() {
       <div style={{ minHeight: "100vh", background: C.bg, paddingBottom: 40, animation: "fadeIn 0.3s ease" }}>
         <div style={{ padding: "24px 20px 16px" }}>
           <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 16 }}>←</span> {T("home")}
+            <ArrowLeft size={16} /> {T("home")}
           </button>
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 900, margin: 0, color: C.t1 }}>{T("diagTitle")}</h1>
           <p style={{ fontSize: 14, color: C.t2, marginTop: 8, lineHeight: 1.6 }}>{T("diagSubtitle")}</p>
@@ -57,7 +59,7 @@ export default function DiagnosticFlow() {
                 textAlign: "center", animation: `fadeIn 0.3s ease ${i * 0.04}s both`,
               }}
             >
-              <div style={{ fontSize: 32, marginBottom: 8 }}>{cat.emoji}</div>
+              <div style={{ marginBottom: 8, display: "flex", justifyContent: "center" }}><Icon name={cat.icon || "Stethoscope"} size={32} color={C.acc} /></div>
               <div style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.4 }}>{cat.name[lang] || cat.name.en}</div>
             </button>
           ))}
@@ -90,7 +92,7 @@ export default function DiagnosticFlow() {
       <div style={{ minHeight: "100vh", background: C.bg, paddingBottom: 40, animation: "fadeIn 0.3s ease" }}>
         <div style={{ padding: "24px 20px 16px" }}>
           <button onClick={() => { if (currentQ > 0) { setCurrentQ(currentQ - 1); } else { reset(); } }} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 16 }}>←</span> {T("back")}
+            <ArrowLeft size={16} /> {T("back")}
           </button>
 
           {/* Progress dots */}
@@ -101,7 +103,7 @@ export default function DiagnosticFlow() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-            <span style={{ fontSize: 28 }}>{selectedCat.emoji}</span>
+            <Icon name={selectedCat.icon || "Stethoscope"} size={28} color={C.acc} />
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 800, margin: 0, color: C.t1 }}>{q.question[lang] || q.question.en}</h2>
           </div>
         </div>
@@ -146,14 +148,14 @@ export default function DiagnosticFlow() {
       <div style={{ minHeight: "100vh", background: C.bg, paddingBottom: 40, animation: "fadeIn 0.3s ease" }}>
         <div style={{ padding: "24px 20px 16px" }}>
           <button onClick={reset} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 16 }}>←</span> {T("diagStartOver")}
+            <ArrowLeft size={16} /> {T("diagStartOver")}
           </button>
         </div>
 
         <div style={{ padding: "0 20px" }}>
           {/* Header */}
           <div style={{ textAlign: "center", marginBottom: 24 }}>
-            <div style={{ fontSize: 48, marginBottom: 8 }}>{selectedCat.emoji}</div>
+            <div style={{ marginBottom: 8, display: "flex", justifyContent: "center" }}><Icon name={selectedCat.icon || "Stethoscope"} size={48} color={C.acc} /></div>
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 900, margin: 0, color: C.t1 }}>{T("diagYourPlan")}</h1>
             <p style={{ fontSize: 14, color: C.t2, marginTop: 6 }}>{selectedCat.name[lang] || selectedCat.name.en}</p>
             <div style={{ display: "inline-block", padding: "6px 16px", borderRadius: 20, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", fontSize: 12, fontWeight: 700, color: C.acc, marginTop: 10 }}>
@@ -168,7 +170,7 @@ export default function DiagnosticFlow() {
               borderRadius: C.rL, border: "1px solid rgba(239,68,68,0.2)",
               display: "flex", gap: 12, alignItems: "flex-start",
             }}>
-              <span style={{ fontSize: 20, flexShrink: 0 }}>⚠️</span>
+              <AlertTriangle size={20} color={C.danger} style={{ flexShrink: 0 }} />
               <div>
                 <div style={{ fontSize: 13, fontWeight: 800, color: C.danger }}>{T("diagProWarningTitle")}</div>
                 <p style={{ fontSize: 12, color: C.t2, margin: "6px 0 0", lineHeight: 1.6 }}>{T("diagProWarning")}</p>
@@ -187,12 +189,12 @@ export default function DiagnosticFlow() {
                 display: "flex", alignItems: "center", gap: 14,
               }}
             >
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: recProg.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{recProg.emoji}</div>
+              <div style={{ width: 48, height: 48, borderRadius: 14, background: recProg.gradient, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Icon name={recProg.icon} size={22} color="#fff" /></div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: C.acc, textTransform: "uppercase", letterSpacing: 1 }}>{T("diagRecommendedProgram")}</div>
                 <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2 }}>{recProg.name}</div>
               </div>
-              <span style={{ color: C.t3, fontSize: 18 }}>›</span>
+              <ChevronRight size={16} color={C.t3} />
             </button>
           )}
 
@@ -218,10 +220,10 @@ export default function DiagnosticFlow() {
                     padding: "14px 16px", background: C.s1, borderRadius: C.rL,
                     border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 12,
                   }}>
-                    <span style={{ fontSize: 16, flexShrink: 0 }}>{done ? "✅" : "⚪"}</span>
+                    {done ? <CheckCircle2 size={16} color={C.acc} style={{ flexShrink: 0 }} /> : <Circle size={16} color={C.t3} style={{ flexShrink: 0 }} />}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{exercise.name}</div>
-                      <div style={{ fontSize: 11, color: C.t3, marginTop: 2 }}>{exProg.emoji} {exProg.name}</div>
+                      <div style={{ fontSize: 11, color: C.t3, marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}><Icon name={exProg.icon} size={11} color={C.t3} /> {exProg.name}</div>
                       <div style={{ fontSize: 12, color: C.t2, marginTop: 4, lineHeight: 1.5 }}>{reason[lang] || reason.en}</div>
                     </div>
                     {!done && (

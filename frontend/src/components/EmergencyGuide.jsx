@@ -1,5 +1,7 @@
 import { useApp } from "../context/AppContext.jsx";
 import { EMERGENCY_GUIDES, SEVERITY_ORDER } from "../data/emergencyGuide.js";
+import { ArrowLeft, ArrowRight, Phone, Hospital, ChevronRight } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", rL: 24, r: 16 };
 
@@ -18,7 +20,7 @@ export default function EmergencyGuide() {
       {/* Header */}
       <div style={{ padding: "24px 20px 16px" }}>
         <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: "#EF4444", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 16 }}>{rtl ? "\u2192" : "\u2190"}</span> {T("home")}
+          {rtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />} {T("home")}
         </button>
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: 0, color: C.t1 }}>{T("emergencyGuide")}</h2>
         <p style={{ fontSize: 14, color: C.t3, marginTop: 4 }}>{T("emergencySubtitle")}</p>
@@ -35,7 +37,7 @@ export default function EmergencyGuide() {
             boxShadow: "0 4px 20px rgba(239,68,68,0.3)",
           }}
         >
-          <span style={{ fontSize: 20 }}>📞</span> {T("callVetNow")}
+          <Phone size={20} /> {T("callVetNow")}
         </button>
       </div>
 
@@ -49,7 +51,7 @@ export default function EmergencyGuide() {
             color: C.t1, fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
           }}
         >
-          <span>🏥</span> {T("emergencyVetDirectory")}
+          <Hospital size={16} /> {T("emergencyVetDirectory")}
         </button>
       </div>
 
@@ -80,7 +82,7 @@ export default function EmergencyGuide() {
                       display: "flex", alignItems: "center", justifyContent: "center",
                       fontSize: 22, flexShrink: 0,
                     }}>
-                      {em.emoji}
+                      <Icon name={em.icon || "AlertTriangle"} size={24} color={sevColor} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -94,7 +96,7 @@ export default function EmergencyGuide() {
                         {em.description[lang]}
                       </div>
                     </div>
-                    <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+                    <ChevronRight size={16} color={C.t3} />
                   </button>
                 ))}
               </div>

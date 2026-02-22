@@ -5,6 +5,7 @@ import { haversine } from "../lib/walkTracker.js";
 import PhotoImg from "./PhotoImg.jsx";
 import LostDogMap from "./LostDogMap.jsx";
 import BottomNav from "./BottomNav.jsx";
+import { ArrowLeft, AlertCircle, CheckCircle2, PartyPopper, AlertTriangle } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
 
@@ -88,7 +89,7 @@ export default function LostDogTracker() {
     return (
       <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
         <div style={{ textAlign: "center", animation: "fadeIn 0.5s ease" }}>
-          <div style={{ fontSize: 80, marginBottom: 16, animation: "fadeIn 0.8s ease" }}>{"🎉"}</div>
+          <div style={{ marginBottom: 16, animation: "fadeIn 0.8s ease", display: "flex", justifyContent: "center" }}><PartyPopper size={80} color={C.acc} /></div>
           <h1 style={{ fontSize: 28, fontWeight: 800, color: C.acc, margin: "0 0 8px" }}>{report.dog_name} {T("lostFoundTitle")}</h1>
           <p style={{ fontSize: 15, color: C.t2, margin: "0 0 32px", lineHeight: 1.6 }}>{T("lostFoundSub")}</p>
           <button onClick={() => nav("home")} style={{ padding: "14px 32px", fontSize: 15, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer" }}>
@@ -117,10 +118,10 @@ export default function LostDogTracker() {
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
       {/* Header */}
       <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t1, fontSize: 24, cursor: "pointer", padding: 0 }}>{"\u2190"}</button>
+        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t1, cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><ArrowLeft size={24} /></button>
         <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: isActive ? C.danger : C.acc }}>
-            {isActive ? `🚨 ${T("lostTracking")} ${report.dog_name}` : `✅ ${report.dog_name} ${T("lostFoundTitle")}`}
+          <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: isActive ? C.danger : C.acc, display: "flex", alignItems: "center", gap: 8 }}>
+            {isActive ? <><AlertCircle size={20} /> {T("lostTracking")} {report.dog_name}</> : <><CheckCircle2 size={20} /> {report.dog_name} {T("lostFoundTitle")}</>}
           </h1>
           <p style={{ fontSize: 12, color: C.t3, margin: "2px 0 0" }}>{T("lostReported")} {timeSince(report.created_at)} {T("lostAgo")}</p>
         </div>
@@ -202,7 +203,7 @@ export default function LostDogTracker() {
             {T("lostShareAlert")}
           </button>
           <button onClick={() => setShowFound(true)} style={{ width: "100%", padding: 14, fontSize: 14, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer" }}>
-            {"🎉"} {T("lostMarkFound")}
+            <PartyPopper size={16} /> {T("lostMarkFound")}
           </button>
           <button onClick={() => setConfirmCancel(true)} style={{ width: "100%", padding: 12, fontSize: 13, fontWeight: 600, background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
             {T("lostCancelReport")}
@@ -214,7 +215,7 @@ export default function LostDogTracker() {
       {showFound && (
         <div onClick={() => setShowFound(false)} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div onClick={e => e.stopPropagation()} style={{ background: C.s1, borderRadius: 24, padding: "28px 24px", maxWidth: 320, width: "90%", textAlign: "center" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>{"🎉"}</div>
+            <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><PartyPopper size={40} color={C.acc} /></div>
             <p style={{ fontSize: 15, color: C.t1, margin: "0 0 20px" }}>{T("lostFoundConfirm").replace("{name}", report.dog_name)}</p>
             <div style={{ display: "flex", gap: 10 }}>
               <button onClick={() => setShowFound(false)} style={{ flex: 1, padding: 12, fontSize: 14, fontWeight: 600, background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>{T("back")}</button>
@@ -228,7 +229,7 @@ export default function LostDogTracker() {
       {confirmCancel && (
         <div onClick={() => setConfirmCancel(false)} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div onClick={e => e.stopPropagation()} style={{ background: C.s1, borderRadius: 24, padding: "28px 24px", maxWidth: 320, width: "90%", textAlign: "center" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>{"\u26A0\uFE0F"}</div>
+            <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><AlertTriangle size={40} color={C.danger} /></div>
             <p style={{ fontSize: 15, color: C.t1, margin: "0 0 20px" }}>{T("lostCancelConfirm")}</p>
             <div style={{ display: "flex", gap: 10 }}>
               <button onClick={() => setConfirmCancel(false)} style={{ flex: 1, padding: 12, fontSize: 14, fontWeight: 600, background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>{T("back")}</button>

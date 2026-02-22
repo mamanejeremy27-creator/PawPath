@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { api } from "../lib/api.js";
 import BottomNav from "./BottomNav.jsx";
+import { ArrowLeft, Scale, Syringe, Pill, Hospital, Heart, ChevronRight, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
 const LS_WEIGHT = "pawpath_weight_logs";
@@ -80,7 +81,7 @@ export default function HealthDashboard() {
   const trend = currentWeight && prevWeight
     ? currentWeight > prevWeight + 0.2 ? "up" : currentWeight < prevWeight - 0.2 ? "down" : "stable"
     : null;
-  const trendArrow = trend === "up" ? "↑" : trend === "down" ? "↓" : trend === "stable" ? "→" : "";
+  const TrendIcon = trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : trend === "stable" ? Minus : null;
   const trendColor = trend === "up" ? "#F59E0B" : trend === "down" ? "#3B82F6" : C.acc;
   const trendLabel = trend === "up" ? T("healthTrendUp") : trend === "down" ? T("healthTrendDown") : trend === "stable" ? T("healthTrendStable") : "";
 
@@ -109,21 +110,21 @@ export default function HealthDashboard() {
     {
       key: "weight",
       screen: "weightTracker",
-      icon: "⚖️",
+      icon: <Scale size={24} color="#22C55E" />,
       title: T("healthWeight"),
       gradient: "rgba(34,197,94,0.08)",
       borderColor: "rgba(34,197,94,0.2)",
       content: currentWeight
         ? <div>
             <div style={{ fontSize: 24, fontWeight: 800, color: C.t1 }}>{currentWeight} {T("healthKg")}</div>
-            {trend && <div style={{ fontSize: 12, fontWeight: 600, color: trendColor, marginTop: 4 }}>{trendArrow} {trendLabel}</div>}
+            {trend && <div style={{ fontSize: 12, fontWeight: 600, color: trendColor, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>{TrendIcon && <TrendIcon size={14} color={trendColor} />} {trendLabel}</div>}
           </div>
         : <div style={{ fontSize: 13, color: C.t3 }}>{T("healthNoData")}</div>,
     },
     {
       key: "vacc",
       screen: "vaccinationTracker",
-      icon: "💉",
+      icon: <Syringe size={24} color="#3B82F6" />,
       title: T("healthVaccinations"),
       gradient: "rgba(59,130,246,0.08)",
       borderColor: "rgba(59,130,246,0.2)",
@@ -138,7 +139,7 @@ export default function HealthDashboard() {
     {
       key: "meds",
       screen: "medicationTracker",
-      icon: "💊",
+      icon: <Pill size={24} color="#8B5CF6" />,
       title: T("healthMedications"),
       gradient: "rgba(139,92,246,0.08)",
       borderColor: "rgba(139,92,246,0.2)",
@@ -149,7 +150,7 @@ export default function HealthDashboard() {
     {
       key: "visits",
       screen: "vetVisitLog",
-      icon: "🏥",
+      icon: <Hospital size={24} color="#EC4899" />,
       title: T("healthVetVisits"),
       gradient: "rgba(236,72,153,0.08)",
       borderColor: "rgba(236,72,153,0.2)",
@@ -167,11 +168,11 @@ export default function HealthDashboard() {
       {/* Header */}
       <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
         <button onClick={() => nav("home")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: C.t3, padding: 4 }}>
-          {"\u2190"}
+          <ArrowLeft size={20} />
         </button>
         <div>
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 2px", color: C.t1 }}>{T("healthDashboard")}</h1>
-          <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>❤️ {T("healthDashboardSub").replace(" →", "").replace("← ", "")}</p>
+          <p style={{ fontSize: 13, color: C.t3, margin: 0 }}><Heart size={14} color="#EC4899" style={{ display: "inline", verticalAlign: "middle" }} /> {T("healthDashboardSub").replace(" →", "").replace("← ", "")}</p>
         </div>
       </div>
 
@@ -197,14 +198,14 @@ export default function HealthDashboard() {
                 display: "flex", alignItems: "center", gap: 16,
               }}
             >
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: card.gradient, border: `1px solid ${card.borderColor}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>
+              <div style={{ width: 48, height: 48, borderRadius: 14, background: card.gradient, border: `1px solid ${card.borderColor}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 {card.icon}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>{card.title}</div>
                 {card.content}
               </div>
-              <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+              <ChevronRight size={16} color={C.t3} />
             </button>
           ))}
         </div>

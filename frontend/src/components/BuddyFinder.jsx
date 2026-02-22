@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { api } from "../lib/api.js";
+import { ArrowLeft, AlertTriangle, PawPrint } from "lucide-react";
 import BottomNav from "./BottomNav.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
@@ -63,7 +64,7 @@ export default function BuddyFinder() {
       {/* Header */}
       <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
         <button onClick={() => nav("buddyDashboard")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: C.t3, padding: 4 }}>
-          {"\u2190"}
+          <ArrowLeft size={20} />
         </button>
         <div>
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 4px", color: C.t1 }}>{T("findBuddy")}</h1>
@@ -81,7 +82,7 @@ export default function BuddyFinder() {
       {/* Error */}
       {!loading && error && (
         <div style={{ textAlign: "center", padding: "60px 20px", color: C.t3 }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>{"\u26A0\uFE0F"}</div>
+          <AlertTriangle size={32} color={C.t3} style={{ marginBottom: 8 }} />
           <div style={{ fontSize: 14, fontWeight: 600 }}>{T("buddyUnavailable")}</div>
         </div>
       )}
@@ -89,7 +90,7 @@ export default function BuddyFinder() {
       {/* Empty */}
       {!loading && !error && candidates.length === 0 && (
         <div style={{ textAlign: "center", padding: "60px 20px" }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>{"\uD83D\uDC3E"}</div>
+          <PawPrint size={48} color={C.t3} style={{ marginBottom: 12 }} />
           <div style={{ fontSize: 16, fontWeight: 700, color: C.t1 }}>{T("noBuddiesFound")}</div>
           <div style={{ fontSize: 13, color: C.t3, marginTop: 6 }}>{T("noBuddiesFoundSub")}</div>
         </div>

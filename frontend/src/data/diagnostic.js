@@ -7,7 +7,7 @@ export const DIAGNOSTIC_CATEGORIES = [
   // ═══════════════════════════════════════════
   {
     id: "pulling",
-    emoji: "🐕",
+    icon: "Dog",
     name: { en: "Pulling on Leash", he: "משיכה ברצועה" },
     description: {
       en: "Your dog drags you on walks or lunges ahead constantly.",
@@ -60,7 +60,7 @@ export const DIAGNOSTIC_CATEGORIES = [
   // ═══════════════════════════════════════════
   {
     id: "recall",
-    emoji: "📢",
+    icon: "Megaphone",
     name: { en: "Won't Come When Called", he: "לא בא כשקוראים" },
     description: {
       en: "Your dog ignores you or runs the other way when you call.",
@@ -112,7 +112,7 @@ export const DIAGNOSTIC_CATEGORIES = [
   // ═══════════════════════════════════════════
   {
     id: "jumping",
-    emoji: "🦘",
+    icon: "ArrowUpFromLine",
     name: { en: "Jumping on People", he: "קפיצה על אנשים" },
     description: {
       en: "Your dog jumps up on you, guests, or strangers to greet them.",
@@ -160,7 +160,7 @@ export const DIAGNOSTIC_CATEGORIES = [
   // ═══════════════════════════════════════════
   {
     id: "barking",
-    emoji: "🔊",
+    icon: "Volume2",
     name: { en: "Excessive Barking", he: "נביחות מוגזמות" },
     description: {
       en: "Your dog barks at everything — doorbell, noises, people passing, or for attention.",
@@ -217,7 +217,7 @@ export const DIAGNOSTIC_CATEGORIES = [
   // ═══════════════════════════════════════════
   {
     id: "potty",
-    emoji: "💧",
+    icon: "Droplets",
     name: { en: "Potty Accidents", he: "תאונות צרכים" },
     description: {
       en: "Your dog has accidents inside the house or isn't fully housetrained.",
@@ -271,7 +271,7 @@ export const DIAGNOSTIC_CATEGORIES = [
   // ═══════════════════════════════════════════
   {
     id: "separation",
-    emoji: "😰",
+    icon: "HeartCrack",
     name: { en: "Can't Be Left Alone", he: "לא יכול להישאר לבד" },
     description: {
       en: "Your dog panics, destroys things, barks, or has accidents when left alone.",
@@ -325,7 +325,7 @@ export const DIAGNOSTIC_CATEGORIES = [
   // ═══════════════════════════════════════════
   {
     id: "reactivity",
-    emoji: "⚡",
+    icon: "Zap",
     name: { en: "Reactive to Dogs or People", he: "תגובתיות לכלבים או אנשים" },
     description: {
       en: "Your dog lunges, barks, or growls at other dogs or people on walks.",
@@ -379,7 +379,7 @@ export const DIAGNOSTIC_CATEGORIES = [
   // ═══════════════════════════════════════════
   {
     id: "focus",
-    emoji: "🙉",
+    icon: "EarOff",
     name: { en: "Ignores Commands", he: "מתעלם מפקודות" },
     description: {
       en: "Your dog knows the commands but doesn't listen, especially with distractions.",
@@ -432,7 +432,7 @@ export const DIAGNOSTIC_CATEGORIES = [
   // ═══════════════════════════════════════════
   {
     id: "fearful",
-    emoji: "🫣",
+    icon: "ShieldAlert",
     name: { en: "Fearful or Anxious", he: "מפוחד או חרד" },
     description: {
       en: "Your dog is scared of noises, new people, new places, or specific situations.",

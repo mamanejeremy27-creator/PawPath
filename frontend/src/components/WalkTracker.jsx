@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { ArrowLeft, ClipboardList, AlertTriangle } from "lucide-react";
 import { useApp } from "../context/AppContext.jsx";
 import { startTracking, stopTracking, calculateDistance, formatDuration, calculatePace, saveWalk, getRandomWalkPrompt } from "../lib/walkTracker.js";
 
@@ -160,8 +161,8 @@ export default function WalkTracker() {
       {/* Header */}
       <div style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => { if (status === "idle" || status === "done") { stopTracking(); nav("home"); } }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: C.t3, padding: 4, opacity: (status === "idle" || status === "done") ? 1 : 0.3 }}>
-            {"\u2190"}
+          <button onClick={() => { if (status === "idle" || status === "done") { stopTracking(); nav("home"); } }} style={{ background: "none", border: "none", cursor: "pointer", color: C.t3, padding: 4, opacity: (status === "idle" || status === "done") ? 1 : 0.3, display: "flex", alignItems: "center" }}>
+            <ArrowLeft size={20} />
           </button>
           <div>
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 2px", color: C.t1 }}>{T("walkTracker")}</h1>
@@ -175,7 +176,7 @@ export default function WalkTracker() {
           fontWeight: 700, fontSize: 13, cursor: "pointer",
           display: "flex", alignItems: "center", gap: 6,
         }}>
-          {"\uD83D\uDCCB"} {T("walkViewHistory")}
+          <ClipboardList size={14} /> {T("walkViewHistory")}
         </button>
       </div>
 
@@ -340,7 +341,7 @@ export default function WalkTracker() {
             color: C.danger, fontSize: 13, fontWeight: 700, cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
           }}>
-            {"🚨"} {T("lostEmergency")}
+            <AlertTriangle size={14} /> {T("lostEmergency")}
           </button>
         )}
       </div>

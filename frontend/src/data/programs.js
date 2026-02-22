@@ -1,6 +1,6 @@
 export const TRAINING_PROGRAMS = [
   {
-    id: "foundations", name: "Puppy Foundations", emoji: "\uD83D\uDC3E",
+    id: "foundations", name: "Puppy Foundations", icon: "PawPrint",
     description: "Essential skills every puppy needs. Build trust, focus, and the basics that everything else is built on.",
     color: "#22C55E", gradient: "linear-gradient(135deg, #22C55E, #16A34A)",
     unlockLevel: 0, difficulty: "Beginner", duration: "2-4 weeks",
@@ -29,7 +29,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "potty", name: "Potty Training", emoji: "\uD83D\uDEBD",
+    id: "potty", name: "Potty Training", icon: "Droplets",
     description: "Housebreaking done right. A structured, no-punishment approach to teaching your dog where and when to go.",
     color: "#06B6D4", gradient: "linear-gradient(135deg, #06B6D4, #0891B2)",
     unlockLevel: 0, difficulty: "Beginner", duration: "2-6 weeks",
@@ -51,7 +51,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "crate", name: "Crate Training", emoji: "\uD83C\uDFE0",
+    id: "crate", name: "Crate Training", icon: "House",
     description: "Make the crate your dog's favorite place. A safe space they choose to go to, not a punishment.",
     color: "#F472B6", gradient: "linear-gradient(135deg, #F472B6, #EC4899)",
     unlockLevel: 0, difficulty: "Beginner", duration: "1-3 weeks",
@@ -73,7 +73,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "social", name: "Puppy Socialization", emoji: "\uD83D\uDC15\u200D\uD83E\uDDBA",
+    id: "social", name: "Puppy Socialization", icon: "Users",
     description: "Expose your puppy to the world safely. Build confidence, not fear. The window is short \u2014 start now.",
     color: "#10B981", gradient: "linear-gradient(135deg, #10B981, #059669)",
     unlockLevel: 0, difficulty: "Beginner", duration: "8-16 weeks of age (critical period)",
@@ -95,7 +95,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "behavior", name: "Behavior Solutions", emoji: "\uD83E\uDDE9",
+    id: "behavior", name: "Behavior Solutions", icon: "Puzzle",
     description: "Solve the common problems. Jumping, barking, pulling \u2014 there's a training solution for each.",
     color: "#8B5CF6", gradient: "linear-gradient(135deg, #8B5CF6, #7C3AED)",
     unlockLevel: 1, difficulty: "All Levels", duration: "Ongoing",
@@ -117,7 +117,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "obedience", name: "Core Obedience", emoji: "\uD83C\uDF93",
+    id: "obedience", name: "Core Obedience", icon: "GraduationCap",
     description: "Make your basics bulletproof. Real-world reliability with distance, distractions, and duration.",
     color: "#3B82F6", gradient: "linear-gradient(135deg, #3B82F6, #2563EB)",
     unlockLevel: 2, difficulty: "Intermediate", duration: "3-6 weeks",
@@ -146,7 +146,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "tricks", name: "Trick Training", emoji: "\uD83C\uDFAA",
+    id: "tricks", name: "Trick Training", icon: "Wand2",
     description: "Fun tricks that build your bond and impress everyone at the park.",
     color: "#F59E0B", gradient: "linear-gradient(135deg, #F59E0B, #D97706)",
     unlockLevel: 3, difficulty: "Intermediate", duration: "Ongoing",
@@ -168,7 +168,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "reactivity", name: "Leash Reactivity", emoji: "\uD83E\uDDAE",
+    id: "reactivity", name: "Leash Reactivity", icon: "Zap",
     description: "Your dog barks, lunges, or loses their mind on leash at other dogs or people. There's a systematic fix.",
     color: "#F97316", gradient: "linear-gradient(135deg, #F97316, #EA580C)",
     unlockLevel: 2, difficulty: "Intermediate-Advanced", duration: "4-12 weeks",
@@ -190,7 +190,7 @@ export const TRAINING_PROGRAMS = [
     ]
   },
   {
-    id: "fitness", name: "Canine Fitness", emoji: "\uD83C\uDFCB\uFE0F",
+    id: "fitness", name: "Canine Fitness", icon: "Dumbbell",
     description: "Physical conditioning for a healthy, strong, injury-resistant dog.",
     color: "#EF4444", gradient: "linear-gradient(135deg, #EF4444, #DC2626)",
     unlockLevel: 4, difficulty: "Intermediate", duration: "Ongoing",

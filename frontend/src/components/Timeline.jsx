@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import PhotoImg from "./PhotoImg.jsx";
+import { Calendar } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", rL: 24 };
 
@@ -44,7 +46,7 @@ export default function Timeline() {
   if (items.length === 0) {
     return (
       <div style={{ textAlign: "center", padding: "60px 40px", color: C.t3 }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>📅</div>
+        <div style={{ marginBottom: 16 }}><Calendar size={48} color={C.t3} /></div>
         <p style={{ fontSize: 15, lineHeight: 1.6 }}>{T("noEntries")}</p>
       </div>
     );
@@ -78,7 +80,7 @@ export default function Timeline() {
                   style={{ width: "100%", textAlign: "start", padding: "14px 16px", background: C.s1, borderRadius: 16, border: `1px solid ${C.b1}`, cursor: "pointer", color: C.t1 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 14 }}>{j.programEmoji}</span>
+                      <span style={{ fontSize: 14 }}>{j.programIcon ? <Icon name={j.programIcon} size={14} /> : j.programEmoji}</span>
                       <span style={{ fontSize: 13, fontWeight: 700 }}>{j.exerciseName}</span>
                     </div>
                     <span style={{ fontSize: 11, color: C.t3 }}>{dayLabel}</span>

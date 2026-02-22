@@ -1,6 +1,8 @@
 import { useApp } from "../context/AppContext.jsx";
 import { hasPreviousMonthReport } from "../utils/monthlyStats.js";
 import { matchBreed } from "../data/breedTraits.js";
+import { CheckCircle2, Award, Stethoscope, ShieldAlert, Footprints, Heart, Search, ShoppingCart, Clock, PenLine, Trophy, Lock, ChevronRight, ArrowRight } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 import DailyPlan from "./DailyPlan.jsx";
 import SkillHealth from "./SkillHealth.jsx";
 import LifeStageBanner from "./LifeStageBanner.jsx";
@@ -66,9 +68,9 @@ export default function Home() {
 
       {/* Stats */}
       <div style={{ display: "flex", gap: 10, padding: "10px 20px 0" }}>
-        {[{ v: completedExercises.length, l: T("done"), i: "✅" }, { v: earnedBadges.length, l: T("badges"), i: "🏅" }].map((s, i) => (
+        {[{ v: completedExercises.length, l: T("done"), i: <CheckCircle2 size={18} color="#22C55E" strokeWidth={2} /> }, { v: earnedBadges.length, l: T("badges"), i: <Award size={18} color="#F59E0B" strokeWidth={2} /> }].map((s, i) => (
           <div key={i} style={{ flex: 1, textAlign: "center", padding: "14px 6px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-            <div style={{ fontSize: 14, marginBottom: 2 }}>{s.i}</div>
+            <div style={{ marginBottom: 4 }}>{s.i}</div>
             <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>{s.v}</div>
             <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600 }}>{s.l}</div>
           </div>
@@ -91,10 +93,10 @@ export default function Home() {
               color: C.t1, textAlign: "start",
             }}
           >
-            <span style={{ fontSize: 28 }}>{"\uD83C\uDFC6"}</span>
+            <Trophy size={28} color="#22C55E" />
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("reportReady")}</div>
-              <div style={{ fontSize: 12, color: C.acc, fontWeight: 600, marginTop: 2 }}>{T("viewReport")} \u2192</div>
+              <div style={{ fontSize: 12, color: C.acc, fontWeight: 600, marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>{T("viewReport")} <ArrowRight size={14} color={C.acc} /></div>
             </div>
           </button>
         </div>
@@ -118,12 +120,12 @@ export default function Home() {
             color: C.t1, textAlign: "start",
           }}
         >
-          <span style={{ fontSize: 28 }}>🩺</span>
+          <Stethoscope size={28} color="#14B8A6" />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("diagCardTitle")}</div>
             <div style={{ fontSize: 12, color: "#14B8A6", fontWeight: 600, marginTop: 2 }}>{T("diagCardSub")}</div>
           </div>
-          <span style={{ color: C.t3, fontSize: 18 }}>›</span>
+          <ChevronRight size={16} color={C.t3} />
         </button>
       </div>
 
@@ -140,12 +142,12 @@ export default function Home() {
             color: C.t1, textAlign: "start",
           }}
         >
-          <span style={{ fontSize: 28 }}>{"\u26D1\uFE0F"}</span>
+          <ShieldAlert size={28} color="#EF4444" />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("emergencyCardTitle")}</div>
             <div style={{ fontSize: 12, color: "#EF4444", fontWeight: 600, marginTop: 2 }}>{T("emergencyCardSub")}</div>
           </div>
-          <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+          <ChevronRight size={16} color={C.t3} />
         </button>
       </div>
 
@@ -167,7 +169,7 @@ export default function Home() {
             <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("nutritionCardTitle")}</div>
             <div style={{ fontSize: 12, color: C.acc, fontWeight: 600, marginTop: 2 }}>{T("nutritionCardSub")}</div>
           </div>
-          <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+          <ChevronRight size={16} color={C.t3} />
         </button>
       </div>
 
@@ -184,12 +186,12 @@ export default function Home() {
             color: C.t1, textAlign: "start",
           }}
         >
-          <span style={{ fontSize: 28 }}>{"\uD83D\uDEB6"}</span>
+          <Footprints size={28} color="#3B82F6" />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("walkTracker")}</div>
             <div style={{ fontSize: 12, color: "#3B82F6", fontWeight: 600, marginTop: 2 }}>{T("walkTrackerSub")}</div>
           </div>
-          <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+          <ChevronRight size={16} color={C.t3} />
         </button>
       </div>
 
@@ -206,12 +208,12 @@ export default function Home() {
             color: C.t1, textAlign: "start",
           }}
         >
-          <span style={{ fontSize: 28 }}>{"💗"}</span>
+          <Heart size={28} color="#EC4899" />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("healthDashboard")}</div>
             <div style={{ fontSize: 12, color: "#EC4899", fontWeight: 600, marginTop: 2 }}>{T("healthDashboardSub")}</div>
           </div>
-          <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+          <ChevronRight size={16} color={C.t3} />
         </button>
       </div>
 
@@ -231,27 +233,27 @@ export default function Home() {
             color: C.t1, textAlign: "start",
           }}
         >
-          <span style={{ fontSize: 28 }}>{"\uD83D\uDD0D"}</span>
+          <Search size={28} color="#FB923C" />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: "#FB923C" }}>{T("lostReportDog")}</div>
             <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{T("lostReportDogSub")}</div>
           </div>
-          <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+          <ChevronRight size={16} color={C.t3} />
         </button>
       </div>
 
       {/* Quick Actions */}
       <div style={{ display: "flex", gap: 10, padding: "20px 20px 0" }}>
         <button onClick={() => setShowGear(true)} style={{ flex: 1, padding: "14px", background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
-          <div style={{ fontSize: 20, marginBottom: 4 }}>🛒</div>
+          <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><ShoppingCart size={20} color="#F59E0B" /></div>
           <div style={{ fontSize: 12, fontWeight: 700 }}>{T("gearGuide")}</div>
         </button>
         <button onClick={() => setShowReminders(true)} style={{ flex: 1, padding: "14px", background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
-          <div style={{ fontSize: 20, marginBottom: 4 }}>⏰</div>
+          <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><Clock size={20} color="#3B82F6" /></div>
           <div style={{ fontSize: 12, fontWeight: 700 }}>{T("reminders")}</div>
         </button>
         <button onClick={() => nav("journal")} style={{ flex: 1, padding: "14px", background: "rgba(139,92,246,0.06)", border: "1px solid rgba(139,92,246,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
-          <div style={{ fontSize: 20, marginBottom: 4 }}>📝</div>
+          <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><PenLine size={20} color="#8B5CF6" /></div>
           <div style={{ fontSize: 12, fontWeight: 700 }}>{T("journal")}</div>
         </button>
       </div>
@@ -267,7 +269,7 @@ export default function Home() {
           return (
             <button key={prog.id} onClick={() => unlocked && nav("program", { program: prog })}
               style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 18px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}`, cursor: unlocked ? "pointer" : "default", opacity: unlocked ? 1 : 0.4, color: C.t1, textAlign: "start", width: "100%", animation: `fadeIn 0.3s ease ${idx * 0.04}s both` }}>
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: prog.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{unlocked ? prog.emoji : "🔒"}</div>
+              <div style={{ width: 48, height: 48, borderRadius: 14, background: prog.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{unlocked ? <Icon name={prog.icon} size={22} color="#fff" /> : <Lock size={22} color="#71717A" />}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 15, fontWeight: 700 }}>{prog.name}</div>
                 <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{unlocked ? `${dn}/${tot} ${T("exercises")}` : `${T("unlockAt")} ${prog.unlockLevel}`}</div>
@@ -276,7 +278,7 @@ export default function Home() {
                 )}
                 {unlocked && dn > 0 && <div style={{ height: 3, background: C.b1, borderRadius: 10, overflow: "hidden", marginTop: 8 }}><div style={{ height: "100%", width: `${pct}%`, background: prog.gradient, borderRadius: 10 }} /></div>}
               </div>
-              <span style={{ color: C.t3, fontSize: 18 }}>›</span>
+              <ChevronRight size={16} color={C.t3} />
             </button>
           );
         })}
@@ -294,12 +296,12 @@ export default function Home() {
             color: C.t1, textAlign: "start",
           }}
         >
-          <span style={{ fontSize: 28 }}>{"\uD83C\uDFC6"}</span>
+          <Trophy size={28} color="#FFD700" />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("leaderboard")}</div>
             <div style={{ fontSize: 12, color: "#FFD700", fontWeight: 600, marginTop: 2 }}>{T("leaderboardSubtitle")}</div>
           </div>
-          <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+          <ChevronRight size={16} color={C.t3} />
         </button>
       </div>
 

@@ -1,5 +1,6 @@
 import { useApp } from "../context/AppContext.jsx";
 import BottomNav from "./BottomNav.jsx";
+import BadgeIcon from "./ui/BadgeIcon.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", rL: 24 };
 
@@ -43,9 +44,8 @@ export default function Badges() {
                   const got = earnedBadges.includes(b.id);
                   return (
                     <div key={b.id} style={{ textAlign: "center", padding: "20px 8px", background: got ? "rgba(34,197,94,0.05)" : C.s1, borderRadius: C.rL, border: `1px solid ${got ? "rgba(34,197,94,0.15)" : C.b1}`, ...(got && { boxShadow: "0 0 12px rgba(34,197,94,0.15)" }) }}>
-                      <div style={{ fontSize: 30, marginBottom: 6, position: "relative", display: "inline-block" }}>
-                        <span style={{ ...(!got && { filter: "grayscale(1) opacity(0.4)" }) }}>{b.emoji}</span>
-                        {!got && <span style={{ position: "absolute", bottom: -2, right: -6, fontSize: 14 }}>{"\uD83D\uDD12"}</span>}
+                      <div style={{ marginBottom: 6, display: "flex", justifyContent: "center" }}>
+                        <BadgeIcon icon={b.icon || "Award"} category={b.category} size={48} earned={got} />
                       </div>
                       <div style={{ fontSize: 11, fontWeight: 800, color: got ? C.t1 : C.t3 }}>{b.name}</div>
                       <div style={{ fontSize: 10, color: C.t3, marginTop: 3, lineHeight: 1.4 }}>{b.desc}</div>

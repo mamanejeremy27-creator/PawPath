@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 import { useApp } from "../context/AppContext.jsx";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 import BottomNav from "./BottomNav.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", rL: 24 };
@@ -11,7 +13,7 @@ export default function LifeStageDetail() {
     return (
       <div style={{ minHeight: "100vh", background: C.bg, padding: "24px 20px" }}>
         <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 16 }}>{rtl ? "→" : "←"}</span> {T("home")}
+          {rtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />} {T("home")}
         </button>
         <p style={{ color: C.t3, textAlign: "center", marginTop: 60 }}>{T("whenBorn").replace("{name}", dogProfile?.name || "")}</p>
       </div>
@@ -44,7 +46,7 @@ export default function LifeStageDetail() {
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
       <div style={{ padding: "24px 20px 16px" }}>
         <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 16 }}>{rtl ? "→" : "←"}</span> {T("home")}
+          {rtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />} {T("home")}
         </button>
 
         {/* Header */}
@@ -146,12 +148,12 @@ export default function LifeStageDetail() {
                   opacity: done ? 0.6 : 1,
                 }}
               >
-                <span style={{ fontSize: 18 }}>{program.emoji}</span>
+                <Icon name={program.icon} size={18} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: C.t1 }}>{exercise.name}</div>
                   <div style={{ fontSize: 11, color: C.t3 }}>{program.name} · {level.name}</div>
                 </div>
-                {done && <span style={{ fontSize: 14, color: C.acc }}>✓</span>}
+                {done && <Check size={16} color={C.acc} />}
               </div>
             ))}
           </div>

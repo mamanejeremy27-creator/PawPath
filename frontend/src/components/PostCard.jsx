@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Heart, MessageCircle, TrendingUp, Camera, Lightbulb, HelpCircle, Medal, MoreHorizontal } from "lucide-react";
 import { useApp } from "../context/AppContext.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { api } from "../lib/api.js";
@@ -8,11 +9,11 @@ import CommentThread from "./CommentThread.jsx";
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
 
 const TYPE_META = {
-  progress: { emoji: "\uD83D\uDCC8", key: "postTypeProgress", color: "#22C55E" },
-  photo: { emoji: "\uD83D\uDCF8", key: "postTypePhoto", color: "#3B82F6" },
-  tip: { emoji: "\uD83D\uDCA1", key: "postTypeTip", color: "#F59E0B" },
-  question: { emoji: "\u2753", key: "postTypeQuestion", color: "#A78BFA" },
-  milestone: { emoji: "\uD83C\uDFC5", key: "postTypeMilestone", color: "#FFD700" },
+  progress: { icon: TrendingUp, key: "postTypeProgress", color: "#22C55E" },
+  photo: { icon: Camera, key: "postTypePhoto", color: "#3B82F6" },
+  tip: { icon: Lightbulb, key: "postTypeTip", color: "#F59E0B" },
+  question: { icon: HelpCircle, key: "postTypeQuestion", color: "#A78BFA" },
+  milestone: { icon: Medal, key: "postTypeMilestone", color: "#FFD700" },
 };
 
 function timeAgo(dateStr, T) {
@@ -75,8 +76,8 @@ export default function PostCard({ post, liked, onLikeChange, onDelete }) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{post.owner_name || T("feedAnon")}</span>
-              <span style={{ padding: "1px 8px", borderRadius: 8, background: `${meta.color}18`, border: `1px solid ${meta.color}30`, fontSize: 10, fontWeight: 700, color: meta.color }}>
-                {meta.emoji} {T(meta.key)}
+              <span style={{ padding: "1px 8px", borderRadius: 8, background: `${meta.color}18`, border: `1px solid ${meta.color}30`, fontSize: 10, fontWeight: 700, color: meta.color, display: "inline-flex", alignItems: "center", gap: 3 }}>
+                <meta.icon size={10} /> {T(meta.key)}
               </span>
             </div>
             <div style={{ fontSize: 11, color: C.t3, marginTop: 1 }}>
@@ -84,7 +85,7 @@ export default function PostCard({ post, liked, onLikeChange, onDelete }) {
             </div>
           </div>
           {isOwn && (
-            <button onClick={() => setShowDeleteConfirm(true)} style={{ background: "none", border: "none", color: C.t3, fontSize: 16, cursor: "pointer", padding: "4px 8px" }}>{"\u22EF"}</button>
+            <button onClick={() => setShowDeleteConfirm(true)} style={{ background: "none", border: "none", color: C.t3, cursor: "pointer", padding: "4px 8px", display: "flex", alignItems: "center" }}><MoreHorizontal size={16} /></button>
           )}
         </div>
 
@@ -101,11 +102,11 @@ export default function PostCard({ post, liked, onLikeChange, onDelete }) {
         {/* Actions: like, comment */}
         <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 8, borderTop: `1px solid ${C.b1}`, paddingTop: 10 }}>
           <button onClick={handleLike} style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: "none", cursor: "pointer", padding: "6px 12px", borderRadius: 20, color: isLiked ? "#EF4444" : C.t3, transition: "all 0.15s" }}>
-            <span style={{ fontSize: 16 }}>{isLiked ? "\u2764\uFE0F" : "\uD83E\uDE76"}</span>
+            <Heart size={16} fill={isLiked ? "#EF4444" : "none"} />
             <span style={{ fontSize: 13, fontWeight: 700 }}>{likeCount > 0 ? likeCount : ""}</span>
           </button>
           <button onClick={() => setShowComments(true)} style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: "none", cursor: "pointer", padding: "6px 12px", borderRadius: 20, color: C.t3 }}>
-            <span style={{ fontSize: 16 }}>{"\uD83D\uDCAC"}</span>
+            <MessageCircle size={16} />
             <span style={{ fontSize: 13, fontWeight: 700 }}>{commentCount > 0 ? commentCount : ""}</span>
           </button>
         </div>

@@ -1,4 +1,6 @@
 import { useApp } from "../context/AppContext.jsx";
+import BadgeIcon from "./ui/BadgeIcon.jsx";
+import { Palette, Crown, Medal, Snowflake } from "lucide-react";
 
 const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E" };
 
@@ -28,11 +30,8 @@ export default function MilestoneUnlockModal() {
         }}
       >
         {/* Celebration glow */}
-        <div style={{
-          fontSize: 64, marginBottom: 16,
-          animation: "pulse 1.5s infinite", filter: "drop-shadow(0 0 12px rgba(34,197,94,0.4))",
-        }}>
-          {m.emoji}
+        <div style={{ marginBottom: 16, display: "flex", justifyContent: "center", animation: "pulse 1.5s infinite", filter: "drop-shadow(0 0 12px rgba(34,197,94,0.4))" }}>
+          <BadgeIcon icon={m.icon || "Award"} category={m.category || "streak"} size={80} earned={true} />
         </div>
 
         <div style={{ fontSize: 10, color: C.acc, textTransform: "uppercase", letterSpacing: 2, fontWeight: 800, marginBottom: 6 }}>
@@ -54,15 +53,15 @@ export default function MilestoneUnlockModal() {
 
         {m.freezeReward && (
           <div style={{ fontSize: 13, color: "#60A5FA", marginBottom: 8 }}>
-            {"\uD83E\uDDCA"} {T("streakFreeze")} +1
+            <Snowflake size={14} color="#60A5FA" style={{ display: "inline", verticalAlign: "middle" }} /> {T("streakFreeze")} +1
           </div>
         )}
 
         {/* Reward type indicator */}
         <div style={{ fontSize: 12, color: C.t3, marginBottom: 20 }}>
-          {m.reward === "theme" && `${"\uD83C\uDFA8"} ${T("themes")}`}
-          {m.reward === "avatar" && `${"\uD83D\uDC51"} ${T("accessories")}`}
-          {m.reward === "badge" && `${"\uD83C\uDFC5"} ${T("badges")}`}
+          {m.reward === "theme" && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Palette size={14} /> {T("themes")}</span>}
+          {m.reward === "avatar" && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Crown size={14} /> {T("accessories")}</span>}
+          {m.reward === "badge" && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Medal size={14} /> {T("badges")}</span>}
         </div>
 
         <button
@@ -73,7 +72,7 @@ export default function MilestoneUnlockModal() {
             cursor: "pointer",
           }}
         >
-          {"\uD83C\uDF89"} {T("back")}
+          {T("back")}
         </button>
       </div>
     </div>

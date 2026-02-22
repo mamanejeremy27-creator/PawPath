@@ -1,4 +1,6 @@
 import { useApp } from "../context/AppContext.jsx";
+import { Lightbulb } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 
 const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16 };
 
@@ -14,12 +16,12 @@ export default function DailyPlan() {
         </span>
       </div>
       <div style={{ padding: "14px 18px", background: "rgba(34,197,94,0.05)", borderRadius: C.r, border: "1px solid rgba(34,197,94,0.1)", marginBottom: 12 }}>
-        <p style={{ fontSize: 13, color: C.t2, margin: 0, lineHeight: 1.6, fontStyle: "italic" }}>💡 "{dailyMsg}"</p>
+        <p style={{ fontSize: 13, color: C.t2, margin: 0, lineHeight: 1.6, fontStyle: "italic", display: "flex", alignItems: "flex-start", gap: 6 }}><Lightbulb size={14} color={C.acc} style={{ flexShrink: 0, marginTop: 2 }} /> "{dailyMsg}"</p>
       </div>
       {dailyPlan.map((item, idx) => (
         <button key={idx} onClick={() => nav("exercise", { program: item.program, level: item.level, exercise: item.exercise })}
           style={{ display: "flex", alignItems: "center", gap: 14, width: "100%", padding: "16px", marginBottom: 8, background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, cursor: "pointer", color: C.t1, textAlign: "start", animation: `fadeIn 0.3s ease ${idx * 0.05}s both` }}>
-          <div style={{ width: 42, height: 42, borderRadius: 12, background: item.program.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>{item.program.emoji}</div>
+          <div style={{ width: 42, height: 42, borderRadius: 12, background: item.program.gradient, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Icon name={item.program.icon} size={20} color="#fff" /></div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700 }}>{item.exercise.name}</div>
             <div style={{ fontSize: 12, color: item.reason === "needsReview" ? "#EF4444" : C.t3, marginTop: 2 }}>{item.program.name} · {item.reason === "needsReview" ? T("needsReview") : item.reason === "continueProgress" ? T("continueProgress") : T("reviewReinforce")}</div>

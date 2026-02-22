@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth.js";
 import { compressPhoto, compressPhotoToBlob, getPhotoCount, canAddPhotos, MAX_PHOTOS } from "../utils/photoCompressor.js";
 import { api } from "../lib/api.js";
 import PhotoImg from "./PhotoImg.jsx";
+import { X, Camera, ImageIcon, AlertTriangle } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", warn: "#F59E0B", r: 16 };
 const sectionLabel = (text) => <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{text}</div>;
@@ -81,7 +82,7 @@ export default function JournalModal() {
       <div style={{ width: "100%", maxWidth: 480, background: C.s1, borderRadius: "24px 24px 0 0", padding: "28px 24px 36px", animation: "slideUp 0.3s ease", maxHeight: "90vh", overflowY: "auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 800, margin: 0, color: C.t1 }}>{T("sessionNotes")}</h3>
-          <button onClick={() => finalizeComplete(true)} style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", fontSize: 16 }}>✕</button>
+          <button onClick={() => finalizeComplete(true)} style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={18} /></button>
         </div>
 
         {sectionLabel(T("howDidItGo"))}
@@ -113,8 +114,8 @@ export default function JournalModal() {
               <div key={i} style={{ position: "relative", width: 72, height: 72, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
                 <PhotoImg src={src} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 <button onClick={() => removePhoto(i)}
-                  style={{ position: "absolute", top: 2, right: 2, width: 22, height: 22, borderRadius: "50%", background: "rgba(0,0,0,0.7)", border: "none", color: "#fff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
-                  ✕
+                  style={{ position: "absolute", top: 2, right: 2, width: 22, height: 22, borderRadius: "50%", background: "rgba(0,0,0,0.7)", border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
+                  <X size={12} />
                 </button>
               </div>
             ))}
@@ -127,12 +128,12 @@ export default function JournalModal() {
               <>
                 <button onClick={() => cameraRef.current?.click()}
                   style={{ width: 72, height: 72, borderRadius: 12, background: C.bg, border: `1px dashed ${C.b2}`, color: C.t3, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, flexShrink: 0 }}>
-                  <span style={{ fontSize: 20 }}>{"\uD83D\uDCF7"}</span>
+                  <Camera size={20} />
                   <span style={{ fontSize: 9, fontWeight: 600 }}>{T("camera")}</span>
                 </button>
                 <button onClick={() => galleryRef.current?.click()}
                   style={{ width: 72, height: 72, borderRadius: 12, background: C.bg, border: `1px dashed ${C.b2}`, color: C.t3, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, flexShrink: 0 }}>
-                  <span style={{ fontSize: 20 }}>{"\uD83D\uDDBC\uFE0F"}</span>
+                  <ImageIcon size={20} />
                   <span style={{ fontSize: 9, fontWeight: 600 }}>{T("gallery")}</span>
                 </button>
               </>
@@ -147,7 +148,8 @@ export default function JournalModal() {
           )}
           <div style={{ fontSize: 11, color: nearCapacity ? C.warn : C.t3, fontWeight: 600 }}>
             {nearCapacity && totalPhotos >= MAX_PHOTOS
-              ? `\u26A0\uFE0F ${T("storageAlmostFull")}`
+              ? <><AlertTriangle size={14} style={{ display: "inline", verticalAlign: "middle", marginInlineEnd: 4 }} />{T("storageAlmostFull")}</>
+
               : `${totalPhotos + photos.length}/${MAX_PHOTOS} ${T("photosStored")}`
             }
           </div>

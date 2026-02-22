@@ -1,5 +1,6 @@
 import { useApp } from "../context/AppContext.jsx";
 import { VET_DIRECTORY, POISON_CONTROL } from "../data/emergencyGuide.js";
+import { ArrowLeft, ArrowRight, Phone, Ambulance } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", rL: 24, r: 16 };
 
@@ -11,7 +12,7 @@ export default function VetDirectory() {
       {/* Header */}
       <div style={{ padding: "24px 20px 16px" }}>
         <button onClick={() => nav("emergency")} style={{ background: "none", border: "none", color: "#EF4444", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 16 }}>{rtl ? "\u2192" : "\u2190"}</span> {T("emergencyGuide")}
+          {rtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />} {T("emergencyGuide")}
         </button>
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: 0, color: C.t1 }}>{T("vetDirectory")}</h2>
         <p style={{ fontSize: 14, color: C.t3, marginTop: 4 }}>{T("tapToCall")}</p>
@@ -39,7 +40,7 @@ export default function VetDirectory() {
                   fontSize: 14, fontWeight: 800, display: "flex", alignItems: "center", gap: 6,
                 }}
               >
-                📞 {POISON_CONTROL.phone}
+                <Phone size={14} /> {POISON_CONTROL.phone}
               </a>
             </div>
 
@@ -56,7 +57,7 @@ export default function VetDirectory() {
                   fontSize: 14, fontWeight: 800, display: "flex", alignItems: "center", gap: 6,
                 }}
               >
-                🚑 {POISON_CONTROL.emergencyPhone}
+                <Ambulance size={14} /> {POISON_CONTROL.emergencyPhone}
               </a>
             </div>
           </div>
@@ -90,7 +91,7 @@ export default function VetDirectory() {
                       display: "flex", alignItems: "center", gap: 6,
                     }}
                   >
-                    📞 {vet.phone}
+                    <Phone size={13} /> {vet.phone}
                   </a>
                 </div>
               ))}

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { Lock, AlertTriangle, Dog, PawPrint, Flame, Handshake, Hand, Dumbbell, PartyPopper } from "lucide-react";
 import { useApp } from "../context/AppContext.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { api } from "../lib/api.js";
@@ -7,10 +8,10 @@ import BottomNav from "./BottomNav.jsx";
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
 
 const NUDGE_PRESETS = [
-  { key: "nudgeTrain", emoji: "\uD83C\uDFCB\uFE0F" },
-  { key: "nudgeStreak", emoji: "\uD83D\uDD25" },
-  { key: "nudgeBoth", emoji: "\uD83E\uDD1D" },
-  { key: "nudgeCheer", emoji: "\uD83C\uDF89" },
+  { key: "nudgeTrain", icon: Dumbbell },
+  { key: "nudgeStreak", icon: Flame },
+  { key: "nudgeBoth", icon: Handshake },
+  { key: "nudgeCheer", icon: PartyPopper },
 ];
 
 export default function BuddyDashboard() {
@@ -106,7 +107,7 @@ export default function BuddyDashboard() {
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 4px", color: C.t1 }}>{T("trainingBuddy")}</h1>
         </div>
         <div style={{ textAlign: "center", padding: "60px 20px", color: C.t3 }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>{"\uD83D\uDD12"}</div>
+          <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Lock size={40} color={C.t3} /></div>
           <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{T("lbSignIn")}</div>
         </div>
         <BottomNav active="community" />
@@ -145,7 +146,7 @@ export default function BuddyDashboard() {
       {/* Error */}
       {!loading && error && (
         <div style={{ textAlign: "center", padding: "60px 20px", color: C.t3 }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>{"\u26A0\uFE0F"}</div>
+          <div style={{ marginBottom: 8, display: "flex", justifyContent: "center" }}><AlertTriangle size={32} color="#F59E0B" /></div>
           <div style={{ fontSize: 14, fontWeight: 600 }}>{T("buddyUnavailable")}</div>
         </div>
       )}
@@ -161,7 +162,7 @@ export default function BuddyDashboard() {
                 {pendingIncoming.map(p => (
                   <div key={p.id} style={{ padding: "16px 18px", background: C.s1, borderRadius: C.r, border: `1px solid rgba(34,197,94,0.2)`, display: "flex", alignItems: "center", gap: 12 }}>
                     <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(34,197,94,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
-                      {"\uD83D\uDC36"}
+                      <Dog size={20} color="#22C55E" />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{p.user_a_name || T("buddyTrainer")}</div>
@@ -204,7 +205,7 @@ export default function BuddyDashboard() {
                       {/* Buddy header */}
                       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
                         <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(34,197,94,0.08)", border: `2px solid ${C.acc}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>
-                          {"\uD83D\uDC36"}
+                          <Dog size={20} color="#22C55E" />
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 16, fontWeight: 700, color: C.t1 }}>{buddyName}</div>
@@ -220,13 +221,13 @@ export default function BuddyDashboard() {
                         <div style={{ flex: 1, textAlign: "center", padding: "12px 6px", background: "rgba(34,197,94,0.04)", borderRadius: C.r, border: `1px solid rgba(34,197,94,0.1)` }}>
                           <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600, marginBottom: 4 }}>{T("you")}</div>
                           <div style={{ fontSize: 22, fontWeight: 800, color: C.acc }}>{currentStreak}</div>
-                          <div style={{ fontSize: 10, color: C.t3, fontWeight: 600 }}>{T("dayStreak")} {"\uD83D\uDD25"}</div>
+                          <div style={{ fontSize: 10, color: C.t3, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 3 }}>{T("dayStreak")} <Flame size={10} /></div>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", fontSize: 18, color: C.t3 }}>vs</div>
                         <div style={{ flex: 1, textAlign: "center", padding: "12px 6px", background: "rgba(139,92,246,0.04)", borderRadius: C.r, border: `1px solid rgba(139,92,246,0.1)` }}>
                           <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600, marginBottom: 4 }}>{T("buddy")}</div>
                           <div style={{ fontSize: 22, fontWeight: 800, color: "#8B5CF6" }}>{buddyStreak}</div>
-                          <div style={{ fontSize: 10, color: C.t3, fontWeight: 600 }}>{T("dayStreak")} {"\uD83D\uDD25"}</div>
+                          <div style={{ fontSize: 10, color: C.t3, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 3 }}>{T("dayStreak")} <Flame size={10} /></div>
                         </div>
                       </div>
 
@@ -252,7 +253,7 @@ export default function BuddyDashboard() {
                               onClick={() => handleNudge(buddyId, n.key)}
                               style={{ padding: "10px 16px", background: "rgba(34,197,94,0.04)", border: `1px solid ${C.b1}`, borderRadius: C.r, color: C.t1, fontSize: 13, fontWeight: 600, cursor: "pointer", textAlign: "start", display: "flex", alignItems: "center", gap: 8 }}
                             >
-                              <span>{n.emoji}</span> {T(n.key)}
+                              <n.icon size={14} /> {T(n.key)}
                             </button>
                           ))}
                           <button onClick={() => setNudgeOpen(null)} style={{ padding: "8px", background: "none", border: "none", color: C.t3, fontSize: 12, cursor: "pointer" }}>
@@ -270,7 +271,7 @@ export default function BuddyDashboard() {
                               fontSize: 14, fontWeight: 700, textAlign: "center",
                             }}
                           >
-                            {isNudgeSent ? `${T("nudgeSent")} \u2713` : `${T("sendNudge")} \uD83D\uDC4B`}
+                            {isNudgeSent ? <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>{T("nudgeSent")} <span>&#10003;</span></span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>{T("sendNudge")} <Hand size={14} /></span>}
                           </button>
                           <button
                             onClick={() => setConfirmEnd(p.id)}
@@ -295,7 +296,7 @@ export default function BuddyDashboard() {
                 {pendingSent.map(p => (
                   <div key={p.id} style={{ padding: "14px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 12 }}>
                     <div style={{ width: 36, height: 36, borderRadius: "50%", background: C.b1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
-                      {"\uD83D\uDC3E"}
+                      <PawPrint size={18} color={C.t3} />
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: C.t1 }}>{T("buddyRequestPending")}</div>
@@ -311,7 +312,7 @@ export default function BuddyDashboard() {
           {/* Empty state — no buddies at all */}
           {activePairs.length === 0 && pendingIncoming.length === 0 && pendingSent.length === 0 && (
             <div style={{ textAlign: "center", padding: "40px 20px" }}>
-              <div style={{ fontSize: 56, marginBottom: 16 }}>{"\uD83E\uDD1D"}</div>
+              <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}><Handshake size={56} color={C.acc} /></div>
               <div style={{ fontSize: 18, fontWeight: 700, color: C.t1, marginBottom: 8 }}>{T("noBuddiesYet")}</div>
               <div style={{ fontSize: 13, color: C.t3, marginBottom: 24, lineHeight: 1.6 }}>{T("noBuddiesYetSub")}</div>
               <button
@@ -332,7 +333,7 @@ export default function BuddyDashboard() {
       {confirmEnd && (
         <div onClick={() => setConfirmEnd(null)} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div onClick={e => e.stopPropagation()} style={{ background: C.s1, borderRadius: 24, padding: "28px 24px", maxWidth: 320, width: "90%", textAlign: "center" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>{"\uD83D\uDC4B"}</div>
+            <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Hand size={40} color={C.t3} /></div>
             <p style={{ fontSize: 15, color: C.t1, margin: "0 0 20px", lineHeight: 1.6 }}>{T("confirmEndBuddy")}</p>
             <div style={{ display: "flex", gap: 10 }}>
               <button onClick={() => setConfirmEnd(null)} style={{ flex: 1, padding: "12px", fontSize: 14, fontWeight: 600, background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>

@@ -1,4 +1,5 @@
 import { useApp } from "../context/AppContext.jsx";
+import { X, Clock } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", s3: "#222228", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", warn: "#F59E0B", danger: "#EF4444", r: 16 };
 const sectionLabel = (text) => <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{text}</div>;
@@ -12,7 +13,7 @@ export default function RemindersModal() {
       <div style={{ width: "100%", maxWidth: 480, background: C.s1, borderRadius: "24px 24px 0 0", padding: "28px 24px 36px", animation: "slideUp 0.3s ease" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 800, margin: 0, color: C.t1 }}>{T("trainingReminders")}</h3>
-          <button onClick={() => setShowReminders(false)} style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", fontSize: 16 }}>✕</button>
+          <button onClick={() => setShowReminders(false)} style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={18} /></button>
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 0", borderBottom: `1px solid ${C.b1}`, marginBottom: 20 }}>
@@ -35,13 +36,13 @@ export default function RemindersModal() {
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
               {reminders.times.map((time, idx) => (
                 <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontSize: 20 }}>⏰</span>
+                  <Clock size={20} color={C.warn} />
                   <input type="time" value={time}
                     onChange={e => { const nt = [...reminders.times]; nt[idx] = e.target.value; setReminders(r => ({ ...r, times: nt })); }}
                     style={{ flex: 1, padding: "12px 16px", fontSize: 16, background: C.bg, border: `1px solid ${C.b2}`, borderRadius: C.r, color: C.t1, outline: "none" }} />
                   {reminders.times.length > 1 && (
                     <button onClick={() => setReminders(r => ({ ...r, times: r.times.filter((_, i) => i !== idx) }))}
-                      style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(239,68,68,0.1)", border: "none", color: C.danger, cursor: "pointer", fontSize: 14 }}>✕</button>
+                      style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(239,68,68,0.1)", border: "none", color: C.danger, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
                   )}
                 </div>
               ))}

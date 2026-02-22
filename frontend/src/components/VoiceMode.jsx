@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useVoiceMode } from "../hooks/useVoiceMode.js";
 import { VOICE_SCRIPTS, detectTimer } from "../data/voiceScripts.js";
+import { X, Play, Pause, SkipBack, SkipForward, RotateCcw, Volume, Volume2, PartyPopper } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 
 const C = {
   bg: "#0A0A0C", s1: "#131316", s2: "#1A1A1F",
@@ -11,7 +13,7 @@ const C = {
 
 const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
-export default function VoiceMode({ exercise, programName, programEmoji, lang, rtl, T, onClose }) {
+export default function VoiceMode({ exercise, programName, programIcon, lang, rtl, T, onClose }) {
   const voice = useVoiceMode();
   const steps = exercise.steps || [];
   const totalSteps = steps.length;
@@ -212,10 +214,10 @@ export default function VoiceMode({ exercise, programName, programEmoji, lang, r
       {/* ── Top Bar ── */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 20px 12px", flexShrink: 0 }}>
         <button onClick={handleClose} style={{ width: 44, height: 44, borderRadius: 12, background: C.s1, border: `1px solid ${C.b1}`, color: C.t3, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {"\u2715"}
+          <X size={20} color={C.t3} />
         </button>
         <div style={{ textAlign: "center", flex: 1 }}>
-          <span style={{ fontSize: 14, color: C.t3 }}>{programEmoji} {programName}</span>
+          <span style={{ fontSize: 14, color: C.t3, display: "inline-flex", alignItems: "center", gap: 4 }}><Icon name={programIcon} size={14} color={C.t3} /> {programName}</span>
         </div>
         <div style={{ width: 44 }} /> {/* spacer */}
       </div>
@@ -226,7 +228,7 @@ export default function VoiceMode({ exercise, programName, programEmoji, lang, r
         {phase === "done" ? (
           /* ── Completion ── */
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 72, marginBottom: 20 }}>{"\uD83C\uDF89"}</div>
+            <div style={{ marginBottom: 20 }}><PartyPopper size={72} color={C.acc} /></div>
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 900, color: C.t1, margin: "0 0 8px" }}>{T("voiceComplete")}</h2>
             <p style={{ fontSize: 15, color: C.t3, margin: "0 0 32px" }}>{exercise.name}</p>
             <button onClick={handleClose} style={{ padding: "18px 48px", fontSize: 16, fontWeight: 800, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer", boxShadow: "0 8px 32px rgba(34,197,94,0.25)" }}>
@@ -286,13 +288,13 @@ export default function VoiceMode({ exercise, programName, programEmoji, lang, r
 
           {/* Volume slider */}
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20, padding: "0 12px" }}>
-            <span style={{ fontSize: 16, color: C.t3, flexShrink: 0 }}>{"\uD83D\uDD07"}</span>
+            <Volume size={16} color={C.t3} style={{ flexShrink: 0 }} />
             <input
               type="range" min="0" max="1" step="0.05" value={vol}
               onChange={(e) => setVol(parseFloat(e.target.value))}
               style={{ flex: 1, accentColor: C.acc, height: 4, cursor: "pointer" }}
             />
-            <span style={{ fontSize: 16, color: C.t3, flexShrink: 0 }}>{"\uD83D\uDD0A"}</span>
+            <Volume2 size={16} color={C.t3} style={{ flexShrink: 0 }} />
           </div>
 
           {/* Main controls row */}
@@ -303,7 +305,7 @@ export default function VoiceMode({ exercise, programName, programEmoji, lang, r
               disabled={step === 0}
               style={{ width: navBtnSize, height: navBtnSize, borderRadius: "50%", background: C.s1, border: `1px solid ${step === 0 ? C.b1 : C.b2}`, color: step === 0 ? C.t3 : C.t1, fontSize: 22, cursor: step === 0 ? "default" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: step === 0 ? 0.4 : 1, transition: "opacity 0.2s" }}
             >
-              {rtl ? "\u25B6" : "\u25C0"}
+              <SkipBack size={22} color={step === 0 ? C.t3 : C.t1} />
             </button>
 
             {/* Pause / Play */}
@@ -311,7 +313,7 @@ export default function VoiceMode({ exercise, programName, programEmoji, lang, r
               onClick={togglePause}
               style={{ width: btnSize, height: btnSize, borderRadius: "50%", background: paused ? C.acc : C.s2, border: paused ? "none" : `2px solid ${C.acc}`, color: paused ? "#000" : C.acc, fontSize: 28, fontWeight: 900, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: paused ? "0 8px 32px rgba(34,197,94,0.3)" : "none", transition: "all 0.2s" }}
             >
-              {paused ? "\u25B6" : "\u23F8"}
+              {paused ? <Play size={28} color="#000" /> : <Pause size={28} color={C.acc} />}
             </button>
 
             {/* Next */}
@@ -319,14 +321,14 @@ export default function VoiceMode({ exercise, programName, programEmoji, lang, r
               onClick={() => step < totalSteps - 1 ? goToStep(step + 1) : goToStep(totalSteps)}
               style={{ width: navBtnSize, height: navBtnSize, borderRadius: "50%", background: C.s1, border: `1px solid ${C.b2}`, color: C.t1, fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
             >
-              {rtl ? "\u25C0" : "\u25B6"}
+              <SkipForward size={22} color={C.t1} />
             </button>
           </div>
 
           {/* Repeat button */}
           <div style={{ textAlign: "center", marginTop: 16 }}>
             <button onClick={repeatStep} style={{ background: "none", border: "none", color: C.t3, fontSize: 13, fontWeight: 700, cursor: "pointer", padding: "8px 16px", display: "inline-flex", alignItems: "center", gap: 6 }}>
-              {"\uD83D\uDD01"} {T("voiceRepeat")}
+              <RotateCcw size={14} color={C.t3} /> {T("voiceRepeat")}
             </button>
           </div>
         </div>

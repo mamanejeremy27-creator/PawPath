@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { api } from "../lib/api.js";
 import PhotoImg from "./PhotoImg.jsx";
+import { ChevronRight } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", danger: "#EF4444", r: 16, rL: 24 };
 
@@ -70,7 +71,7 @@ export default function LostDogFeed() {
             {alerts.length > 1 && <span style={{ fontSize: 11, color: C.t3 }}>+{alerts.length - 1}</span>}
           </div>
         </div>
-        <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+        <ChevronRight size={18} color={C.t3} />
       </button>
     </div>
   );

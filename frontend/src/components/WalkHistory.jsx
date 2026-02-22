@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { getWalks, deleteWalk, formatDuration } from "../lib/walkTracker.js";
 import BottomNav from "./BottomNav.jsx";
+import { Check, Trash2, Footprints } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
 const PAGE_SIZE = 20;
@@ -152,7 +153,7 @@ export default function WalkHistory() {
           backdropFilter: "blur(16px)", animation: "badgeDrop 0.4s ease",
           display: "flex", alignItems: "center", gap: 8,
         }}>
-          <span style={{ fontSize: 18 }}>{toast === "saved" ? "\u2705" : "\uD83D\uDDD1\uFE0F"}</span>
+          <span style={{ display: "flex", alignItems: "center" }}>{toast === "saved" ? <Check size={18} color={C.acc} /> : <Trash2 size={18} color={C.danger} />}</span>
           <span style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>
             {toast === "saved" ? T("walkSaved") : T("walkDeleted")}
           </span>
@@ -205,7 +206,7 @@ export default function WalkHistory() {
       {/* Empty */}
       {!loading && allWalks.length === 0 && (
         <div style={{ textAlign: "center", padding: "60px 20px" }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>{"\uD83D\uDEB6"}</div>
+          <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Footprints size={48} color={C.t3} /></div>
           <div style={{ fontSize: 16, fontWeight: 700, color: C.t1 }}>{T("noWalksYet")}</div>
           <div style={{ fontSize: 13, color: C.t3, marginTop: 6 }}>{T("noWalksYetSub")}</div>
           <button onClick={() => nav("walkTracker")} style={{
@@ -249,8 +250,8 @@ export default function WalkHistory() {
                             fontFamily: "inherit", textAlign: "start", padding: 0,
                           }}
                         >
-                          <div style={{ width: 44, height: 44, borderRadius: 14, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>
-                            {"\uD83D\uDEB6"}
+                          <div style={{ width: 44, height: 44, borderRadius: 14, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <Footprints size={22} color={C.acc} />
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontSize: 14, fontWeight: 700 }}>{formatDate(startTime)}</div>
@@ -274,7 +275,7 @@ export default function WalkHistory() {
                           onMouseEnter={e => e.currentTarget.style.color = C.danger}
                           onMouseLeave={e => e.currentTarget.style.color = C.t3}
                         >
-                          {"\uD83D\uDDD1\uFE0F"}
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </div>
@@ -304,7 +305,7 @@ export default function WalkHistory() {
       {deleteTarget !== null && (
         <div style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ width: "calc(100% - 48px)", maxWidth: 340, background: C.s1, borderRadius: C.rL, padding: "28px 24px", animation: "fadeIn 0.2s ease", textAlign: "center" }}>
-            <div style={{ fontSize: 36, marginBottom: 16 }}>{"\uD83D\uDEB6"}</div>
+            <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}><Footprints size={36} color={C.t3} /></div>
             <div style={{ fontSize: 16, fontWeight: 700, color: C.t1, marginBottom: 20 }}>{T("walkDeleteConfirm")}</div>
             <div style={{ display: "flex", gap: 10 }}>
               <button

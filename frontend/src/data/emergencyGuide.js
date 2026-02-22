@@ -6,7 +6,7 @@ export const EMERGENCY_GUIDES = [
   // ── CRITICAL ──
   {
     id: "choking",
-    emoji: "😰",
+    icon: "AlertTriangle",
     severity: "critical",
     name: { en: "Choking", he: "חנק" },
     description: {
@@ -27,7 +27,7 @@ export const EMERGENCY_GUIDES = [
   },
   {
     id: "heatstroke",
-    emoji: "🌡️",
+    icon: "Thermometer",
     severity: "critical",
     name: { en: "Heatstroke", he: "מכת חום" },
     description: {
@@ -49,7 +49,7 @@ export const EMERGENCY_GUIDES = [
   },
   {
     id: "poisoning",
-    emoji: "☠️",
+    icon: "Skull",
     severity: "critical",
     name: { en: "Poisoning", he: "הרעלה" },
     description: {
@@ -70,7 +70,7 @@ export const EMERGENCY_GUIDES = [
   },
   {
     id: "bloat",
-    emoji: "🫧",
+    icon: "CircleAlert",
     severity: "critical",
     name: { en: "Bloat (GDV)", he: "נפיחות קיבה (GDV)" },
     description: {
@@ -93,7 +93,7 @@ export const EMERGENCY_GUIDES = [
   // ── MODERATE ──
   {
     id: "seizures",
-    emoji: "⚡",
+    icon: "Zap",
     severity: "moderate",
     name: { en: "Seizures", he: "פרכוסים" },
     description: {
@@ -114,7 +114,7 @@ export const EMERGENCY_GUIDES = [
   },
   {
     id: "snake_bite",
-    emoji: "🐍",
+    icon: "AlertOctagon",
     severity: "moderate",
     name: { en: "Snake Bite", he: "נשיכת נחש" },
     description: {
@@ -135,7 +135,7 @@ export const EMERGENCY_GUIDES = [
   },
   {
     id: "cuts",
-    emoji: "🩸",
+    icon: "Droplets",
     severity: "moderate",
     name: { en: "Cuts & Bleeding", he: "חתכים ודימום" },
     description: {
@@ -157,7 +157,7 @@ export const EMERGENCY_GUIDES = [
   },
   {
     id: "broken_bone",
-    emoji: "🦴",
+    icon: "Bone",
     severity: "moderate",
     name: { en: "Broken Bone", he: "שבר בעצם" },
     description: {
@@ -178,7 +178,7 @@ export const EMERGENCY_GUIDES = [
   },
   {
     id: "eye_injury",
-    emoji: "👁️",
+    icon: "Eye",
     severity: "moderate",
     name: { en: "Eye Injury", he: "פציעת עין" },
     description: {
@@ -202,7 +202,7 @@ export const EMERGENCY_GUIDES = [
   // ── LOW ──
   {
     id: "tick_bite",
-    emoji: "🪲",
+    icon: "Bug",
     severity: "low",
     name: { en: "Tick Bite", he: "עקיצת קרציה" },
     description: {
@@ -225,31 +225,31 @@ export const EMERGENCY_GUIDES = [
 ];
 
 export const COMMON_TOXINS = [
-  { name: { en: "Chocolate", he: "שוקולד" }, emoji: "🍫", severity: "high", note: { en: "Dark chocolate is most toxic. 20g/kg can be fatal.", he: "שוקולד מריר הכי רעיל. 20 גרם/ק\"ג יכול להיות קטלני." } },
-  { name: { en: "Xylitol (sugar-free gum)", he: "קסיליטול (מסטיק ללא סוכר)" }, emoji: "🍬", severity: "critical", note: { en: "Even small amounts cause rapid insulin release and liver failure.", he: "גם כמויות קטנות גורמות לשחרור אינסולין מהיר ואי ספיקת כבד." } },
-  { name: { en: "Grapes & Raisins", he: "ענבים וצימוקים" }, emoji: "🍇", severity: "high", note: { en: "Can cause kidney failure. Any amount is dangerous.", he: "יכולים לגרום לאי ספיקת כליות. כל כמות מסוכנת." } },
-  { name: { en: "Onions & Garlic", he: "בצל ושום" }, emoji: "🧅", severity: "moderate", note: { en: "Damages red blood cells. Garlic is 5x more toxic than onion.", he: "פוגע בתאי דם אדומים. שום רעיל פי 5 מבצל." } },
-  { name: { en: "Rat Poison", he: "רעל עכברים" }, emoji: "🐀", severity: "critical", note: { en: "Causes internal bleeding. Symptoms may be delayed 2-5 days.", he: "גורם לדימום פנימי. תסמינים עלולים להתעכב 2-5 ימים." } },
-  { name: { en: "Antifreeze", he: "נוזל קירור" }, emoji: "🧪", severity: "critical", note: { en: "Tastes sweet to dogs. Even 1 tablespoon can be fatal.", he: "טעם מתוק לכלבים. אפילו כף אחת יכולה להיות קטלנית." } },
-  { name: { en: "Ibuprofen / Paracetamol", he: "איבופרופן / פרצטמול" }, emoji: "💊", severity: "high", note: { en: "Human painkillers are toxic to dogs. Never give without vet guidance.", he: "משככי כאבים לבני אדם רעילים לכלבים. לעולם אל תיתנו ללא הנחיית וטרינר." } },
-  { name: { en: "Macadamia Nuts", he: "אגוזי מקדמיה" }, emoji: "🥜", severity: "moderate", note: { en: "Causes weakness, vomiting, tremors. Usually resolves in 48 hours.", he: "גורם לחולשה, הקאות, רעידות. בדרך כלל חולף תוך 48 שעות." } },
+  { name: { en: "Chocolate", he: "שוקולד" }, emoji: "\uD83C\uDF6B", severity: "high", note: { en: "Dark chocolate is most toxic. 20g/kg can be fatal.", he: "שוקולד מריר הכי רעיל. 20 גרם/ק\"ג יכול להיות קטלני." } },
+  { name: { en: "Xylitol (sugar-free gum)", he: "קסיליטול (מסטיק ללא סוכר)" }, emoji: "\uD83C\uDF6C", severity: "critical", note: { en: "Even small amounts cause rapid insulin release and liver failure.", he: "גם כמויות קטנות גורמות לשחרור אינסולין מהיר ואי ספיקת כבד." } },
+  { name: { en: "Grapes & Raisins", he: "ענבים וצימוקים" }, emoji: "\uD83C\uDF47", severity: "high", note: { en: "Can cause kidney failure. Any amount is dangerous.", he: "יכולים לגרום לאי ספיקת כליות. כל כמות מסוכנת." } },
+  { name: { en: "Onions & Garlic", he: "בצל ושום" }, emoji: "\uD83E\uDDC5", severity: "moderate", note: { en: "Damages red blood cells. Garlic is 5x more toxic than onion.", he: "פוגע בתאי דם אדומים. שום רעיל פי 5 מבצל." } },
+  { name: { en: "Rat Poison", he: "רעל עכברים" }, emoji: "\uD83D\uDC00", severity: "critical", note: { en: "Causes internal bleeding. Symptoms may be delayed 2-5 days.", he: "גורם לדימום פנימי. תסמינים עלולים להתעכב 2-5 ימים." } },
+  { name: { en: "Antifreeze", he: "נוזל קירור" }, emoji: "\uD83E\uDDEA", severity: "critical", note: { en: "Tastes sweet to dogs. Even 1 tablespoon can be fatal.", he: "טעם מתוק לכלבים. אפילו כף אחת יכולה להיות קטלנית." } },
+  { name: { en: "Ibuprofen / Paracetamol", he: "איבופרופן / פרצטמול" }, emoji: "\uD83D\uDC8A", severity: "high", note: { en: "Human painkillers are toxic to dogs. Never give without vet guidance.", he: "משככי כאבים לבני אדם רעילים לכלבים. לעולם אל תיתנו ללא הנחיית וטרינר." } },
+  { name: { en: "Macadamia Nuts", he: "אגוזי מקדמיה" }, emoji: "\uD83E\uDD5C", severity: "moderate", note: { en: "Causes weakness, vomiting, tremors. Usually resolves in 48 hours.", he: "גורם לחולשה, הקאות, רעידות. בדרך כלל חולף תוך 48 שעות." } },
 ];
 
 export const ISRAEL_SNAKES = [
   {
     name: { en: "Palestine Viper (צפע ארצישראלי)", he: "צפע ארצישראלי" },
+    emoji: "\uD83D\uDC0D",
     description: { en: "Israel's most dangerous snake. Triangular head, zigzag pattern. Found throughout Israel, especially near rocks and vegetation.", he: "הנחש המסוכן ביותר בישראל. ראש משולש, דוגמת זיגזג. נמצא בכל רחבי ישראל, בעיקר ליד סלעים וצמחייה." },
-    emoji: "🐍",
   },
   {
     name: { en: "Desert Horned Viper (צפע חרטומי)", he: "צפע חרטומי" },
+    emoji: "\uD83C\uDFDC\uFE0F",
     description: { en: "Found in the Negev and Arava. Small horns above the eyes. Nocturnal, hides in sand.", he: "נמצא בנגב ובערבה. קרניים קטנות מעל העיניים. לילי, מתחבא בחול." },
-    emoji: "🏜️",
   },
   {
     name: { en: "Black Desert Cobra (עכן שחור)", he: "עכן שחור" },
+    emoji: "\uD83D\uDDA4",
     description: { en: "Found in southern Israel. Black, raises hood when threatened. Rare but serious.", he: "נמצא בדרום ישראל. שחור, מרים ברדס כשמאוים. נדיר אך רציני." },
-    emoji: "🖤",
   },
 ];
 

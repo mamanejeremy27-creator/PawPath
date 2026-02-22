@@ -1,4 +1,5 @@
 import { useApp } from "../context/AppContext.jsx";
+import { ChevronRight } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E" };
 
@@ -54,7 +55,7 @@ export default function LifeStageBanner() {
       </div>
 
       {/* Arrow */}
-      <div style={{ fontSize: 16, color: C.t3, flexShrink: 0 }}>›</div>
+      <div style={{ flexShrink: 0 }}><ChevronRight size={16} color={C.t3} /></div>
     </div>
   );
 }

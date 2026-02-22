@@ -1,3 +1,5 @@
+import { ArrowLeft, CheckCircle2, CircleDot, XCircle, Circle, Trophy, Zap, Home } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 import { useApp } from "../context/AppContext.jsx";
 import { CHALLENGES, getWeekNumber } from "../data/challenges.js";
 
@@ -26,22 +28,22 @@ export default function ChallengeView() {
     const cc = challengeCelebration;
     return (
       <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: 40, animation: "fadeIn 0.4s ease" }}>
-        <div style={{ fontSize: 80, marginBottom: 20, animation: "badgeDrop 0.6s ease" }}>{cc.challenge?.emoji || "\uD83C\uDFC6"}</div>
+        <div style={{ marginBottom: 20, animation: "badgeDrop 0.6s ease", display: "flex", justifyContent: "center" }}><Icon name={cc.challenge?.icon || "Trophy"} size={80} color={C.acc} /></div>
         <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 32, fontWeight: 800, color: C.t1, margin: "0 0 8px" }}>{T("challengeCompleteTitle")}</h1>
         <p style={{ fontSize: 15, color: C.t2, margin: "0 0 24px", lineHeight: 1.6 }}>{T("challengeCompleteSub")}</p>
 
         <div style={{ padding: "16px 28px", background: "rgba(34,197,94,0.08)", borderRadius: C.rL, border: "1px solid rgba(34,197,94,0.2)", marginBottom: 16, display: "inline-flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 24 }}>{cc.challenge?.emoji}</span>
+          <Icon name={cc.challenge?.icon || "Trophy"} size={24} color={C.acc} />
           <span style={{ fontSize: 16, fontWeight: 800, color: C.acc }}>{lang === "he" ? cc.challenge?.nameHe : cc.challenge?.name}</span>
         </div>
 
-        <div style={{ fontSize: 20, fontWeight: 800, color: accent || C.acc, marginBottom: 32 }}>+{cc.xp} XP {"\u26A1"}</div>
+        <div style={{ fontSize: 20, fontWeight: 800, color: accent || C.acc, marginBottom: 32, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>+{cc.xp} XP <Zap size={20} /></div>
 
         {nextWeekChallenge && (
           <div style={{ padding: "14px 20px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, marginBottom: 24 }}>
             <div style={{ fontSize: 11, color: C.t3, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>{T("nextWeekPreview")}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 20 }}>{nextWeekChallenge.emoji}</span>
+              <Icon name={nextWeekChallenge.icon || "Trophy"} size={20} color={C.t1} />
               <span style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{lang === "he" ? nextWeekChallenge.nameHe : nextWeekChallenge.name}</span>
             </div>
           </div>
@@ -51,7 +53,7 @@ export default function ChallengeView() {
           onClick={() => { setChallengeCelebration(null); nav("home"); }}
           style={{ padding: "14px 36px", fontSize: 15, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer" }}
         >
-          {"\uD83C\uDFE0"} {T("home")}
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><Home size={16} /> {T("home")}</span>
         </button>
       </div>
     );
@@ -62,13 +64,13 @@ export default function ChallengeView() {
       {/* Back button */}
       <div style={{ padding: "16px 20px 0" }}>
         <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t3, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
-          {"\u2190"} {T("back")}
+          <ArrowLeft size={14} /> {T("back")}
         </button>
       </div>
 
       {/* Header */}
       <div style={{ textAlign: "center", padding: "20px 20px 0" }}>
-        <div style={{ fontSize: 52, marginBottom: 12 }}>{challenge.emoji}</div>
+        <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Icon name={challenge.icon || "Trophy"} size={52} color={accent} /></div>
         <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 800, color: C.t1, margin: "0 0 6px" }}>
           {lang === "he" ? challenge.nameHe : challenge.name}
         </h1>
@@ -91,7 +93,7 @@ export default function ChallengeView() {
       {/* Reward */}
       <div style={{ padding: "14px 20px 0" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 18px", background: `${accent}0A`, borderRadius: C.r, border: `1px solid ${accent}20` }}>
-          <span style={{ fontSize: 18 }}>{"\uD83C\uDFC6"}</span>
+          <Trophy size={18} color={accent} />
           <span style={{ fontSize: 13, color: C.t2 }}>
             {T("challengeReward")}: <span style={{ fontWeight: 700, color: accent }}>{lang === "he" ? challenge.nameHe : challenge.name}</span> badge + <span style={{ fontWeight: 700, color: accent }}>{challenge.bonusXP} XP</span>
           </span>
@@ -107,11 +109,11 @@ export default function ChallengeView() {
           const isFuture = d.day > todayDay;
           const ref = findExercise(d.exerciseId);
 
-          let icon, iconColor;
-          if (done) { icon = "\u2705"; iconColor = C.acc; }
-          else if (isToday) { icon = "\uD83D\uDD35"; iconColor = accent; }
-          else if (isPast) { icon = "\u274C"; iconColor = "#EF4444"; }
-          else { icon = "\u26AA"; iconColor = C.t3; }
+          let StatusIcon, iconColor;
+          if (done) { StatusIcon = CheckCircle2; iconColor = C.acc; }
+          else if (isToday) { StatusIcon = CircleDot; iconColor = accent; }
+          else if (isPast) { StatusIcon = XCircle; iconColor = "#EF4444"; }
+          else { StatusIcon = Circle; iconColor = C.t3; }
 
           return (
             <div
@@ -125,7 +127,7 @@ export default function ChallengeView() {
                 ...(isToday && { boxShadow: `0 0 16px ${accent}15` }),
               }}
             >
-              <span style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
+              <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}><StatusIcon size={16} color={iconColor} /></span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: done ? C.t3 : (isToday ? C.t1 : (isPast ? "#EF4444" : C.t3)) }}>
                   {T("challengeDay")} {d.day}
@@ -155,7 +157,7 @@ export default function ChallengeView() {
                     borderRadius: 20, cursor: "pointer", flexShrink: 0,
                   }}
                 >
-                  {"\u2713"}
+                  <CheckCircle2 size={14} />
                 </button>
               )}
             </div>

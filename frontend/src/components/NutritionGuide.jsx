@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { DOG_FOODS, FOOD_CATEGORIES, CATEGORY_CONFIG } from "../data/dogNutrition.js";
+import { Search } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", rL: 24, r: 16 };
 
@@ -59,8 +60,8 @@ export default function NutritionGuide() {
             }}
           />
           {!query && (
-            <span style={{ position: "absolute", insetInlineStart: 16, top: "50%", transform: "translateY(-50%)", fontSize: 18, pointerEvents: "none" }}>
-              {"\uD83D\uDD0D"}
+            <span style={{ position: "absolute", insetInlineStart: 16, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", display: "flex", alignItems: "center" }}>
+              <Search size={18} color={C.t3} />
             </span>
           )}
         </div>
@@ -82,7 +83,7 @@ export default function NutritionGuide() {
       {/* No Results */}
       {filtered.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px 20px" }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>{"\uD83D\uDD0D"}</div>
+          <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Search size={40} color={C.t3} /></div>
           <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{T("nutritionNoResults")}</div>
           <div style={{ fontSize: 13, color: C.t3, marginTop: 4 }}>{T("nutritionTryAnother")}</div>
         </div>

@@ -3,6 +3,7 @@ import { useApp } from "../context/AppContext.jsx";
 import { gatherMonthlyStats } from "../utils/monthlyStats.js";
 import { generateMilestoneCard, shareCard, downloadCard } from "../utils/milestoneCardGenerator.js";
 import BottomNav from "./BottomNav.jsx";
+import { ChevronRight, RefreshCw, Download, ArrowDown, Calendar } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", rL: 24 };
 
@@ -103,14 +104,14 @@ export default function MilestoneCards() {
             background: C.acc, color: "#000", border: "none", borderRadius: 50,
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
           }}>
-            {sharing ? "..." : <><span style={{ fontSize: 18 }}>\uD83D\uDCE4</span> {T("shareCard")}</>}
+            {sharing ? "..." : <><Download size={18} style={{ transform: "rotate(180deg)" }} /> {T("shareCard")}</>}
           </button>
           <button onClick={handleDownload} style={{
             flex: 1, padding: "16px", fontSize: 15, fontWeight: 700,
             background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50,
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
           }}>
-            <span style={{ fontSize: 18 }}>\u2B07\uFE0F</span> {T("downloadCard")}
+            <ArrowDown size={18} /> {T("downloadCard")}
           </button>
         </div>
 
@@ -155,7 +156,7 @@ export default function MilestoneCards() {
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 24, flexShrink: 0,
               }}>
-                {"\uD83D\uDCC5"}
+                <Calendar size={24} color={C.acc} />
               </div>
 
               {/* Info */}
@@ -169,7 +170,7 @@ export default function MilestoneCards() {
               </div>
 
               {/* Arrow */}
-              <span style={{ color: C.t3, fontSize: 18 }}>\u203A</span>
+              <ChevronRight size={18} color={C.t3} />
             </button>
           ))}
         </div>

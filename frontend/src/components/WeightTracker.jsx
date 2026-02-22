@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { api } from "../lib/api.js";
+import { ArrowLeft, Scale, X } from "lucide-react";
 
 function getBreedWeightRange(size) {
   switch (size) {
@@ -131,8 +132,8 @@ export default function WeightTracker() {
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
       {/* Header */}
       <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("healthDashboard")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: C.t3, padding: 4 }}>
-          {"\u2190"}
+        <button onClick={() => nav("healthDashboard")} style={{ background: "none", border: "none", cursor: "pointer", color: C.t3, padding: 4, display: "flex", alignItems: "center" }}>
+          <ArrowLeft size={20} />
         </button>
         <div>
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 2px", color: C.t1 }}>{T("healthWeight")}</h1>
@@ -224,7 +225,7 @@ export default function WeightTracker() {
       {/* Weight List */}
       {!loading && weights.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px 20px" }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>⚖️</div>
+          <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Scale size={48} color={C.t3} /></div>
           <div style={{ fontSize: 16, fontWeight: 700, color: C.t1 }}>{T("healthNoWeight")}</div>
         </div>
       )}
@@ -244,7 +245,7 @@ export default function WeightTracker() {
                 </div>
                 <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{formatDate(w.date)}{w.notes ? ` · ${w.notes}` : ""}</div>
               </div>
-              <button onClick={() => handleDelete(w.id)} style={{ background: "none", border: "none", color: C.t3, cursor: "pointer", fontSize: 16, padding: 4 }}>✕</button>
+              <button onClick={() => handleDelete(w.id)} style={{ background: "none", border: "none", color: C.t3, cursor: "pointer", padding: 4, display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
             </div>
           ))}
         </div>

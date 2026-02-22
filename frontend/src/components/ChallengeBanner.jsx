@@ -1,3 +1,5 @@
+import { CheckCircle2, ArrowRight } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 import { useApp } from "../context/AppContext.jsx";
 
 const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", rL: 24 };
@@ -26,7 +28,7 @@ export default function ChallengeBanner() {
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 20 }}>{challenge.emoji}</span>
+            <Icon name={challenge.icon || "Trophy"} size={20} color={accent} />
             <span style={{ fontSize: 11, fontWeight: 700, color: accent, textTransform: "uppercase", letterSpacing: 1.5 }}>{T("thisWeeksChallenge")}</span>
           </div>
           <span style={{ fontSize: 13, fontWeight: 800, color: accent }}>{progress}/7</span>
@@ -49,11 +51,11 @@ export default function ChallengeBanner() {
               {T("challengeDay")} {todayDay}:
             </span>{" "}
             {task}
-            {todayCompleted && <span style={{ marginInlineStart: 6 }}>{"\u2705"}</span>}
+            {todayCompleted && <span style={{ marginInlineStart: 6, display: "inline-flex", verticalAlign: "middle" }}><CheckCircle2 size={14} color={accent} /></span>}
           </div>
           {!todayCompleted && (
             <span style={{ fontSize: 11, padding: "5px 12px", borderRadius: 20, background: accent, color: "#000", fontWeight: 700, marginInlineStart: 10, flexShrink: 0 }}>
-              {T("challengeGo")} {"\u2192"}
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>{T("challengeGo")} <ArrowRight size={11} /></span>
             </span>
           )}
         </div>

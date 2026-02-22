@@ -1,3 +1,5 @@
+import { Snowflake } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 import { useApp } from "../context/AppContext.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
@@ -26,7 +28,7 @@ export default function StreakWidget() {
         {freezesAvailable > 0 && (
           <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: C.t3 }}>
             {Array.from({ length: freezesAvailable }).map((_, i) => (
-              <span key={i} style={{ fontSize: 14 }}>{"\uD83E\uDDCA"}</span>
+              <Snowflake key={i} size={14} color="#93C5FD" />
             ))}
             <span style={{ marginInlineStart: 2 }}>{freezesAvailable}</span>
           </div>
@@ -45,7 +47,7 @@ export default function StreakWidget() {
           </div>
           <div style={{ fontSize: 11, color: C.t3, display: "flex", justifyContent: "space-between", width: "100%" }}>
             <span>{T("nextReward")}: {lang === "he" ? (nextMilestone.nameHe || nextMilestone.name) : nextMilestone.name}</span>
-            <span>{nextMilestone.emoji} {nextMilestone.days} {T("daysOfStreak")}</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Icon name={nextMilestone.icon || "Trophy"} size={11} color={C.t3} /> {nextMilestone.days} {T("daysOfStreak")}</span>
           </div>
         </>
       )}

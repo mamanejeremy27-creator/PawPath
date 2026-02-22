@@ -1,3 +1,4 @@
+import { PawPrint } from "lucide-react";
 import { useApp } from "../context/AppContext.jsx";
 
 const C = {
@@ -45,7 +46,7 @@ export default function FeedbackPrompt() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-          <span style={{ fontSize: 28 }}>🐾</span>
+          <PawPrint size={28} color="#22C55E" />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>
               {T("enjoyingPawPath")}

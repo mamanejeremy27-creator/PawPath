@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Bug, Lightbulb, Star, FileText, X, Inbox, Dog, Flame } from "lucide-react";
 import { useApp } from "../context/AppContext.jsx";
 
 const C = {
@@ -14,10 +15,10 @@ const C = {
 };
 
 const TYPE_META = {
-  bug: { emoji: "🐛", color: "#EF4444" },
-  feature: { emoji: "💡", color: "#F59E0B" },
-  rating: { emoji: "⭐", color: "#8B5CF6" },
-  general: { emoji: "📝", color: "#3B82F6" },
+  bug: { icon: Bug, color: "#EF4444" },
+  feature: { icon: Lightbulb, color: "#F59E0B" },
+  rating: { icon: Star, color: "#8B5CF6" },
+  general: { icon: FileText, color: "#3B82F6" },
 };
 
 const FILTERS = [
@@ -116,13 +117,12 @@ export default function FeedbackAdmin() {
               height: 38,
               borderRadius: 10,
               cursor: "pointer",
-              fontSize: 16,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            ✕
+            <X size={16} />
           </button>
         </div>
       </div>
@@ -156,7 +156,7 @@ export default function FeedbackAdmin() {
       <div style={{ padding: "0 20px 40px" }}>
         {filtered.length === 0 ? (
           <div style={{ textAlign: "center", padding: "60px 20px", color: C.t3 }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>📭</div>
+            <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Inbox size={40} color={C.t3} /></div>
             <div style={{ fontSize: 15, fontWeight: 600 }}>{T("noFeedback")}</div>
           </div>
         ) : (
@@ -190,7 +190,7 @@ export default function FeedbackAdmin() {
                       color: meta.color,
                     }}
                   >
-                    <span>{meta.emoji}</span>
+                    <meta.icon size={12} />
                     <span>{entry.type}</span>
                   </div>
                   <span style={{ fontSize: 12, color: C.t3 }}>{formatDate(entry.timestamp)}</span>
@@ -229,14 +229,14 @@ export default function FeedbackAdmin() {
                     }}
                   >
                     {entry.context.dogName && (
-                      <span style={{ fontSize: 11, color: C.t3 }}>🐕 {entry.context.dogName}</span>
+                      <span style={{ fontSize: 11, color: C.t3, display: "inline-flex", alignItems: "center", gap: 3 }}><Dog size={11} /> {entry.context.dogName}</span>
                     )}
                     {entry.context.dogBreed && (
                       <span style={{ fontSize: 11, color: C.t3 }}>{entry.context.dogBreed}</span>
                     )}
                     <span style={{ fontSize: 11, color: C.t3 }}>Lv.{entry.context.playerLevel}</span>
                     <span style={{ fontSize: 11, color: C.t3 }}>{entry.context.totalXP} XP</span>
-                    <span style={{ fontSize: 11, color: C.t3 }}>🔥 {entry.context.currentStreak}</span>
+                    <span style={{ fontSize: 11, color: C.t3, display: "inline-flex", alignItems: "center", gap: 3 }}><Flame size={11} /> {entry.context.currentStreak}</span>
                     <span style={{ fontSize: 11, color: C.t3 }}>{entry.context.totalExercises} ex.</span>
                     <span style={{ fontSize: 11, color: C.t3 }}>{entry.context.language}</span>
                     <span style={{ fontSize: 11, color: C.t3 }}>@{entry.context.screen}</span>

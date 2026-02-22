@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { api } from "../lib/api.js";
 import BottomNav from "./BottomNav.jsx";
+import { ArrowLeft, Syringe, X } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
 const LS_KEY = "pawpath_vaccinations";
@@ -116,8 +117,8 @@ export default function VaccinationTracker() {
       {/* Header */}
       <div style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => nav("healthDashboard")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: C.t3, padding: 4 }}>
-            {"\u2190"}
+          <button onClick={() => nav("healthDashboard")} style={{ background: "none", border: "none", cursor: "pointer", color: C.t3, padding: 4, display: "flex", alignItems: "center" }}>
+            <ArrowLeft size={20} />
           </button>
           <div>
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 2px", color: C.t1 }}>{T("healthVaccinations")}</h1>
@@ -159,7 +160,7 @@ export default function VaccinationTracker() {
       {/* Empty */}
       {!loading && vacc.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px 20px" }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>💉</div>
+          <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Syringe size={48} color={C.t3} /></div>
           <div style={{ fontSize: 16, fontWeight: 700, color: C.t1 }}>{T("healthNoVaccinations")}</div>
         </div>
       )}
@@ -184,7 +185,7 @@ export default function VaccinationTracker() {
                     {v.vet_name && <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{T("healthVetName")}: {v.vet_name}</div>}
                     {v.notes && <div style={{ fontSize: 12, color: C.t2, marginTop: 2 }}>{v.notes}</div>}
                   </div>
-                  <button onClick={() => handleDelete(v.id)} style={{ background: "none", border: "none", color: C.t3, cursor: "pointer", fontSize: 16, padding: 4 }}>✕</button>
+                  <button onClick={() => handleDelete(v.id)} style={{ background: "none", border: "none", color: C.t3, cursor: "pointer", padding: 4, display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
                 </div>
               </div>
             );
@@ -198,7 +199,7 @@ export default function VaccinationTracker() {
           <div style={{ width: "100%", maxWidth: 480, background: C.s1, borderRadius: "24px 24px 0 0", padding: "28px 24px 36px", animation: "slideUp 0.3s ease", maxHeight: "90vh", overflowY: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
               <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 800, margin: 0, color: C.t1 }}>{T("healthAddVaccination")}</h3>
-              <button onClick={() => setShowForm(false)} style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", fontSize: 16 }}>✕</button>
+              <button onClick={() => setShowForm(false)} style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={18} /></button>
             </div>
 
             <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>{T("healthVaccineName")}</div>

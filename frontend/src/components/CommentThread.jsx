@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { api } from "../lib/api.js";
+import { X, MessageCircle } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16 };
 
@@ -72,7 +73,7 @@ export default function CommentThread({ postId, onClose, onCountChange }) {
         {/* Header */}
         <div style={{ padding: "20px 20px 12px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `1px solid ${C.b1}`, flexShrink: 0 }}>
           <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0, color: C.t1 }}>{T("comments")}</h3>
-          <button onClick={onClose} style={{ background: C.b1, border: "none", color: C.t3, width: 32, height: 32, borderRadius: 8, cursor: "pointer", fontSize: 14 }}>{"\u2715"}</button>
+          <button onClick={onClose} style={{ background: C.b1, border: "none", color: C.t3, width: 32, height: 32, borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
         </div>
 
         {/* Comments List */}
@@ -84,7 +85,7 @@ export default function CommentThread({ postId, onClose, onCountChange }) {
           )}
           {!loading && comments.length === 0 && (
             <div style={{ textAlign: "center", padding: "32px 0", color: C.t3 }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>{"\uD83D\uDCAC"}</div>
+              <MessageCircle size={32} color={C.t3} style={{ marginBottom: 8 }} />
               <div style={{ fontSize: 14, fontWeight: 600 }}>{T("cmtEmpty")}</div>
             </div>
           )}

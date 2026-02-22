@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import PhotoImg from "./PhotoImg.jsx";
+import { Camera, ArrowRight } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", rL: 24 };
 
@@ -30,7 +32,7 @@ export default function GrowthView() {
   if (monthlyPhotos.length === 0) {
     return (
       <div style={{ textAlign: "center", padding: "60px 40px", color: C.t3 }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>📸</div>
+        <div style={{ marginBottom: 16 }}><Camera size={48} color={C.t3} /></div>
         <p style={{ fontSize: 15, lineHeight: 1.6 }}>{T("noEntries")}</p>
       </div>
     );
@@ -52,7 +54,7 @@ export default function GrowthView() {
               <PhotoImg src={first.photo} style={{ width: "100%", aspectRatio: "1", borderRadius: 14, objectFit: "cover" }} />
               <div style={{ fontSize: 11, color: C.t3, marginTop: 6, fontWeight: 600 }}>{first.label}</div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", color: C.t3, fontSize: 20 }}>→</div>
+            <div style={{ display: "flex", alignItems: "center" }}><ArrowRight size={20} color={C.t3} /></div>
             <div style={{ flex: 1, textAlign: "center" }}>
               <PhotoImg src={last.photo} style={{ width: "100%", aspectRatio: "1", borderRadius: 14, objectFit: "cover" }} />
               <div style={{ fontSize: 11, color: C.t3, marginTop: 6, fontWeight: 600 }}>{last.label}</div>
@@ -68,7 +70,7 @@ export default function GrowthView() {
             <PhotoImg src={m.photo} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} />
             <div style={{ padding: "8px 10px" }}>
               <div style={{ fontSize: 10, color: C.t3, fontWeight: 600 }}>{m.label}</div>
-              <div style={{ fontSize: 11, color: C.t2, marginTop: 2 }}>{m.programEmoji} {m.exerciseName}</div>
+              <div style={{ fontSize: 11, color: C.t2, marginTop: 2, display: "flex", alignItems: "center", gap: 3 }}>{m.programIcon ? <Icon name={m.programIcon} size={11} /> : <span>{m.programEmoji}</span>} {m.exerciseName}</div>
             </div>
           </div>
         ))}

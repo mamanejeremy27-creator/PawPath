@@ -3,6 +3,7 @@ import { useApp } from "../context/AppContext.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { api } from "../lib/api.js";
 import BottomNav from "./BottomNav.jsx";
+import { Trophy, Flame, Lock, ArrowLeft, AlertTriangle } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", r: 16 };
 
@@ -76,8 +77,8 @@ export default function Leaderboard() {
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
       {/* Header */}
       <div style={{ padding: "40px 20px 0" }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t3, fontSize: 14, cursor: "pointer", padding: 0, marginBottom: 12 }}>
-          ← {T("back")}
+        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t3, fontSize: 14, cursor: "pointer", padding: 0, marginBottom: 12, display: "flex", alignItems: "center", gap: 4 }}>
+          <ArrowLeft size={16} /> {T("back")}
         </button>
         <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, color: C.t1, margin: 0 }}>{T("leaderboard")}</h1>
         <p style={{ fontSize: 14, color: C.t3, margin: "4px 0 0" }}>{T("leaderboardSubtitle")}</p>
@@ -119,17 +120,17 @@ export default function Leaderboard() {
           </div>
         ) : error ? (
           <div style={{ textAlign: "center", padding: "60px 20px" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>⚠️</div>
+            <div style={{ marginBottom: 12 }}><AlertTriangle size={40} color="#F59E0B" /></div>
             <p style={{ fontSize: 15, color: C.t3 }}>{T("lbUnavailable")}</p>
           </div>
         ) : !isAuthenticated ? (
           <div style={{ textAlign: "center", padding: "60px 20px" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>🔒</div>
+            <div style={{ marginBottom: 12 }}><Lock size={40} color={C.t3} /></div>
             <p style={{ fontSize: 15, color: C.t3 }}>{T("lbSignIn")}</p>
           </div>
         ) : entries.length === 0 ? (
           <div style={{ textAlign: "center", padding: "60px 20px" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>🏆</div>
+            <div style={{ marginBottom: 12 }}><Trophy size={40} color="#FFD700" /></div>
             <p style={{ fontSize: 15, color: C.t1, fontWeight: 700 }}>{T("lbEmpty")}</p>
             <p style={{ fontSize: 13, color: C.t3, marginTop: 4 }}>{T("lbEmptySub")}</p>
           </div>
@@ -165,7 +166,7 @@ export default function Leaderboard() {
                   {/* Streak */}
                   {entry.currentStreak > 0 && (
                     <div style={{ fontSize: 12, color: "#F59E0B", fontWeight: 600, display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
-                      🔥 {entry.currentStreak}
+                      <Flame size={14} color="#F59E0B" /> {entry.currentStreak}
                     </div>
                   )}
 

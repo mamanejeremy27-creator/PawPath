@@ -1,4 +1,5 @@
 import { useApp } from "../context/AppContext.jsx";
+import { ArrowRight } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E" };
 
@@ -75,7 +76,7 @@ export default function StageTransitionModal() {
             cursor: "pointer",
           }}
         >
-          {T("stageInfo")} →
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>{T("stageInfo")} <ArrowRight size={16} /></span>
         </button>
       </div>
     </div>

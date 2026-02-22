@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Bug, Star, Lightbulb, FileText, X, PartyPopper } from "lucide-react";
 import { useApp } from "../context/AppContext.jsx";
 import { submitFeedbackToSheet } from "../utils/feedback.js";
 
@@ -14,10 +15,10 @@ const C = {
 };
 
 const TYPES = [
-  { id: "bug", emoji: "\uD83D\uDC1B", labelKey: "bugReport" },
-  { id: "rating", emoji: "\u2B50", labelKey: "rateApp" },
-  { id: "feature", emoji: "\uD83D\uDCA1", labelKey: "featureRequest" },
-  { id: "general", emoji: "\uD83D\uDCDD", labelKey: "generalFeedback" },
+  { id: "bug", icon: Bug, labelKey: "bugReport" },
+  { id: "rating", icon: Star, labelKey: "rateApp" },
+  { id: "feature", icon: Lightbulb, labelKey: "featureRequest" },
+  { id: "general", icon: FileText, labelKey: "generalFeedback" },
 ];
 
 const PLACEHOLDERS = {
@@ -120,7 +121,7 @@ export default function FeedbackModal() {
       >
         {submitted ? (
           <div style={{ textAlign: "center", padding: "48px 20px", animation: "fadeIn 0.4s ease" }}>
-            <div style={{ fontSize: 56, marginBottom: 16 }}>{"\uD83C\uDF89"}</div>
+            <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}><PartyPopper size={56} color="#22C55E" /></div>
             <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>
               {T("thanksFeedback")}
             </div>
@@ -134,9 +135,9 @@ export default function FeedbackModal() {
               </h3>
               <button
                 onClick={handleClose}
-                style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", fontSize: 16 }}
+                style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
               >
-                {"\u2715"}
+                <X size={16} />
               </button>
             </div>
 
@@ -159,7 +160,7 @@ export default function FeedbackModal() {
                     transition: "all 0.15s ease",
                   }}
                 >
-                  <div style={{ fontSize: 24, marginBottom: 4 }}>{tp.emoji}</div>
+                  <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><tp.icon size={24} /></div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: type === tp.id ? C.acc : C.t1 }}>{T(tp.labelKey)}</div>
                 </button>
               ))}

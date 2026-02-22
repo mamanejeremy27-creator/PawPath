@@ -4,6 +4,7 @@ import { api } from "../lib/api.js";
 import { compressPhoto } from "../utils/photoCompressor.js";
 import PhotoImg from "./PhotoImg.jsx";
 import BottomNav from "./BottomNav.jsx";
+import { ArrowLeft, Heart, Dog, Camera } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
 
@@ -70,7 +71,7 @@ export default function ReportSighting() {
     return (
       <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
         <div style={{ textAlign: "center", animation: "fadeIn 0.3s ease" }}>
-          <div style={{ fontSize: 64, marginBottom: 16 }}>{"🙏"}</div>
+          <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}><Heart size={64} color={C.acc} /></div>
           <h2 style={{ fontSize: 22, fontWeight: 800, color: C.acc, margin: "0 0 8px" }}>{T("lostSightingThanks")}</h2>
           <p style={{ fontSize: 14, color: C.t2, margin: "0 0 24px", lineHeight: 1.6 }}>{T("lostSightingThanksSub")}</p>
           <button onClick={() => nav("home")} style={{ padding: "14px 32px", fontSize: 14, fontWeight: 700, background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
@@ -85,7 +86,7 @@ export default function ReportSighting() {
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
       {/* Header */}
       <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t1, fontSize: 24, cursor: "pointer", padding: 0 }}>{"\u2190"}</button>
+        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t1, cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><ArrowLeft size={24} /></button>
         <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: C.t1 }}>{T("lostReportSighting")}</h1>
       </div>
 
@@ -96,7 +97,7 @@ export default function ReportSighting() {
             {report.dog_photo ? (
               <PhotoImg src={report.dog_photo} style={{ width: 48, height: 48, objectFit: "cover" }} />
             ) : (
-              <span style={{ fontSize: 24 }}>{"\uD83D\uDC15"}</span>
+              <Dog size={24} color={C.t3} />
             )}
           </div>
           <div>
@@ -140,7 +141,7 @@ export default function ReportSighting() {
             </div>
           ) : (
             <button onClick={() => photoRef.current?.click()} style={{ padding: "12px 20px", background: C.s1, border: `1px dashed ${C.t3}`, borderRadius: 12, color: C.t3, fontSize: 13, cursor: "pointer" }}>
-              {"📷"} {T("lostAddPhoto")}
+              <Camera size={14} /> {T("lostAddPhoto")}
             </button>
           )}
         </div>

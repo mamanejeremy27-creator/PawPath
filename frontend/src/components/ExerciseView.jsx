@@ -6,6 +6,21 @@ import MoodCheck from "./MoodCheck.jsx";
 import VoiceMode from "./VoiceMode.jsx";
 import { calculateFreshness, getFreshnessColor } from "../utils/freshness.js";
 import { matchBreed, getBreedExerciseTip } from "../data/breedTraits.js";
+import { ArrowLeft, ArrowRight, Clock, Lightbulb, Dog, Mic, PartyPopper } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
+
+const GEAR_ICONS = {
+  clicker: "Bell",
+  treat_pouch: "ShoppingBag",
+  high_value_treats: "UtensilsCrossed",
+  long_line: "Link2",
+  treat_mat: "LayoutGrid",
+  target_stick: "WandSparkles",
+  mat_bed: "BedDouble",
+  puzzle_toy: "Brain",
+  harness: "Link2",
+  whistle: "Megaphone",
+};
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", warn: "#F59E0B", rL: 24, r: 16 };
 const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
@@ -60,14 +75,14 @@ export default function ExerciseView() {
     <div style={{ minHeight: "100vh", background: C.bg, paddingBottom: 40, animation: "fadeIn 0.3s ease" }}>
       <div style={{ padding: "24px 20px 16px" }}>
         <button onClick={() => nav("level", { exercise: null })} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 16 }}>{rtl ? "→" : "←"}</span> {selLevel.name}
+          {rtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />} {selLevel.name}
         </button>
       </div>
       <div style={{ padding: "0 20px" }}>
-        <div style={{ display: "inline-flex", padding: "6px 14px", borderRadius: 8, background: selProgram.gradient, fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 14 }}>{selProgram.emoji} {selProgram.name}</div>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8, background: selProgram.gradient, fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 14 }}><Icon name={selProgram.icon} size={14} color="#fff" /> {selProgram.name}</div>
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 900, margin: 0, color: C.t1 }}>{ex.name}</h2>
         <div style={{ display: "flex", gap: 14, marginTop: 8, fontSize: 13, color: C.t3 }}>
-          <span>⏱ {Math.floor(ex.duration / 60)} {T("min")}</span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Clock size={14} /> {Math.floor(ex.duration / 60)} {T("min")}</span>
           <span style={{ color: selProgram.color }}>{"●".repeat(ex.difficulty)}{"○".repeat(4 - ex.difficulty)}</span>
         </div>
         {done && freshData && (
@@ -84,7 +99,7 @@ export default function ExerciseView() {
         {HAS_SPEECH && (
           <button onClick={() => setShowVoice(true)}
             style={{ width: "100%", marginTop: 14, padding: "16px", fontSize: 15, fontWeight: 700, background: "rgba(34,197,94,0.08)", color: C.acc, border: "1px solid rgba(34,197,94,0.2)", borderRadius: 50, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, transition: "all 0.2s" }}>
-            <span style={{ fontSize: 20 }}>{"\uD83C\uDF99\uFE0F"}</span> {T("voiceStart")}
+            <Mic size={20} /> {T("voiceStart")}
           </button>
         )}
 
@@ -101,7 +116,7 @@ export default function ExerciseView() {
 
         {/* Pro Tip */}
         <div style={{ marginTop: 14, padding: "18px", background: "rgba(34,197,94,0.05)", borderRadius: C.rL, border: "1px solid rgba(34,197,94,0.1)", display: "flex", gap: 12, alignItems: "flex-start" }}>
-          <span style={{ fontSize: 20, flexShrink: 0 }}>💡</span>
+          <Lightbulb size={20} color={C.acc} style={{ flexShrink: 0 }} />
           <div>
             <h4 style={{ fontSize: 12, fontWeight: 800, margin: 0, color: C.acc, textTransform: "uppercase", letterSpacing: 1 }}>{T("proTip")}</h4>
             <p style={{ fontSize: 13, color: C.t2, marginTop: 6, lineHeight: 1.6 }}>{ex.tips}</p>
@@ -115,7 +130,7 @@ export default function ExerciseView() {
           if (!breedTip) return null;
           return (
             <div style={{ marginTop: 14, padding: "18px", background: "rgba(245,158,11,0.05)", borderRadius: C.rL, border: "1px solid rgba(245,158,11,0.12)", display: "flex", gap: 12, alignItems: "flex-start" }}>
-              <span style={{ fontSize: 20, flexShrink: 0 }}>{"\uD83D\uDC36"}</span>
+              <Dog size={20} color={C.warn} style={{ flexShrink: 0 }} />
               <div>
                 <h4 style={{ fontSize: 12, fontWeight: 800, margin: 0, color: C.warn, textTransform: "uppercase", letterSpacing: 1 }}>{T("breedTip")} — {breedData.name[lang] || breedData.name.en}</h4>
                 <p style={{ fontSize: 13, color: C.t2, marginTop: 6, lineHeight: 1.6 }}>{breedTip}</p>
@@ -130,7 +145,7 @@ export default function ExerciseView() {
             <h4 style={{ fontSize: 12, fontWeight: 800, margin: "0 0 12px", color: C.warn, textTransform: "uppercase", letterSpacing: 1 }}>{T("recommendedGear")}</h4>
             {gear.map(g => (
               <div key={g.id} style={{ display: "flex", gap: 10, marginBottom: 10, padding: "10px", background: "rgba(255,255,255,0.02)", borderRadius: 10 }}>
-                <span style={{ fontSize: 22 }}>{g.emoji}</span>
+                <Icon name={GEAR_ICONS[g.id] || "ShoppingBag"} size={20} color={C.warn} />
                 <div><div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{g.name} <span style={{ color: C.t3, fontWeight: 500 }}>· <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "embed" }}>{g.price}</span></span></div><div style={{ fontSize: 12, color: C.t3, marginTop: 3, lineHeight: 1.5 }}>{g.tip}</div></div>
               </div>
             ))}
@@ -170,7 +185,7 @@ export default function ExerciseView() {
               {allProgramDone ? (
                 <>
                   <div style={{ textAlign: "center", padding: "16px 0" }}>
-                    <div style={{ fontSize: 48 }}>{"\uD83C\uDF89"}</div>
+                    <div><PartyPopper size={48} color={C.acc} /></div>
                     <div style={{ fontSize: 16, fontWeight: 700, color: C.acc, marginTop: 8 }}>{T("programComplete")}</div>
                   </div>
                   <button onClick={() => nav("home", { program: null, level: null, exercise: null })}
@@ -199,7 +214,7 @@ export default function ExerciseView() {
         <VoiceMode
           exercise={ex}
           programName={selProgram.name}
-          programEmoji={selProgram.emoji}
+          programIcon={selProgram.icon}
           lang={lang}
           rtl={rtl}
           T={T}

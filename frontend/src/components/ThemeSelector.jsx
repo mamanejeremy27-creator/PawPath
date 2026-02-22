@@ -1,4 +1,5 @@
 import { useApp } from "../context/AppContext.jsx";
+import { CheckCircle2, Lock } from "lucide-react";
 
 const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", r: 16 };
 
@@ -29,10 +30,10 @@ export default function ThemeSelector() {
               }}
             >
               {isActive && (
-                <span style={{ position: "absolute", top: 8, insetInlineEnd: 8, fontSize: 14 }}>{"\u2705"}</span>
+                <span style={{ position: "absolute", top: 8, insetInlineEnd: 8, display: "flex" }}><CheckCircle2 size={16} color={C.acc} /></span>
               )}
               {!isUnlocked && (
-                <span style={{ position: "absolute", top: 8, insetInlineEnd: 8, fontSize: 14 }}>{"\uD83D\uDD12"}</span>
+                <span style={{ position: "absolute", top: 8, insetInlineEnd: 8, display: "flex" }}><Lock size={16} color={C.t3} /></span>
               )}
               {/* Color swatches */}
               <div style={{ display: "flex", justifyContent: "center", gap: 6, marginBottom: 10 }}>

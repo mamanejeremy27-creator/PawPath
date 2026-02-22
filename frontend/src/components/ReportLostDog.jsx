@@ -4,6 +4,7 @@ import { api } from "../lib/api.js";
 import DogAvatar from "./DogAvatar.jsx";
 import LostDogMap from "./LostDogMap.jsx";
 import BottomNav from "./BottomNav.jsx";
+import { ArrowLeft, AlertCircle } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", dangerBg: "rgba(239,68,68,0.08)", dangerBorder: "rgba(239,68,68,0.2)", r: 16, rL: 24 };
 
@@ -86,7 +87,7 @@ export default function ReportLostDog() {
     return (
       <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
         <div style={{ padding: "60px 20px 24px", textAlign: "center" }}>
-          <div style={{ fontSize: 64, marginBottom: 16, animation: "fadeIn 0.5s ease" }}>{"🚨"}</div>
+          <div style={{ marginBottom: 16, animation: "fadeIn 0.5s ease", display: "flex", justifyContent: "center" }}><AlertCircle size={64} color={C.danger} /></div>
           <h1 style={{ fontSize: 24, fontWeight: 800, color: C.danger, margin: "0 0 8px" }}>{T("lostAlertSent")}</h1>
           <p style={{ fontSize: 14, color: C.t2, margin: "0 0 24px", lineHeight: 1.6 }}>{T("lostAlertSentSub")}</p>
 
@@ -118,9 +119,9 @@ export default function ReportLostDog() {
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
       {/* Header */}
       <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t1, fontSize: 24, cursor: "pointer", padding: 0 }}>{"\u2190"}</button>
+        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t1, cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><ArrowLeft size={24} /></button>
         <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: C.danger }}>{"🚨"} {T("lostReportTitle")}</h1>
+          <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: C.danger, display: "flex", alignItems: "center", gap: 8 }}><AlertCircle size={22} /> {T("lostReportTitle")}</h1>
           <p style={{ fontSize: 12, color: C.t3, margin: "2px 0 0" }}>{T("lostReportSub")}</p>
         </div>
       </div>
@@ -217,7 +218,7 @@ export default function ReportLostDog() {
             marginTop: 8, opacity: sending ? 0.7 : 1,
             boxShadow: canSubmit ? "0 4px 24px rgba(239,68,68,0.4)" : "none",
           }}>
-          {"🚨"} {sending ? T("lostSending") : T("lostSendAlert")}
+          <AlertCircle size={18} /> {sending ? T("lostSending") : T("lostSendAlert")}
         </button>
       </div>
 

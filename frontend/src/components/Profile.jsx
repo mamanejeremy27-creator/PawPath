@@ -1,4 +1,6 @@
 import { useState, useRef } from "react";
+import { Camera, Pencil, Dog, Heart, AlertTriangle, Lock, CheckCircle2, Sparkles } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 import { useApp } from "../context/AppContext.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { CHALLENGES } from "../data/challenges.js";
@@ -106,8 +108,8 @@ export default function Profile() {
   ];
 
   const pencil = (field) => (
-    <button onClick={() => startEdit(field)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, fontSize: 14, color: C.t3, opacity: 0.7 }}>
-      {"\u270F\uFE0F"}
+    <button onClick={() => startEdit(field)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: C.t3, opacity: 0.7, display: "inline-flex", alignItems: "center" }}>
+      <Pencil size={14} />
     </button>
   );
 
@@ -132,8 +134,8 @@ export default function Profile() {
         {/* Tappable avatar for photo upload */}
         <div onClick={() => photoRef.current?.click()} style={{ cursor: "pointer", display: "inline-block", position: "relative" }}>
           <DogAvatar key={activeDogId} size="large" dogId={activeDogId} />
-          <div style={{ position: "absolute", bottom: -2, right: -2, width: 28, height: 28, borderRadius: "50%", background: C.acc, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
-            {"\uD83D\uDCF7"}
+          <div style={{ position: "absolute", bottom: -2, right: -2, width: 28, height: 28, borderRadius: "50%", background: C.acc, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.3)", color: "#000" }}>
+            <Camera size={14} />
           </div>
         </div>
         <div style={{ fontSize: 11, color: C.t3, marginTop: 6 }}>{T("tapToChangePhoto")}</div>
@@ -162,7 +164,7 @@ export default function Profile() {
                   const hasProfile = !!matchBreed(b);
                   return (
                     <button key={b} onClick={() => { saveField("breed", b); }} style={{ display: "block", width: "100%", padding: "13px 20px", fontSize: 15, background: "none", border: "none", borderBottom: `1px solid ${C.b1}`, color: C.t1, textAlign: rtl ? "right" : "left", cursor: "pointer" }}>
-                      {hasProfile ? "\uD83D\uDC36 " : b.toLowerCase().includes("mix") ? "\uD83D\uDC15\u200D\uD83E\uDDBA " : ""}{b}
+                      {hasProfile ? <><Dog size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: 4 }} /></> : null}{b}
                     </button>
                   );
                 })}
@@ -210,7 +212,7 @@ export default function Profile() {
         {/* Stats */}
         {[
           [T("totalXP"), `${totalXP} ${T("xp")}`],
-          [T("streak"), `${currentStreak} ${T("dayStreak")} \uD83D\uDD25`],
+          [T("streak"), currentStreak + " " + T("dayStreak")],
           [T("exercises"), completedExercises.length],
           [T("levels"), completedLevels.length],
           [T("badges"), `${earnedBadges.length}/${badges.length}`],
@@ -236,7 +238,7 @@ export default function Profile() {
               <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("breedProfile")}</h3>
               <div style={{ padding: "18px 20px", background: C.s1, borderRadius: 16, border: `1px solid ${C.b1}` }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                  <span style={{ fontSize: 22 }}>{"\uD83D\uDC36"}</span>
+                  <Dog size={22} color={C.acc} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{breedData.name[lang] || breedData.name.en}</div>
                   </div>
@@ -292,8 +294,8 @@ export default function Profile() {
                       </button>
                     )}
                     {isActive && (
-                      <button onClick={() => nav("reportLostDog")} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: C.danger, border: "none", borderRadius: 20, cursor: "pointer" }}>
-                        {"🚨"} {T("lostEmergency")}
+                      <button onClick={() => nav("reportLostDog")} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: C.danger, border: "none", borderRadius: 20, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                        <AlertTriangle size={12} /> {T("lostEmergency")}
                       </button>
                     )}
                     {dogCount > 1 && (
@@ -338,14 +340,14 @@ export default function Profile() {
                   const chDef = CHALLENGES.find(c => c.id === h.challengeId);
                   return (
                     <div key={i} style={{ padding: "12px 16px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 12 }}>
-                      <span style={{ fontSize: 20 }}>{chDef?.emoji || "\uD83C\uDFC6"}</span>
+                      <Icon name={chDef?.icon || "Trophy"} size={20} color={C.t1} />
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{lang === "he" ? chDef?.nameHe : chDef?.name}</div>
                         <div style={{ fontSize: 11, color: C.t3, marginTop: 2 }}>
                           {h.completedDays.length}/7 {T("challengeDay")}s · {h.fullComplete ? T("fullCompletion") : T("partialCompletion")} · +{h.xpEarned} XP
                         </div>
                       </div>
-                      {h.fullComplete && <span style={{ fontSize: 14 }}>{"\u2705"}</span>}
+                      {h.fullComplete && <CheckCircle2 size={14} color={C.acc} />}
                     </div>
                   );
                 })}
@@ -393,12 +395,12 @@ export default function Profile() {
         <div style={{ marginTop: 32 }}>
           <button onClick={() => nav("healthDashboard")}
             style={{ width: "100%", padding: "16px 20px", background: "linear-gradient(135deg, rgba(236,72,153,0.08), rgba(239,68,68,0.06))", border: "1px solid rgba(236,72,153,0.2)", borderRadius: C.r, cursor: "pointer", display: "flex", alignItems: "center", gap: 14, color: C.t1, textAlign: "start" }}>
-            <span style={{ fontSize: 24 }}>{"❤️"}</span>
+            <Heart size={24} color="#EC4899" fill="#EC4899" />
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("healthDashboard")}</div>
               <div style={{ fontSize: 12, color: "#EC4899", fontWeight: 600, marginTop: 2 }}>{T("healthDashboardSub")}</div>
             </div>
-            <span style={{ color: C.t3, fontSize: 18 }}>{"\u203A"}</span>
+            <Icon name="ChevronRight" size={18} color={C.t3} />
           </button>
         </div>
 
@@ -426,7 +428,7 @@ export default function Profile() {
                       {isActive ? T("unequip") : T("equip")}
                     </button>
                   )}
-                  {!isUnlocked && <span style={{ fontSize: 16 }}>{"\uD83D\uDD12"}</span>}
+                  {!isUnlocked && <Lock size={16} color={C.t3} />}
                 </div>
               );
             })}
@@ -457,7 +459,7 @@ export default function Profile() {
         <div style={{ marginTop: 32 }}>
           <button onClick={() => hasEnoughForRecap && nav("annualRecap")}
             style={{ width: "100%", padding: "16px", fontSize: 14, fontWeight: 700, background: "linear-gradient(135deg, rgba(34,197,94,0.1), rgba(139,92,246,0.08))", color: hasEnoughForRecap ? C.acc : C.t3, border: `1px solid rgba(34,197,94,0.2)`, borderRadius: C.r, cursor: hasEnoughForRecap ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, opacity: hasEnoughForRecap ? 1 : 0.7 }}>
-            {"\uD83C\uDF1F"} {T("viewRecap")}
+            <Sparkles size={16} /> {T("viewRecap")}
           </button>
           {!hasEnoughForRecap && (
             <p style={{ fontSize: 12, color: C.t3, textAlign: "center", margin: "8px 0 0", lineHeight: 1.5 }}>{T("keepTrainingRecap")}</p>
@@ -483,7 +485,7 @@ export default function Profile() {
       {confirmRemove && (
         <div onClick={() => setConfirmRemove(null)} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div onClick={e => e.stopPropagation()} style={{ background: C.s1, borderRadius: 24, padding: "28px 24px", maxWidth: 320, width: "90%", textAlign: "center" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>{"\u26A0\uFE0F"}</div>
+            <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><AlertTriangle size={40} color="#F59E0B" /></div>
             <p style={{ fontSize: 15, color: C.t1, margin: "0 0 20px", lineHeight: 1.6 }}>
               {T("confirmRemoveDog").replace("{name}", dogs[confirmRemove]?.profile?.name || "")}
             </p>

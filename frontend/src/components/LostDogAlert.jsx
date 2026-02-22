@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { api } from "../lib/api.js";
 import PhotoImg from "./PhotoImg.jsx";
+import { AlertCircle, Dog } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", danger: "#EF4444", r: 16, rL: 24 };
 
@@ -71,7 +72,7 @@ export default function LostDogAlert() {
         <button onClick={dismiss} style={{ position: "absolute", top: 12, insetInlineEnd: 14, background: "none", border: "none", color: C.t3, fontSize: 18, cursor: "pointer", padding: 0 }}>{"×"}</button>
 
         <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 10 }}>
-          <span style={{ fontSize: 16 }}>{"🚨"}</span>
+          <AlertCircle size={16} color={C.danger} />
           <span style={{ fontSize: 12, fontWeight: 800, color: C.danger, textTransform: "uppercase", letterSpacing: 1.5 }}>{T("lostDogNearby")}</span>
         </div>
 
@@ -81,7 +82,7 @@ export default function LostDogAlert() {
             {alert.dog_photo ? (
               <PhotoImg src={alert.dog_photo} style={{ width: 56, height: 56, objectFit: "cover" }} />
             ) : (
-              <span style={{ fontSize: 28 }}>{"\uD83D\uDC15"}</span>
+              <Dog size={28} color={C.t3} />
             )}
           </div>
 

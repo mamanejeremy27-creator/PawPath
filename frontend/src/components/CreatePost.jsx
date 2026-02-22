@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { ArrowLeft, TrendingUp, Camera, Lightbulb, HelpCircle, Image, X } from "lucide-react";
 import { useApp } from "../context/AppContext.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { api } from "../lib/api.js";
@@ -8,10 +9,10 @@ import PhotoImg from "./PhotoImg.jsx";
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
 
 const POST_TYPES = [
-  { id: "progress", emoji: "\uD83D\uDCC8", key: "postTypeProgress" },
-  { id: "photo", emoji: "\uD83D\uDCF8", key: "postTypePhoto" },
-  { id: "tip", emoji: "\uD83D\uDCA1", key: "postTypeTip" },
-  { id: "question", emoji: "\u2753", key: "postTypeQuestion" },
+  { id: "progress", icon: TrendingUp, key: "postTypeProgress" },
+  { id: "photo", icon: Camera, key: "postTypePhoto" },
+  { id: "tip", icon: Lightbulb, key: "postTypeTip" },
+  { id: "question", icon: HelpCircle, key: "postTypeQuestion" },
 ];
 
 export default function CreatePost() {
@@ -76,7 +77,7 @@ export default function CreatePost() {
     <div style={{ minHeight: "100vh", background: C.bg, animation: "fadeIn 0.3s ease" }}>
       {/* Header */}
       <div style={{ padding: "20px", display: "flex", alignItems: "center", gap: 14 }}>
-        <button onClick={() => nav("community")} style={{ background: C.b1, border: "none", color: C.t1, width: 36, height: 36, borderRadius: 10, cursor: "pointer", fontSize: 16 }}>{"\u2190"}</button>
+        <button onClick={() => nav("community")} style={{ background: C.b1, border: "none", color: C.t1, width: 36, height: 36, borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><ArrowLeft size={16} /></button>
         <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 800, margin: 0, color: C.t1 }}>{T("createPost")}</h1>
       </div>
 
@@ -92,7 +93,7 @@ export default function CreatePost() {
                 borderRadius: 12, cursor: "pointer", textAlign: "center", transition: "all 0.15s",
                 color: C.t1,
               }}>
-              <div style={{ fontSize: 18 }}>{pt.emoji}</div>
+              <div style={{ display: "flex", justifyContent: "center" }}><pt.icon size={18} /></div>
               <div style={{ fontSize: 10, fontWeight: 700, color: postType === pt.id ? C.acc : C.t3, marginTop: 2 }}>{T(pt.key)}</div>
             </button>
           ))}
@@ -146,8 +147,8 @@ export default function CreatePost() {
                 <div style={{ position: "relative", width: 80, height: 80, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
                   <PhotoImg src={photoPath} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   <button onClick={() => setPhotoPath(null)}
-                    style={{ position: "absolute", top: 2, right: 2, width: 22, height: 22, borderRadius: "50%", background: "rgba(0,0,0,0.7)", border: "none", color: "#fff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
-                    {"\u2715"}
+                    style={{ position: "absolute", top: 2, right: 2, width: 22, height: 22, borderRadius: "50%", background: "rgba(0,0,0,0.7)", border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
+                    <X size={12} />
                   </button>
                 </div>
               )}
@@ -160,12 +161,12 @@ export default function CreatePost() {
                 <>
                   <button onClick={() => cameraRef.current?.click()}
                     style={{ width: 80, height: 80, borderRadius: 12, background: C.s1, border: `1px dashed ${C.b2}`, color: C.t3, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, flexShrink: 0 }}>
-                    <span style={{ fontSize: 22 }}>{"\uD83D\uDCF7"}</span>
+                    <Camera size={22} />
                     <span style={{ fontSize: 10, fontWeight: 600 }}>{T("camera")}</span>
                   </button>
                   <button onClick={() => galleryRef.current?.click()}
                     style={{ width: 80, height: 80, borderRadius: 12, background: C.s1, border: `1px dashed ${C.b2}`, color: C.t3, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, flexShrink: 0 }}>
-                    <span style={{ fontSize: 22 }}>{"\uD83D\uDDBC\uFE0F"}</span>
+                    <Image size={22} />
                     <span style={{ fontSize: 10, fontWeight: 600 }}>{T("gallery")}</span>
                   </button>
                 </>

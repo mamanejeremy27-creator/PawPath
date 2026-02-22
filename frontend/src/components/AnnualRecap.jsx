@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { computeRecap, generateRecapCard } from "../utils/recapData.js";
+import { Calendar } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E" };
 
@@ -147,7 +148,7 @@ export default function AnnualRecap() {
   if (!recap) {
     return (
       <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 40 }}>
-        <div style={{ fontSize: 56, marginBottom: 16 }}>{"\uD83D\uDCC5"}</div>
+        <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}><Calendar size={56} color={C.t3} /></div>
         <p style={{ fontSize: 16, color: C.t3, textAlign: "center" }}>{T("noRecapData")}</p>
         <button onClick={() => nav("profile")} style={{ marginTop: 24, padding: "12px 32px", background: C.b1, border: "none", borderRadius: 50, color: C.t1, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
           {T("back")}

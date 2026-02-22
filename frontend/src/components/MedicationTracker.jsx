@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { api } from "../lib/api.js";
 import BottomNav from "./BottomNav.jsx";
+import { ArrowLeft, Pill, X } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
 const LS_KEY = "pawpath_medications";
@@ -98,7 +99,7 @@ export default function MedicationTracker() {
     const isActive = !(m.endDate || m.end_date) || new Date(m.endDate || m.end_date) >= now;
     return (
       <div key={m.id || i} style={{ padding: "14px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 14 }}>
-        <div style={{ width: 40, height: 40, borderRadius: 12, background: isActive ? "rgba(139,92,246,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${isActive ? "rgba(139,92,246,0.15)" : C.b1}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>💊</div>
+        <div style={{ width: 40, height: 40, borderRadius: 12, background: isActive ? "rgba(139,92,246,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${isActive ? "rgba(139,92,246,0.15)" : C.b1}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Pill size={18} color={isActive ? "#8B5CF6" : C.t3} /></div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{m.name}</span>
@@ -115,7 +116,7 @@ export default function MedicationTracker() {
           </div>
           {m.notes && <div style={{ fontSize: 12, color: C.t2, marginTop: 4 }}>{m.notes}</div>}
         </div>
-        <button onClick={() => handleDelete(m.id)} style={{ background: "none", border: "none", color: C.t3, cursor: "pointer", fontSize: 16, padding: 4 }}>✕</button>
+        <button onClick={() => handleDelete(m.id)} style={{ background: "none", border: "none", color: C.t3, cursor: "pointer", padding: 4, display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
       </div>
     );
   };
@@ -125,8 +126,8 @@ export default function MedicationTracker() {
       {/* Header */}
       <div style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => nav("healthDashboard")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: C.t3, padding: 4 }}>
-            {"\u2190"}
+          <button onClick={() => nav("healthDashboard")} style={{ background: "none", border: "none", cursor: "pointer", color: C.t3, padding: 4, display: "flex", alignItems: "center" }}>
+            <ArrowLeft size={20} />
           </button>
           <div>
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 2px", color: C.t1 }}>{T("healthMedications")}</h1>
@@ -150,7 +151,7 @@ export default function MedicationTracker() {
       {/* Empty */}
       {!loading && meds.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px 20px" }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>💊</div>
+          <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Pill size={48} color={C.t3} /></div>
           <div style={{ fontSize: 16, fontWeight: 700, color: C.t1 }}>{T("healthNoMedications")}</div>
         </div>
       )}
@@ -181,7 +182,7 @@ export default function MedicationTracker() {
           <div style={{ width: "100%", maxWidth: 480, background: C.s1, borderRadius: "24px 24px 0 0", padding: "28px 24px 36px", animation: "slideUp 0.3s ease", maxHeight: "90vh", overflowY: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
               <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 800, margin: 0, color: C.t1 }}>{T("healthAddMedication")}</h3>
-              <button onClick={() => setShowForm(false)} style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", fontSize: 16 }}>✕</button>
+              <button onClick={() => setShowForm(false)} style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={18} /></button>
             </div>
 
             <div style={{ marginBottom: 14 }}>

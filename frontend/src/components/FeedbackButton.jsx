@@ -1,3 +1,4 @@
+import { MessageSquare } from "lucide-react";
 import { useApp } from "../context/AppContext.jsx";
 
 const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", acc: "#22C55E" };
@@ -26,7 +27,7 @@ export default function FeedbackButton() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontSize: 22,
+        color: "#F5F5F7",
         boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
         transition: "transform 0.15s ease, box-shadow 0.15s ease",
       }}
@@ -39,7 +40,7 @@ export default function FeedbackButton() {
         e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.4)";
       }}
     >
-      💬
+      <MessageSquare size={22} />
     </button>
   );
 }

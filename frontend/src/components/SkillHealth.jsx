@@ -1,4 +1,5 @@
 import { useApp } from "../context/AppContext.jsx";
+import Icon from "./ui/Icon.jsx";
 
 const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16 };
 
@@ -34,7 +35,7 @@ export default function SkillHealth() {
               background: s.program.gradient, display: "flex",
               alignItems: "center", justifyContent: "center", fontSize: 16,
             }}>
-              {s.program.emoji}
+              <Icon name={s.program.icon} size={16} color="#fff" />
             </div>
             <div style={{
               width: 8, height: 8, borderRadius: "50%", background: s.color,

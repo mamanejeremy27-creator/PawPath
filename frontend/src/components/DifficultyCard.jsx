@@ -1,4 +1,6 @@
 import { useApp } from "../context/AppContext.jsx";
+import { Lightbulb, CheckCircle2, CircleDot } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", s2: "#1F1F23", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", amber: "#F59E0B", amberBg: "rgba(245,158,11,0.08)", amberBorder: "rgba(245,158,11,0.15)", rL: 24, r: 16 };
 
@@ -40,7 +42,7 @@ export default function DifficultyCard({ exerciseId, program }) {
       animation: "slideDown 0.3s ease",
     }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 12 }}>
-        <span style={{ fontSize: 20, flexShrink: 0 }}>💡</span>
+        <Lightbulb size={20} color={C.amber} style={{ flexShrink: 0 }} />
         <div>
           <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: C.amber }}>
             {T("needAHand")}
@@ -58,10 +60,10 @@ export default function DifficultyCard({ exerciseId, program }) {
           background: "rgba(255,255,255,0.03)", borderRadius: 12,
           border: `1px solid ${C.b1}`,
         }}>
-          <span style={{ fontSize: 14, flexShrink: 0 }}>{done ? "✅" : "⚪"}</span>
+          {done ? <CheckCircle2 size={16} color={C.acc} style={{ flexShrink: 0 }} /> : <CircleDot size={16} color={C.t3} style={{ flexShrink: 0 }} />}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{ex.name}</div>
-            <div style={{ fontSize: 11, color: C.t3 }}>{prog.emoji} {prog.name}</div>
+            <div style={{ fontSize: 11, color: C.t3, display: "flex", alignItems: "center", gap: 4 }}><Icon name={prog.icon} size={11} color={C.t3} /> {prog.name}</div>
           </div>
           {done ? (
             <span style={{ fontSize: 11, color: C.acc, fontWeight: 600 }}>{T("alreadyDone")}</span>

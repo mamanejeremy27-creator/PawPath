@@ -3,6 +3,7 @@ import { useApp } from "../context/AppContext.jsx";
 import { api } from "../lib/api.js";
 import PhotoImg from "./PhotoImg.jsx";
 import BottomNav from "./BottomNav.jsx";
+import { ArrowLeft, AlertCircle, Dog } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
 
@@ -47,8 +48,8 @@ export default function LostDogFeedList() {
   return (
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
       <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t1, fontSize: 24, cursor: "pointer", padding: 0 }}>{"\u2190"}</button>
-        <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: C.danger }}>{"🚨"} {T("lostDogsNearYou")}</h1>
+        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t1, cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><ArrowLeft size={24} /></button>
+        <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: C.danger, display: "flex", alignItems: "center", gap: 8 }}><AlertCircle size={20} /> {T("lostDogsNearYou")}</h1>
       </div>
 
       {loading ? (
@@ -57,7 +58,7 @@ export default function LostDogFeedList() {
         </div>
       ) : alerts.length === 0 ? (
         <div style={{ textAlign: "center", padding: "60px 20px", color: C.t3 }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>{"\uD83D\uDC15"}</div>
+          <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Dog size={40} color={C.t3} /></div>
           <p style={{ fontSize: 14 }}>{T("lostNoNearbyAlerts")}</p>
         </div>
       ) : (
@@ -73,7 +74,7 @@ export default function LostDogFeedList() {
                     {alert.dog_photo ? (
                       <PhotoImg src={alert.dog_photo} style={{ width: 56, height: 56, objectFit: "cover" }} />
                     ) : (
-                      <span style={{ fontSize: 28 }}>{"\uD83D\uDC15"}</span>
+                      <Dog size={28} color={C.t3} />
                     )}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>

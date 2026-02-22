@@ -1,4 +1,5 @@
 import { useApp } from "../context/AppContext.jsx";
+import { Home, Users, BookOpen, Award, User } from "lucide-react";
 
 const C = { bg: "#0A0A0C", acc: "#22C55E", t3: "#71717A" };
 
@@ -6,11 +7,11 @@ export default function BottomNav({ active }) {
   const { setScreen, setSelProgram, setSelLevel, setSelExercise, T } = useApp();
 
   const items = [
-    { id: "home", icon: "🏠", label: T("home") },
-    { id: "community", icon: "\uD83D\uDC65", label: T("community") },
-    { id: "journal", icon: "📝", label: T("journal") },
-    { id: "badges", icon: "🏅", label: T("badges") },
-    { id: "profile", icon: "👤", label: T("profile") },
+    { id: "home", Icon: Home, label: T("home") },
+    { id: "community", Icon: Users, label: T("community") },
+    { id: "journal", Icon: BookOpen, label: T("journal") },
+    { id: "badges", Icon: Award, label: T("badges") },
+    { id: "profile", Icon: User, label: T("profile") },
   ];
 
   return (
@@ -18,7 +19,7 @@ export default function BottomNav({ active }) {
       {items.map(item => (
         <button key={item.id} onClick={() => { setScreen(item.id); if (item.id === "home") { setSelProgram(null); setSelLevel(null); setSelExercise(null); } }}
           style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: active === item.id ? C.acc : C.t3 }}>
-          <span style={{ fontSize: 18 }}>{item.icon}</span>
+          <item.Icon size={20} strokeWidth={active === item.id ? 2.5 : 1.5} />
           <span style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>{item.label}</span>
         </button>
       ))}

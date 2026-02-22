@@ -1,5 +1,6 @@
 import { useApp } from "../context/AppContext.jsx";
 import { formatDuration } from "../lib/walkTracker.js";
+import { Ruler, Timer, Footprints, MapPin } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
 
@@ -107,13 +108,13 @@ export default function WalkDetail() {
       <div style={{ padding: "16px 20px 0" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {[
-            { label: T("walkDistance"), value: `${distance.toFixed(2)} km`, icon: "\uD83D\uDCCF" },
-            { label: T("walkDuration"), value: formatDuration(duration), icon: "\u23F1\uFE0F" },
-            { label: T("walkPace"), value: `${pace} ${T("walkPaceUnit")}`, icon: "\uD83D\uDEB6" },
-            { label: T("walkPoints"), value: `${routeCoords.length}`, icon: "\uD83D\uDCCD" },
+            { label: T("walkDistance"), value: `${distance.toFixed(2)} km`, icon: <Ruler size={20} color={C.acc} /> },
+            { label: T("walkDuration"), value: formatDuration(duration), icon: <Timer size={20} color={C.acc} /> },
+            { label: T("walkPace"), value: `${pace} ${T("walkPaceUnit")}`, icon: <Footprints size={20} color={C.acc} /> },
+            { label: T("walkPoints"), value: `${routeCoords.length}`, icon: <MapPin size={20} color={C.acc} /> },
           ].map((s, i) => (
             <div key={i} style={{ padding: "16px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, textAlign: "center" }}>
-              <div style={{ fontSize: 20, marginBottom: 6 }}>{s.icon}</div>
+              <div style={{ marginBottom: 6, display: "flex", justifyContent: "center" }}>{s.icon}</div>
               <div style={{ fontSize: 18, fontWeight: 800, color: C.t1 }}>{s.value}</div>
               <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600, marginTop: 4 }}>{s.label}</div>
             </div>

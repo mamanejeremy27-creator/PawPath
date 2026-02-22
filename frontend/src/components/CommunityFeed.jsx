@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { api } from "../lib/api.js";
+import { Lock, Handshake, ChevronRight, AlertTriangle, PawPrint } from "lucide-react";
 import PostCard from "./PostCard.jsx";
 import BottomNav from "./BottomNav.jsx";
 
@@ -80,7 +81,7 @@ export default function CommunityFeed() {
           <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{T("communitySubtitle")}</p>
         </div>
         <div style={{ textAlign: "center", padding: "60px 20px", color: C.t3 }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>{"\uD83D\uDD12"}</div>
+          <Lock size={40} color={C.t3} style={{ marginBottom: 12 }} />
           <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{T("lbSignIn")}</div>
         </div>
         <BottomNav active="community" />
@@ -121,12 +122,12 @@ export default function CommunityFeed() {
               textAlign: "start",
             }}
           >
-            <span style={{ fontSize: 28 }}>{"\uD83E\uDD1D"}</span>
+            <Handshake size={28} color={C.acc} />
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("buddySection")}</div>
               <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{T("buddySectionSub")}</div>
             </div>
-            <span style={{ fontSize: 16, color: C.t3 }}>{"\u203A"}</span>
+            <ChevronRight size={16} color={C.t3} />
           </button>
         </div>
       )}
@@ -141,7 +142,7 @@ export default function CommunityFeed() {
       {/* Error */}
       {!loading && error && (
         <div style={{ textAlign: "center", padding: "60px 20px", color: C.t3 }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>{"\u26A0\uFE0F"}</div>
+          <AlertTriangle size={32} color={C.t3} style={{ marginBottom: 8 }} />
           <div style={{ fontSize: 14, fontWeight: 600 }}>{T("cmtUnavailable")}</div>
         </div>
       )}
@@ -149,7 +150,7 @@ export default function CommunityFeed() {
       {/* Empty state */}
       {!loading && !error && posts.length === 0 && (
         <div style={{ textAlign: "center", padding: "60px 20px" }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>{"\uD83D\uDC3E"}</div>
+          <PawPrint size={48} color={C.t3} style={{ marginBottom: 12 }} />
           <div style={{ fontSize: 16, fontWeight: 700, color: C.t1 }}>{T("noPosts")}</div>
           <div style={{ fontSize: 13, color: C.t3, marginTop: 6 }}>{T("noPostsSub")}</div>
           <button

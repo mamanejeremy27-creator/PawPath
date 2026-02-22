@@ -3,6 +3,7 @@ import { useApp } from "../context/AppContext.jsx";
 import { api } from "../lib/api.js";
 import PhotoImg from "./PhotoImg.jsx";
 import LostDogMap from "./LostDogMap.jsx";
+import { AlertCircle, Dog, Eye } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
 
@@ -35,7 +36,7 @@ export default function LostDogPublicPage({ shareTokenFromUrl }) {
     return (
       <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>{"\uD83D\uDC15"}</div>
+          <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}><Dog size={48} color={C.t3} /></div>
           <p style={{ color: C.t3, fontSize: 15 }}>{T("lostReportNotFound")}</p>
           <button onClick={() => nav("home")} style={{ marginTop: 16, padding: "12px 24px", background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer", fontSize: 14, fontWeight: 600 }}>{T("home")}</button>
         </div>
@@ -61,7 +62,7 @@ export default function LostDogPublicPage({ shareTokenFromUrl }) {
         borderBottom: `1px solid ${isActive ? "rgba(239,68,68,0.2)" : "rgba(34,197,94,0.2)"}`,
       }}>
         <div style={{ fontSize: 14, fontWeight: 800, color: isActive ? C.danger : C.acc }}>
-          {"🚨"} {isActive ? T("lostDogAlert") : `${report.dog_name} ${T("lostFoundTitle")}`}
+          <AlertCircle size={16} style={{ display: "inline", verticalAlign: "middle", marginInlineEnd: 4 }} /> {isActive ? T("lostDogAlert") : `${report.dog_name} ${T("lostFoundTitle")}`}
         </div>
       </div>
 
@@ -76,7 +77,7 @@ export default function LostDogPublicPage({ shareTokenFromUrl }) {
             {report.dog_photo ? (
               <PhotoImg src={report.dog_photo} style={{ width: 120, height: 120, objectFit: "cover" }} />
             ) : (
-              <span style={{ fontSize: 56 }}>{"\uD83D\uDC15"}</span>
+              <Dog size={56} color={C.t3} />
             )}
           </div>
         </div>
@@ -135,7 +136,7 @@ export default function LostDogPublicPage({ shareTokenFromUrl }) {
                 background: C.danger, color: "#fff", border: "none", borderRadius: 50, cursor: "pointer",
                 boxShadow: "0 4px 24px rgba(239,68,68,0.4)",
               }}>
-              {"👁️"} {T("lostISawThisDog")}
+              <Eye size={18} /> {T("lostISawThisDog")}
             </button>
 
             <button onClick={() => {

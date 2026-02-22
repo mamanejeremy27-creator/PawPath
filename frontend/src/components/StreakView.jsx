@@ -1,3 +1,5 @@
+import { ArrowLeft, CheckCircle2, Unlock, Lock, Snowflake } from "lucide-react";
+import Icon from "./ui/Icon.jsx";
 import { useApp } from "../context/AppContext.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
@@ -12,7 +14,7 @@ export default function StreakView() {
     <div style={{ minHeight: "100vh", paddingBottom: 40, background: C.bg, animation: "fadeIn 0.3s ease" }}>
       {/* Header */}
       <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t3, fontSize: 24, cursor: "pointer", padding: 0 }}>{"\u2190"}</button>
+        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t3, cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><ArrowLeft size={24} /></button>
         <h2 style={{ fontSize: 18, fontWeight: 800, color: C.t1, margin: 0 }}>{T("streakDetails")}</h2>
       </div>
 
@@ -42,8 +44,8 @@ export default function StreakView() {
                 borderBottom: i < STREAK_MILESTONES.length - 1 ? `1px solid ${C.b1}` : "none",
                 opacity: unlocked ? 1 : isNext ? 0.85 : 0.4,
               }}>
-                <span style={{ fontSize: 16, width: 24, textAlign: "center" }}>
-                  {unlocked ? "\u2705" : isNext ? "\uD83D\uDD13" : "\uD83D\uDD12"}
+                <span style={{ width: 24, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                  {unlocked ? <CheckCircle2 size={16} color={C.acc} /> : isNext ? <Unlock size={16} color={C.t3} /> : <Lock size={16} color={C.t3} />}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: unlocked ? C.t1 : C.t3 }}>
@@ -55,7 +57,7 @@ export default function StreakView() {
                     </div>
                   )}
                 </div>
-                <span style={{ fontSize: 18 }}>{m.emoji}</span>
+                <Icon name={m.icon || "Trophy"} size={18} color={unlocked ? C.acc : C.t3} />
               </div>
             );
           })}
@@ -68,7 +70,7 @@ export default function StreakView() {
         <div style={{ background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}`, padding: "16px 18px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
             {[0, 1, 2].map(i => (
-              <span key={i} style={{ fontSize: 20, opacity: i < freezesAvailable ? 1 : 0.2 }}>{"\uD83E\uDDCA"}</span>
+              <Snowflake key={i} size={20} color="#93C5FD" style={{ opacity: i < freezesAvailable ? 1 : 0.2 }} />
             ))}
             <span style={{ fontSize: 14, color: C.t1, fontWeight: 700, marginInlineStart: 8 }}>{freezesAvailable}/3 {T("freezesAvailable")}</span>
           </div>

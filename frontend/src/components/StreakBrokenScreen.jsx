@@ -1,4 +1,5 @@
 import { useApp } from "../context/AppContext.jsx";
+import { RefreshCw, ArrowRight } from "lucide-react";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E" };
 
@@ -30,7 +31,7 @@ export default function StreakBrokenScreen() {
           background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)",
           borderRadius: 20, padding: "18px 16px", marginBottom: 20,
         }}>
-          <div style={{ fontSize: 28, marginBottom: 8 }}>{"\uD83D\uDD04"}</div>
+          <RefreshCw size={28} color={C.acc} style={{ marginBottom: 8 }} />
           <div style={{ fontSize: 15, fontWeight: 700, color: C.t1, marginBottom: 4 }}>{T("recoveryChallenge")}</div>
           <div style={{ fontSize: 13, color: C.t3, marginBottom: 14, lineHeight: 1.5 }}>{T("trainToRecover")}</div>
           <button
@@ -41,7 +42,7 @@ export default function StreakBrokenScreen() {
               cursor: "pointer",
             }}
           >
-            {T("startRecovery")} {"\u2192"}
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>{T("startRecovery")} <ArrowRight size={14} /></span>
           </button>
         </div>
 
