@@ -342,7 +342,7 @@ export function AppProvider({ children }) {
           if (data) {
             idMapRef.current[newId] = data.id;
             if (data.newBadges?.length > 0) {
-              const badgeDef = badges.find(b => b.id === data.newBadges[0]);
+              const badgeDef = BADGE_DEFS.find(b => b.id === data.newBadges[0]);
               if (badgeDef) { setNewBadge(badgeDef); setTimeout(() => setNewBadge(null), 4000); }
             }
           }
@@ -350,7 +350,7 @@ export function AppProvider({ children }) {
         .catch(err => console.error('Failed to create dog:', err.message));
     }
     return newId;
-  }, [dogs, isAuthenticated, badges]);
+  }, [dogs, isAuthenticated]);
 
   const removeDog = useCallback((dogId) => {
     const dogIds = Object.keys(dogs);
@@ -395,7 +395,7 @@ export function AppProvider({ children }) {
             if (data) {
               idMapRef.current[newId] = data.id;
               if (data.newBadges?.length > 0) {
-                const badgeDef = badges.find(b => b.id === data.newBadges[0]);
+                const badgeDef = BADGE_DEFS.find(b => b.id === data.newBadges[0]);
                 if (badgeDef) { setNewBadge(badgeDef); setTimeout(() => setNewBadge(null), 4000); }
               }
             }
