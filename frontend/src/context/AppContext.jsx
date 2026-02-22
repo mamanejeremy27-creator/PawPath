@@ -57,6 +57,7 @@ export function AppProvider({ children }) {
   const { user, loading: authLoading, signOut } = useAuth();
   const isAuthenticated = !!user;
   const idMapRef = useRef({});
+  const addingDogRef = useRef(false);
   const getDogBackendId = (localId) => idMapRef.current[localId];
 
   // ─── Multi-Dog Persisted State ───
@@ -329,8 +330,10 @@ export function AppProvider({ children }) {
   const dogCount = Object.keys(dogs).length;
 
   const addDog = useCallback((profile) => {
+    if (addingDogRef.current) return null;
     const dogIds = Object.keys(dogs);
     if (dogIds.length >= 2) return null;
+    addingDogRef.current = true;
     const newId = !dogs.dog_1 ? "dog_1" : "dog_2";
     const newDog = { ...DEFAULT_DOG_STATE, profile };
     setDogs(prev => ({ ...prev, [newId]: newDog }));
@@ -347,7 +350,10 @@ export function AppProvider({ children }) {
             }
           }
         })
-        .catch(err => console.error('Failed to create dog:', err.message));
+        .catch(err => console.error('Failed to create dog:', err.message))
+        .finally(() => { addingDogRef.current = false; });
+    } else {
+      addingDogRef.current = false;
     }
     return newId;
   }, [dogs, isAuthenticated]);

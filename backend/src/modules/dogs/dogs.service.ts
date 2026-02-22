@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Dog } from '../../entities/dog.entity';
@@ -28,6 +28,11 @@ export class DogsService {
   }
 
   async create(userId: string, createDogDto: CreateDogDto) {
+    const existingCount = await this.dogRepository.count({ where: { userId } });
+    if (existingCount >= 2) {
+      throw new BadRequestException('Maximum of 2 dogs allowed');
+    }
+
     const dog = this.dogRepository.create({ ...createDogDto, userId });
     const saved = await this.dogRepository.save(dog);
     const newBadges: string[] = [];
