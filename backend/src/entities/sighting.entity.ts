@@ -3,6 +3,7 @@ import {
   ManyToOne, JoinColumn,
 } from 'typeorm';
 import { LostDogReport } from './lost-dog-report.entity';
+import { User } from './user.entity';
 
 @Entity('sightings')
 export class Sighting {
@@ -18,6 +19,10 @@ export class Sighting {
 
   @Column({ nullable: true })
   userId: string;
+
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
   @Column({ type: 'jsonb', nullable: true })
   location: { lat: number; lng: number; address?: string };

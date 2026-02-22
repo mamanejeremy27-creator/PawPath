@@ -24,6 +24,10 @@ import { BuddyRequest } from './entities/buddy-request.entity';
 import { LostDogReport } from './entities/lost-dog-report.entity';
 import { Sighting } from './entities/sighting.entity';
 import { Feedback } from './entities/feedback.entity';
+import { TrainingProgram } from './entities/training-program.entity';
+import { BadgeDefinition } from './entities/badge-definition.entity';
+import { ChallengeDefinition } from './entities/challenge-definition.entity';
+import { StreakMilestone } from './entities/streak-milestone.entity';
 
 config();
 
@@ -41,6 +45,7 @@ export const AppDataSource = new DataSource({
     UserSettings, WeightRecord, Vaccination, VetVisit, Medication,
     Walk, Post, PostLike, Comment, BuddyRequest,
     LostDogReport, Sighting, Feedback,
+    TrainingProgram, BadgeDefinition, ChallengeDefinition, StreakMilestone,
   ],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
