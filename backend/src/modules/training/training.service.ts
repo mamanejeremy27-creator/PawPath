@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, MoreThanOrEqual } from 'typeorm';
 import { Dog } from '../../entities/dog.entity';
 import { DogProgress } from '../../entities/dog-progress.entity';
 import { CompletedExercise } from '../../entities/completed-exercise.entity';
@@ -154,6 +154,45 @@ export class TrainingService {
     });
 
     const allPrograms = await this.programRepo.find();
+    const journalEntries = await this.journalRepo.find({ where: { dogId } });
+
+    // Count photos across all journal entries
+    const photoCount = journalEntries.reduce(
+      (sum, j) => sum + (j.photos ? j.photos.length : 0), 0,
+    );
+
+    // Count exercises completed TODAY only
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayExercises = await this.completedRepo.count({
+      where: { dogId, completedAt: MoreThanOrEqual(todayStart) },
+    });
+
+    // Check if all user's dogs trained today
+    const userDogs = await this.dogRepo.find({ where: { userId } });
+    let bothDogsTrainedToday = false;
+    if (userDogs.length >= 2) {
+      const allTrained = await Promise.all(
+        userDogs.map(d => this.completedRepo.count({
+          where: { dogId: d.id, completedAt: MoreThanOrEqual(todayStart) },
+        })),
+      );
+      bothDogsTrainedToday = allTrained.every(count => count > 0);
+    }
+
+    // Challenge history and stats
+    const challengeHistory = await this.challengeRepo.find({ where: { dogId } });
+    const completedChallenges = challengeHistory.filter(ch => ch.fullComplete);
+    const challengeStats = {
+      totalCompleted: completedChallenges.length,
+      bestStreak: this.calcChallengeBestStreak(challengeHistory),
+    };
+
+    // Streak recovery: had a streak > 1, lost it, and rebuilt to > 1
+    const streakRecovered = progress.bestStreak > 1
+      && progress.currentStreak > 1
+      && progress.currentStreak < progress.bestStreak;
+
     const badgeState = {
       totalSessions: progress.totalSessions,
       currentStreak: progress.currentStreak,
@@ -162,20 +201,18 @@ export class TrainingService {
       totalXP: progress.totalXP,
       playerLevel: Math.floor(progress.totalXP / 100) + 1,
       totalReviews: progress.totalReviews,
-      journal: await this.journalRepo.find({ where: { dogId } }),
-      photoCount: 0,
-      dogCount: await this.dogRepo.count({ where: { userId } }),
-      todayExercises: await this.completedRepo.count({
-        where: { dogId },
-      }),
+      journal: journalEntries,
+      photoCount,
+      dogCount: userDogs.length,
+      todayExercises,
       allSkillsFresh,
       streakBest: progress.bestStreak,
-      streakRecovered: false,
+      streakRecovered,
       streakFreezesUsed: 0,
       programs: allPrograms,
-      challengeHistory: [],
-      challengeStats: { totalCompleted: 0, bestStreak: 0 },
-      bothDogsTrainedToday: false,
+      challengeHistory,
+      challengeStats,
+      bothDogsTrainedToday,
     };
 
     const badgeDefs = await this.badgeDefRepo.find();
@@ -294,6 +331,25 @@ export class TrainingService {
     const challenges = await this.challengeDefRepo.find();
     if (challenges.length === 0) return null;
     return challenges[week % challenges.length];
+  }
+
+  private calcChallengeBestStreak(history: ChallengeProgress[]): number {
+    const completedWeeks = history
+      .filter(h => h.fullComplete)
+      .map(h => h.weekNumber)
+      .sort((a, b) => a - b);
+    if (completedWeeks.length === 0) return 0;
+    let best = 1;
+    let current = 1;
+    for (let i = 1; i < completedWeeks.length; i++) {
+      if (completedWeeks[i] === completedWeeks[i - 1] + 1) {
+        current++;
+        best = Math.max(best, current);
+      } else {
+        current = 1;
+      }
+    }
+    return best;
   }
 
   private isProgramComplete(progId: string, state: any): boolean {
