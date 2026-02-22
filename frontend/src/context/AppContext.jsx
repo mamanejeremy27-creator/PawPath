@@ -1077,6 +1077,7 @@ export function AppProvider({ children }) {
 
     // Auth
     isAuthenticated,
+    getDogBackendId,
 
     // i18n
     T, rtl,

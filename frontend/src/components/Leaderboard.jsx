@@ -9,7 +9,7 @@ const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5
 const MEDAL_COLORS = ["#FFD700", "#C0C0C0", "#CD7F32"];
 
 export default function Leaderboard() {
-  const { nav, T, dogProfile, appSettings, setAppSettings, isAuthenticated, activeDogId } = useApp();
+  const { nav, T, dogProfile, appSettings, setAppSettings, isAuthenticated, activeDogId, getDogBackendId } = useApp();
   const { user } = useAuth();
 
   const [tab, setTab] = useState("weekly");
@@ -65,10 +65,11 @@ export default function Leaderboard() {
     : tab === "allTime" ? T("lbAllTimeSub")
     : T("lbBreedSub").replace("{breed}", dogProfile?.breed || "");
 
-  const xpKey = tab === "weekly" ? "weekly_xp" : "total_xp";
+  const xpKey = tab === "weekly" ? "weeklyXp" : "totalXp";
 
   const isCurrentUser = (entry) => {
-    return user && entry.user_id === user.id && entry.dog_id === activeDogId;
+    const backendDogId = getDogBackendId?.(activeDogId);
+    return user && backendDogId && entry.dogId === backendDogId;
   };
 
   return (
@@ -153,24 +154,24 @@ export default function Leaderboard() {
                   {/* Dog info */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 700, color: C.t1, display: "flex", alignItems: "center", gap: 6 }}>
-                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{entry.dog_name}</span>
+                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{entry.dogName}</span>
                       {isSelf && <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 6, background: "rgba(34,197,94,0.15)", color: C.acc, fontWeight: 700 }}>{T("lbYou")}</span>}
                     </div>
                     <div style={{ fontSize: 11, color: C.t3, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {entry.owner_name}
+                      {entry.breed || ""}
                     </div>
                   </div>
 
                   {/* Streak */}
-                  {entry.current_streak > 0 && (
+                  {entry.currentStreak > 0 && (
                     <div style={{ fontSize: 12, color: "#F59E0B", fontWeight: 600, display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
-                      🔥 {entry.current_streak}
+                      🔥 {entry.currentStreak}
                     </div>
                   )}
 
                   {/* XP */}
                   <div style={{ fontSize: 15, fontWeight: 800, color: C.acc, flexShrink: 0 }}>
-                    {entry[xpKey].toLocaleString()} <span style={{ fontSize: 11, fontWeight: 600 }}>XP</span>
+                    {(entry[xpKey] || 0).toLocaleString()} <span style={{ fontSize: 11, fontWeight: 600 }}>XP</span>
                   </div>
                 </div>
               );
