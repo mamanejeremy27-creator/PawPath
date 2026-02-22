@@ -14,7 +14,7 @@ const FREQ_OPTIONS = [
 ];
 
 export default function MedicationTracker() {
-  const { nav, T, lang, isAuthenticated, activeDogId } = useApp();
+  const { nav, T, lang, isAuthenticated, activeDogId, getDogBackendId } = useApp();
   const [meds, setMeds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -29,7 +29,7 @@ export default function MedicationTracker() {
       let data = [];
       if (isAuthenticated) {
         try {
-          data = await api.getMedications(activeDogId) || [];
+          data = await api.getMedications(getDogBackendId(activeDogId) || activeDogId) || [];
         } catch { /* silent */ }
       }
       try {
@@ -53,12 +53,12 @@ export default function MedicationTracker() {
     if (!form.name || !form.start_date) return;
     setSaving(true);
 
-    const entry = { name: form.name, dosage: form.dosage, frequency: form.frequency, start_date: form.start_date, end_date: form.end_date || null, notes: form.notes };
+    const entry = { name: form.name, dosage: form.dosage, frequency: form.frequency, startDate: form.start_date, endDate: form.end_date || undefined, notes: form.notes };
     let saved = null;
 
     if (isAuthenticated) {
       try {
-        saved = await api.addMedication(activeDogId, entry);
+        saved = await api.addMedication(getDogBackendId(activeDogId) || activeDogId, entry);
       } catch { /* silent */ }
     }
 

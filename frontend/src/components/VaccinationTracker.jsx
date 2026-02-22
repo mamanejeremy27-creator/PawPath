@@ -29,7 +29,7 @@ const statusLabel = (T, key) => {
 };
 
 export default function VaccinationTracker() {
-  const { nav, T, lang, isAuthenticated, activeDogId } = useApp();
+  const { nav, T, lang, isAuthenticated, activeDogId, getDogBackendId } = useApp();
   const [vacc, setVacc] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -45,7 +45,7 @@ export default function VaccinationTracker() {
       let data = [];
       if (isAuthenticated) {
         try {
-          data = await api.getVaccinations(activeDogId) || [];
+          data = await api.getVaccinations(getDogBackendId(activeDogId) || activeDogId) || [];
         } catch { /* silent */ }
       }
       try {
@@ -65,12 +65,12 @@ export default function VaccinationTracker() {
     if (!form.vaccine_name || !form.date_given) return;
     setSaving(true);
 
-    const entry = { vaccine_name: form.vaccine_name, date_given: form.date_given, next_due: form.next_due || null, vet_name: form.vet_name || null, notes: form.notes || null };
+    const entry = { name: form.vaccine_name, date: form.date_given, nextDue: form.next_due || undefined, notes: form.notes || undefined };
     let saved = null;
 
     if (isAuthenticated) {
       try {
-        saved = await api.addVaccination(activeDogId, entry);
+        saved = await api.addVaccination(getDogBackendId(activeDogId) || activeDogId, entry);
       } catch { /* silent */ }
     }
 

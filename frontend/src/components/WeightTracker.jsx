@@ -18,7 +18,7 @@ const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5
 const LS_KEY = "pawpath_weight_logs";
 
 export default function WeightTracker() {
-  const { nav, T, lang, isAuthenticated, activeDogId, dogProfile } = useApp();
+  const { nav, T, lang, isAuthenticated, activeDogId, dogProfile, getDogBackendId } = useApp();
   const [weights, setWeights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ weight_kg: "", date: new Date().toISOString().split("T")[0], notes: "" });
@@ -34,7 +34,7 @@ export default function WeightTracker() {
     async function load() {
       let data = [];
       if (isAuthenticated) {
-        try { data = await api.getWeightRecords(activeDogId) || []; } catch {}
+        try { data = await api.getWeightRecords(getDogBackendId(activeDogId) || activeDogId) || []; } catch {}
       }
       try {
         const local = JSON.parse(localStorage.getItem(LS_KEY) || "[]").filter(x => x.dogId === activeDogId);
@@ -54,11 +54,11 @@ export default function WeightTracker() {
     if (!kg || kg <= 0) return;
     setSaving(true);
 
-    const entry = { weight_kg: kg, date: form.date, notes: form.notes };
+    const entry = { weight: kg, date: form.date, notes: form.notes };
     let saved = null;
 
     if (isAuthenticated) {
-      try { saved = await api.addWeightRecord(activeDogId, entry); } catch {}
+      try { saved = await api.addWeightRecord(getDogBackendId(activeDogId) || activeDogId, entry); } catch {}
     }
 
     if (!saved) {

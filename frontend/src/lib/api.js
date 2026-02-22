@@ -73,16 +73,16 @@ export const api = {
 
   // Health
   getWeightRecords: (dogId) => apiFetch(`/health/weight/${dogId}`),
-  addWeightRecord: (dogId, data) => apiFetch(`/health/weight/${dogId}`, { method: 'POST', body: JSON.stringify(data) }),
+  addWeightRecord: (dogId, data) => apiFetch('/health/weight', { method: 'POST', body: JSON.stringify({ dogId, ...data }) }),
   deleteWeightRecord: (id) => apiFetch(`/health/weight/${id}`, { method: 'DELETE' }),
   getVaccinations: (dogId) => apiFetch(`/health/vaccinations/${dogId}`),
-  addVaccination: (dogId, data) => apiFetch(`/health/vaccinations/${dogId}`, { method: 'POST', body: JSON.stringify(data) }),
+  addVaccination: (dogId, data) => apiFetch('/health/vaccinations', { method: 'POST', body: JSON.stringify({ dogId, ...data }) }),
   deleteVaccination: (id) => apiFetch(`/health/vaccinations/${id}`, { method: 'DELETE' }),
   getVetVisits: (dogId) => apiFetch(`/health/vet-visits/${dogId}`),
-  addVetVisit: (dogId, data) => apiFetch(`/health/vet-visits/${dogId}`, { method: 'POST', body: JSON.stringify(data) }),
+  addVetVisit: (dogId, data) => apiFetch('/health/vet-visits', { method: 'POST', body: JSON.stringify({ dogId, ...data }) }),
   deleteVetVisit: (id) => apiFetch(`/health/vet-visits/${id}`, { method: 'DELETE' }),
   getMedications: (dogId) => apiFetch(`/health/medications/${dogId}`),
-  addMedication: (dogId, data) => apiFetch(`/health/medications/${dogId}`, { method: 'POST', body: JSON.stringify(data) }),
+  addMedication: (dogId, data) => apiFetch('/health/medications', { method: 'POST', body: JSON.stringify({ dogId, ...data }) }),
   deleteMedication: (id) => apiFetch(`/health/medications/${id}`, { method: 'DELETE' }),
 
   // Walks

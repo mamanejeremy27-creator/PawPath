@@ -7,7 +7,7 @@ const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5
 const LS_KEY = "pawpath_vet_visits";
 
 export default function VetVisitLog() {
-  const { nav, T, lang, isAuthenticated, activeDogId } = useApp();
+  const { nav, T, lang, isAuthenticated, activeDogId, getDogBackendId } = useApp();
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -23,7 +23,7 @@ export default function VetVisitLog() {
       let data = [];
       if (isAuthenticated) {
         try {
-          data = await api.getVetVisits(activeDogId) || [];
+          data = await api.getVetVisits(getDogBackendId(activeDogId) || activeDogId) || [];
         } catch { /* silent */ }
       }
       try {
@@ -43,12 +43,12 @@ export default function VetVisitLog() {
     if (!form.date) return;
     setSaving(true);
 
-    const entry = { date: form.date, reason: form.reason, vet_name: form.vet_name, diagnosis: form.diagnosis, treatment: form.treatment, cost: form.cost ? parseFloat(form.cost) : null, notes: form.notes };
+    const entry = { date: form.date, reason: form.reason, vet: form.vet_name || undefined, cost: form.cost ? parseFloat(form.cost) : undefined, notes: [form.diagnosis, form.treatment, form.notes].filter(Boolean).join(' | ') || undefined };
     let saved = null;
 
     if (isAuthenticated) {
       try {
-        saved = await api.addVetVisit(activeDogId, entry);
+        saved = await api.addVetVisit(getDogBackendId(activeDogId) || activeDogId, entry);
       } catch { /* silent */ }
     }
 
