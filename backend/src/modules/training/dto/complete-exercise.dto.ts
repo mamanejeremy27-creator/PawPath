@@ -1,4 +1,5 @@
-import { IsString, IsOptional, IsNumber, IsObject, Min, Max } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsArray, Min, Max, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class JournalDataDto {
   @IsString()
@@ -16,6 +17,8 @@ export class JournalDataDto {
   mood?: string;
 
   @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
   photos?: string[];
 }
 
@@ -33,6 +36,7 @@ export class CompleteExerciseDto {
   programId: string;
 
   @IsOptional()
-  @IsObject()
+  @ValidateNested()
+  @Type(() => JournalDataDto)
   journal?: JournalDataDto;
 }

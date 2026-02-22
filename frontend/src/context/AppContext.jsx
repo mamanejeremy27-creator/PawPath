@@ -374,7 +374,7 @@ export function AppProvider({ children }) {
 
   const setDogProfile = useCallback((profile) => {
     const dogIds = Object.keys(dogs);
-    const dbPayload = { name: profile.name, breed: profile.breed || null, birthday: profile.birthday || null, weight: profile.weight || null, avatar: profile.avatar || null, photo: profile.photo || null };
+    const dbPayload = { name: profile.name, breed: profile.breed || null, birthday: profile.birthday || null, weight: profile.weight || null, avatar: profile.avatar || null };
     if (dogIds.length === 0 || !activeDogId || !dogs[activeDogId]) {
       // First dog — create it
       const newId = dogIds.length === 0 ? "dog_1" : (!dogs.dog_1 ? "dog_1" : "dog_2");
@@ -902,8 +902,9 @@ export function AppProvider({ children }) {
     } : undefined;
 
     try {
+      const backendDogId = getDogBackendId(activeDogId) || activeDogId;
       const result = await api.completeExercise({
-        dogId: activeDogId,
+        dogId: backendDogId,
         exerciseId: exId,
         levelId: lvlId,
         programId: progId,
