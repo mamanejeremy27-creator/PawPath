@@ -36,27 +36,47 @@ import { TtsModule } from './modules/tts/tts.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 5435),
-        username: configService.get('DB_USERNAME', 'pawpath'),
-        password: configService.get('DB_PASSWORD', 'pawpath_dev'),
-        database: configService.get('DB_DATABASE', 'pawpath'),
-        entities: [
-          User, Dog, DogProgress, CompletedExercise, SkillFreshness,
-          EarnedBadge, StreakHistory, ChallengeProgress, UnlockedReward,
-          LeaderboardEntry, JournalEntry,
-          UserSettings, WeightRecord, Vaccination, VetVisit, Medication,
-          Walk, Post, PostLike, Comment, BuddyRequest,
-          LostDogReport, Sighting, Feedback,
-          TrainingProgram, BadgeDefinition, ChallengeDefinition, StreakMilestone,
-        ],
-        migrations: ['dist/migrations/*.js'],
-        migrationsRun: true,
-        synchronize: true,
-        logging: configService.get('NODE_ENV') === 'development',
-      }),
+      useFactory: (configService: ConfigService) => {
+        // Support DATABASE_URL (provided by Railway PostgreSQL plugin)
+        // or fall back to individual DB_* vars (local dev)
+        const databaseUrl = configService.get<string>('DATABASE_URL');
+        const dbConn = databaseUrl
+          ? (() => {
+              const u = new URL(databaseUrl);
+              return {
+                host: u.hostname,
+                port: parseInt(u.port || '5432', 10),
+                username: u.username,
+                password: u.password,
+                database: u.pathname.slice(1),
+                ssl: { rejectUnauthorized: false },
+              };
+            })()
+          : {
+              host: configService.get('DB_HOST', 'localhost'),
+              port: configService.get<number>('DB_PORT', 5435),
+              username: configService.get('DB_USERNAME', 'pawpath'),
+              password: configService.get('DB_PASSWORD', 'pawpath_dev'),
+              database: configService.get('DB_DATABASE', 'pawpath'),
+            };
+        return {
+          type: 'postgres' as const,
+          ...dbConn,
+          entities: [
+            User, Dog, DogProgress, CompletedExercise, SkillFreshness,
+            EarnedBadge, StreakHistory, ChallengeProgress, UnlockedReward,
+            LeaderboardEntry, JournalEntry,
+            UserSettings, WeightRecord, Vaccination, VetVisit, Medication,
+            Walk, Post, PostLike, Comment, BuddyRequest,
+            LostDogReport, Sighting, Feedback,
+            TrainingProgram, BadgeDefinition, ChallengeDefinition, StreakMilestone,
+          ],
+          migrations: ['dist/migrations/*.js'],
+          migrationsRun: true,
+          synchronize: true,
+          logging: configService.get('NODE_ENV') === 'development',
+        };
+      },
     }),
     AuthModule,
     DogsModule,

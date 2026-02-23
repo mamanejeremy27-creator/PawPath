@@ -1,0 +1,33 @@
+# Frontend (not needed for backend Docker build)
+frontend/
+
+# Root workspace files
+pnpm-workspace.yaml
+pnpm-lock.yaml
+docs/
+*.md
+
+# Git
+.git
+.gitignore
+.claude/
+
+# IDE
+.vscode
+.idea
+
+# Environment files (injected by Railway)
+.env
+.env.*
+
+# Backend ignores
+backend/node_modules
+backend/dist
+backend/coverage
+backend/test
+backend/.env
+backend/.env.*
+
+# General
+node_modules
+*.log

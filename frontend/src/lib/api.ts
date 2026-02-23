@@ -1,6 +1,10 @@
 import { getAuthHeaders, clearToken } from './auth.js';
 
-const API_BASE = '/api';
+// In production, VITE_API_URL is the Railway backend URL (e.g. https://pawpath.up.railway.app).
+// In dev, it's empty and the Vite proxy handles /api → localhost:3004.
+const API_BASE = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api';
 
 async function apiFetch(path: string, options: Record<string, any> = {}) {
   const res = await fetch(`${API_BASE}${path}`, {

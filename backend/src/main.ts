@@ -21,9 +21,17 @@ async function bootstrap() {
     }),
   );
 
-  // CORS
+  // Health check — outside /api prefix, used by Railway
+  app.getHttpAdapter().get('/health', (_req: any, res: any) => {
+    res.status(200).json({ status: 'ok' });
+  });
+
+  // CORS — supports comma-separated FRONTEND_URL for multiple origins (e.g. Vercel preview URLs)
+  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5176')
+    .split(',')
+    .map((o) => o.trim());
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5176',
+    origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
     credentials: true,
   });
 
