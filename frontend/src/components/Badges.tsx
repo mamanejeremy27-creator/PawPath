@@ -1,8 +1,7 @@
 import { useApp } from "../context/AppContext.jsx";
 import BottomNav from "./BottomNav.jsx";
 import BadgeIcon from "./ui/BadgeIcon.jsx";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", rL: 24 };
+import { cn } from "../lib/cn";
 
 const CATEGORY_ORDER = ["streaks", "training", "programs", "journal", "skills", "streak", "challenge", "special"];
 const CATEGORY_KEYS = {
@@ -27,28 +26,39 @@ export default function Badges() {
   });
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
-      <div style={{ padding: "24px 20px 14px" }}>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: 0, color: C.t1 }}>{T("achievements")}</h2>
-        <p style={{ fontSize: 14, color: C.t3, marginTop: 4 }}>{earnedBadges.length} {T("of")} {badges.length} {T("unlocked")}</p>
+    <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
+      <div className="px-5 pt-6 pb-3.5">
+        <h2 className="font-display text-[28px] font-black m-0 text-text">{T("achievements")}</h2>
+        <p className="text-sm text-muted mt-1">{earnedBadges.length} {T("of")} {badges.length} {T("unlocked")}</p>
       </div>
-      <div style={{ padding: "0 20px" }}>
+
+      <div className="px-5">
         {CATEGORY_ORDER.map(cat => {
           const items = grouped[cat];
           if (!items || items.length === 0) return null;
           return (
-            <div key={cat} style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 }}>{T(CATEGORY_KEYS[cat])}</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+            <div key={cat} className="mb-6">
+              <div className="text-[11px] font-bold text-muted tracking-[2px] uppercase mb-2.5">
+                {T(CATEGORY_KEYS[cat])}
+              </div>
+              <div className="grid grid-cols-3 gap-2">
                 {items.map((b) => {
                   const got = earnedBadges.includes(b.id);
                   return (
-                    <div key={b.id} style={{ textAlign: "center", padding: "20px 8px", background: got ? "rgba(34,197,94,0.05)" : C.s1, borderRadius: C.rL, border: `1px solid ${got ? "rgba(34,197,94,0.15)" : C.b1}`, ...(got && { boxShadow: "0 0 12px rgba(34,197,94,0.15)" }) }}>
-                      <div style={{ marginBottom: 6, display: "flex", justifyContent: "center" }}>
+                    <div
+                      key={b.id}
+                      className={cn(
+                        "text-center py-5 px-2 rounded-3xl border",
+                        got
+                          ? "bg-training/5 border-training/15 shadow-[0_0_12px_rgba(34,197,94,0.15)]"
+                          : "bg-surface border-border"
+                      )}
+                    >
+                      <div className="mb-1.5 flex justify-center">
                         <BadgeIcon icon={b.icon || "Award"} category={b.category} size={48} earned={got} />
                       </div>
-                      <div style={{ fontSize: 11, fontWeight: 800, color: got ? C.t1 : C.t3 }}>{b.name}</div>
-                      <div style={{ fontSize: 10, color: C.t3, marginTop: 3, lineHeight: 1.4 }}>{b.desc}</div>
+                      <div className={cn("text-[11px] font-black", got ? "text-text" : "text-muted")}>{b.name}</div>
+                      <div className="text-[10px] text-muted mt-0.5 leading-snug">{b.desc}</div>
                     </div>
                   );
                 })}
@@ -57,6 +67,7 @@ export default function Badges() {
           );
         })}
       </div>
+
       <BottomNav active="badges" />
     </div>
   );

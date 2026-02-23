@@ -14,8 +14,8 @@ function getBreedWeightRange(size) {
 }
 import { matchBreed } from "../data/breedTraits.js";
 import BottomNav from "./BottomNav.jsx";
+import { cn } from "../lib/cn";
 
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
 const LS_KEY = "pawpath_weight_logs";
 
 export default function WeightTracker() {
@@ -129,56 +129,62 @@ export default function WeightTracker() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
       {/* Header */}
-      <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("healthDashboard")} style={{ background: "none", border: "none", cursor: "pointer", color: C.t3, padding: 4, display: "flex", alignItems: "center" }}>
+      <div className="px-5 pt-5 flex items-center gap-3">
+        <button
+          onClick={() => nav("healthDashboard")}
+          className="bg-transparent border-none cursor-pointer text-muted p-1 flex items-center"
+        >
           <ArrowLeft size={20} />
         </button>
         <div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 2px", color: C.t1 }}>{T("healthWeight")}</h1>
-          <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{weights.length} {T("healthRecords")}</p>
+          <h1 className="font-display text-2xl font-black m-0 mb-0.5 text-text">{T("healthWeight")}</h1>
+          <p className="text-[13px] text-muted m-0">{weights.length} {T("healthRecords")}</p>
         </div>
       </div>
 
       {/* Add Form */}
-      <div style={{ padding: "16px 20px 0" }}>
-        <div style={{ padding: "16px 18px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 12 }}>{T("healthAddWeight")}</div>
-          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+      <div className="px-5 pt-4">
+        <div className="px-[18px] py-4 bg-surface rounded-3xl border border-border">
+          <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px] mb-3">{T("healthAddWeight")}</div>
+          <div className="flex gap-2 mb-2.5">
             <input
               type="number" step="0.1" min="0" placeholder={T("healthWeightKg")}
               value={form.weight_kg} onChange={e => setForm(f => ({ ...f, weight_kg: e.target.value }))}
-              style={{ flex: 1, padding: "12px 14px", fontSize: 14, background: C.bg, border: `1px solid ${C.b1}`, borderRadius: C.r, color: C.t1, outline: "none" }}
+              className="flex-1 px-3.5 py-3 text-sm bg-bg border border-border rounded-2xl text-text outline-none focus:border-training/50 transition-colors"
             />
             <input
               type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-              style={{ padding: "12px 14px", fontSize: 14, background: C.bg, border: `1px solid ${C.b1}`, borderRadius: C.r, color: C.t1, outline: "none" }}
+              className="px-3.5 py-3 text-sm bg-bg border border-border rounded-2xl text-text outline-none focus:border-training/50 transition-colors"
             />
           </div>
           <input
             type="text" placeholder={T("healthNotesPlaceholder")}
             value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
-            style={{ width: "100%", padding: "12px 14px", fontSize: 14, background: C.bg, border: `1px solid ${C.b1}`, borderRadius: C.r, color: C.t1, outline: "none", marginBottom: 10, boxSizing: "border-box" }}
+            className="w-full px-3.5 py-3 text-sm bg-bg border border-border rounded-2xl text-text outline-none focus:border-training/50 transition-colors mb-2.5"
           />
           <button
             onClick={handleAdd} disabled={saving || !form.weight_kg}
-            style={{ width: "100%", padding: "14px", fontSize: 14, fontWeight: 800, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer", opacity: saving || !form.weight_kg ? 0.5 : 1 }}
+            className={cn(
+              "w-full py-3.5 text-sm font-black bg-training text-black border-none rounded-full cursor-pointer transition-opacity",
+              (saving || !form.weight_kg) ? "opacity-50" : "opacity-100"
+            )}
           >{saving ? T("saving") : T("healthSave")}</button>
         </div>
       </div>
 
       {/* Chart */}
       {sorted.length >= 2 && (
-        <div style={{ padding: "16px 20px 0" }}>
-          <div style={{ padding: "16px 18px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 12 }}>{T("healthWeightChart")}</div>
+        <div className="px-5 pt-4">
+          <div className="px-[18px] py-4 bg-surface rounded-3xl border border-border">
+            <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px] mb-3">{T("healthWeightChart")}</div>
             <svg width="100%" viewBox={`0 0 ${chartW} ${chartH}`} style={{ display: "block" }}>
               {/* Grid lines */}
               {yLabels.map((l, i) => (
                 <g key={i}>
                   <line x1={pad} y1={l.y} x2={chartW - pad} y2={l.y} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-                  <text x={pad - 8} y={l.y + 4} fill={C.t3} fontSize="10" textAnchor="end">{l.value}</text>
+                  <text x={pad - 8} y={l.y + 4} fill="#71717A" fontSize="10" textAnchor="end">{l.value}</text>
                 </g>
               ))}
               {/* Healthy range band */}
@@ -189,14 +195,14 @@ export default function WeightTracker() {
               <path d={pathD} fill="none" stroke="url(#weightGrad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               {/* Dots */}
               {points.map((p, i) => (
-                <circle key={i} cx={p.x} cy={p.y} r="4" fill={C.acc} stroke={C.bg} strokeWidth="2" />
+                <circle key={i} cx={p.x} cy={p.y} r="4" fill="#22C55E" stroke="#0A0A0C" strokeWidth="2" />
               ))}
               {/* X-axis dates */}
               {points.length <= 10 && points.map((p, i) => (
-                <text key={i} x={p.x} y={chartH - 8} fill={C.t3} fontSize="9" textAnchor="middle">{formatDate(p.date)}</text>
+                <text key={i} x={p.x} y={chartH - 8} fill="#71717A" fontSize="9" textAnchor="middle">{formatDate(p.date)}</text>
               ))}
               {points.length > 10 && [0, Math.floor(points.length / 2), points.length - 1].map(i => (
-                <text key={i} x={points[i].x} y={chartH - 8} fill={C.t3} fontSize="9" textAnchor="middle">{formatDate(points[i].date)}</text>
+                <text key={i} x={points[i].x} y={chartH - 8} fill="#71717A" fontSize="9" textAnchor="middle">{formatDate(points[i].date)}</text>
               ))}
               <defs>
                 <linearGradient id="weightGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -206,8 +212,8 @@ export default function WeightTracker() {
               </defs>
             </svg>
             {weightRange && (
-              <div style={{ fontSize: 11, color: C.t3, marginTop: 8, display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 12, height: 8, borderRadius: 2, background: "rgba(34,197,94,0.15)" }} />
+              <div className="text-[11px] text-muted mt-2 flex items-center gap-1.5">
+                <div className="w-3 h-2 rounded-sm" style={{ background: "rgba(34,197,94,0.15)" }} />
                 {T("healthHealthyRange")}: {weightRange.min}-{weightRange.max} {T("healthKg")}
               </div>
             )}
@@ -217,35 +223,44 @@ export default function WeightTracker() {
 
       {/* Loading */}
       {loading && (
-        <div style={{ textAlign: "center", padding: "40px 0" }}>
-          <div style={{ width: 32, height: 32, border: "3px solid rgba(255,255,255,0.1)", borderTopColor: C.acc, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto" }} />
+        <div className="text-center py-10">
+          <div className="w-8 h-8 border-[3px] border-white/10 border-t-training rounded-full animate-[spin_0.8s_linear_infinite] mx-auto" />
         </div>
       )}
 
       {/* Weight List */}
       {!loading && weights.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px 20px" }}>
-          <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Scale size={48} color={C.t3} /></div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: C.t1 }}>{T("healthNoWeight")}</div>
+        <div className="text-center py-10 px-5">
+          <div className="mb-3 flex justify-center"><Scale size={48} className="text-muted" /></div>
+          <div className="text-base font-bold text-text">{T("healthNoWeight")}</div>
         </div>
       )}
 
       {!loading && weights.length > 0 && (
-        <div style={{ padding: "16px 20px 0", display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="px-5 pt-4 flex flex-col gap-2">
           {weights.map((w, i) => (
-            <div key={w.id || i} style={{ padding: "14px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 14 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                  <span style={{ fontSize: 18, fontWeight: 800, color: C.t1 }}>{w.weight || w.weight_kg} {T("healthKg")}</span>
+            <div key={w.id || i} className="px-[18px] py-3.5 bg-surface rounded-2xl border border-border flex items-center gap-3.5">
+              <div className="flex-1">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-lg font-black text-text">{w.weight || w.weight_kg} {T("healthKg")}</span>
                   {i < weights.length - 1 && (() => {
                     const diff = (w.weight || w.weight_kg) - (weights[i + 1].weight || weights[i + 1].weight_kg);
                     if (Math.abs(diff) < 0.1) return null;
-                    return <span style={{ fontSize: 12, color: diff > 0 ? "#F59E0B" : "#3B82F6", fontWeight: 600 }}>{diff > 0 ? "+" : ""}{diff.toFixed(1)}</span>;
+                    return (
+                      <span className={cn("text-xs font-semibold", diff > 0 ? "text-xp" : "text-health")}>
+                        {diff > 0 ? "+" : ""}{diff.toFixed(1)}
+                      </span>
+                    );
                   })()}
                 </div>
-                <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{formatDate(w.date)}{w.notes ? ` · ${w.notes}` : ""}</div>
+                <div className="text-xs text-muted mt-0.5">{formatDate(w.date)}{w.notes ? ` · ${w.notes}` : ""}</div>
               </div>
-              <button onClick={() => handleDelete(w.id)} style={{ background: "none", border: "none", color: C.t3, cursor: "pointer", padding: 4, display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
+              <button
+                onClick={() => handleDelete(w.id)}
+                className="bg-transparent border-none text-muted cursor-pointer p-1 flex items-center justify-center"
+              >
+                <X size={16} />
+              </button>
             </div>
           ))}
         </div>

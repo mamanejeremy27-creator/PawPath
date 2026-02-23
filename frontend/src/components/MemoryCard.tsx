@@ -3,8 +3,6 @@ import { useApp } from "../context/AppContext.jsx";
 import { getTodaysMemory, recordMemoryShown } from "../utils/memories.js";
 import { ChevronRight } from "lucide-react";
 
-const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", rL: 24 };
-
 const TYPE_CONFIG = {
   onThisDay: { gradient: "linear-gradient(135deg, rgba(139,92,246,0.1), rgba(59,130,246,0.08))", border: "rgba(139,92,246,0.2)", label: "onThisDay" },
   anniversary: { gradient: "linear-gradient(135deg, rgba(245,158,11,0.1), rgba(234,88,12,0.08))", border: "rgba(245,158,11,0.2)", label: "trainingAnniversary" },
@@ -34,39 +32,31 @@ export default function MemoryCard() {
       : "";
 
   return (
-    <div style={{ padding: "12px 20px 0" }}>
+    <div className="px-5 pt-3">
       <button
         onClick={handleTap}
+        className="w-full px-5 py-4 rounded-3xl cursor-pointer flex items-center gap-3.5 text-text text-start"
         style={{
-          width: "100%",
-          padding: "16px 20px",
           background: config.gradient,
           border: `1px solid ${config.border}`,
-          borderRadius: C.rL,
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: 14,
-          color: C.t1,
-          textAlign: "start",
           animation: "fadeIn 0.4s ease",
         }}
       >
-        <span style={{ fontSize: 32, flexShrink: 0 }}>{memory.emoji}</span>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: C.acc, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 2 }}>
+        <span className="text-[32px] shrink-0">{memory.emoji}</span>
+        <div className="flex-1 min-w-0">
+          <div className="text-[10px] font-bold text-training uppercase tracking-[1.5px] mb-0.5">
             {T(config.label)}
           </div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: C.t1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <div className="text-[14px] font-bold text-text overflow-hidden text-ellipsis whitespace-nowrap">
             {memory.title}
           </div>
           {timeLabel && (
-            <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>
+            <div className="text-[12px] text-muted mt-0.5">
               {timeLabel}{(memory as any).year ? ` \u00B7 ${(memory as any).year}` : ""}
             </div>
           )}
         </div>
-        <ChevronRight size={18} color={C.t3} />
+        <ChevronRight size={18} color="#71717A" />
       </button>
     </div>
   );

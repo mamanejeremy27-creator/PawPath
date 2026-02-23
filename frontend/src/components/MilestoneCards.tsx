@@ -3,9 +3,8 @@ import { useApp } from "../context/AppContext.jsx";
 import { gatherMonthlyStats } from "../utils/monthlyStats.js";
 import { generateMilestoneCard, shareCard, downloadCard } from "../utils/milestoneCardGenerator.js";
 import BottomNav from "./BottomNav.jsx";
-import { ChevronRight, RefreshCw, Download, ArrowDown, Calendar } from "lucide-react";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", rL: 24 };
+import { ChevronRight, Download, ArrowDown, Calendar } from "lucide-react";
+import { cn } from "../lib/cn";
 
 export default function MilestoneCards() {
   const { journal, completedExercises, totalXP, currentStreak, totalSessions, totalReviews, dogProfile, nav, T, rtl, lang } = useApp();
@@ -62,55 +61,57 @@ export default function MilestoneCards() {
   // Full card view
   if (selectedMonth && cardImage) {
     return (
-      <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
-        <div style={{ padding: "24px 20px 16px" }}>
-          <button onClick={() => { setSelectedMonth(null); setCardImage(null); }} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 16 }}>{rtl ? "\u2192" : "\u2190"}</span> {T("milestoneCards")}
+      <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
+        <div className="px-5 pt-6 pb-4">
+          <button
+            onClick={() => { setSelectedMonth(null); setCardImage(null); }}
+            className="bg-transparent border-0 text-training text-sm font-semibold cursor-pointer p-0 mb-4 flex items-center gap-1.5"
+          >
+            <span className="text-base">{rtl ? "→" : "←"}</span> {T("milestoneCards")}
           </button>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: 0, color: C.t1 }}>{selectedMonth.label}</h2>
+          <h2 className="font-display text-2xl font-black m-0 text-text">{selectedMonth.label}</h2>
         </div>
 
         {/* Card preview */}
-        <div style={{ padding: "0 20px", marginBottom: 20 }}>
-          <div style={{ borderRadius: 20, overflow: "hidden", border: `1px solid ${C.b1}`, boxShadow: "0 16px 48px rgba(0,0,0,0.4)" }}>
-            <img src={cardImage} alt="Milestone card" style={{ width: "100%", display: "block" }} />
+        <div className="px-5 mb-5">
+          <div className="rounded-[20px] overflow-hidden border border-border shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
+            <img src={cardImage} alt="Milestone card" className="w-full block" />
           </div>
         </div>
 
         {/* Stats summary */}
-        <div style={{ padding: "0 20px", marginBottom: 20 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+        <div className="px-5 mb-5">
+          <div className="grid grid-cols-3 gap-2">
             {[
-              { v: selectedMonth.sessions, l: T("sessionsThisMonth"), i: "\uD83C\uDFAF" },
-              { v: selectedMonth.xp, l: T("xpEarned"), i: "\u26A1" },
-              { v: selectedMonth.newExercises.length, l: T("exercisesLearned"), i: "\uD83C\uDF1F" },
-              { v: selectedMonth.bestStreak, l: T("bestStreak"), i: "\uD83D\uDD25" },
-              { v: selectedMonth.reviews, l: T("reviewsDone"), i: "\uD83D\uDD04" },
-              { v: selectedMonth.avgRating, l: "Avg \u2B50", i: "\u2B50" },
+              { v: selectedMonth.sessions, l: T("sessionsThisMonth"), i: "🎯" },
+              { v: selectedMonth.xp, l: T("xpEarned"), i: "⚡" },
+              { v: selectedMonth.newExercises.length, l: T("exercisesLearned"), i: "🌟" },
+              { v: selectedMonth.bestStreak, l: T("bestStreak"), i: "🔥" },
+              { v: selectedMonth.reviews, l: T("reviewsDone"), i: "🔄" },
+              { v: selectedMonth.avgRating, l: "Avg ⭐", i: "⭐" },
             ].map((s, i) => (
-              <div key={i} style={{ textAlign: "center", padding: "14px 6px", background: C.s1, borderRadius: 16, border: `1px solid ${C.b1}` }}>
-                <div style={{ fontSize: 16, marginBottom: 2 }}>{s.i}</div>
-                <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>{s.v}</div>
-                <div style={{ fontSize: 10, color: C.t3, fontWeight: 600 }}>{s.l}</div>
+              <div key={i} className="text-center py-3.5 px-1.5 bg-surface rounded-2xl border border-border">
+                <div className="text-base mb-0.5">{s.i}</div>
+                <div className="text-xl font-black text-text">{s.v}</div>
+                <div className="text-[10px] text-muted font-semibold">{s.l}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Share/Download buttons */}
-        <div style={{ display: "flex", gap: 10, padding: "0 20px" }}>
-          <button onClick={handleShare} disabled={sharing} style={{
-            flex: 1, padding: "16px", fontSize: 15, fontWeight: 700,
-            background: C.acc, color: "#000", border: "none", borderRadius: 50,
-            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-          }}>
-            {sharing ? "..." : <><Download size={18} style={{ transform: "rotate(180deg)" }} /> {T("shareCard")}</>}
+        <div className="flex gap-2.5 px-5">
+          <button
+            onClick={handleShare}
+            disabled={sharing}
+            className="flex-1 py-4 text-[15px] font-bold bg-training text-black border-0 rounded-full cursor-pointer flex items-center justify-center gap-2"
+          >
+            {sharing ? "..." : <><Download size={18} className="rotate-180" /> {T("shareCard")}</>}
           </button>
-          <button onClick={handleDownload} style={{
-            flex: 1, padding: "16px", fontSize: 15, fontWeight: 700,
-            background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50,
-            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-          }}>
+          <button
+            onClick={handleDownload}
+            className="flex-1 py-4 text-[15px] font-bold bg-surface text-text border border-border rounded-full cursor-pointer flex items-center justify-center gap-2"
+          >
             <ArrowDown size={18} /> {T("downloadCard")}
           </button>
         </div>
@@ -122,55 +123,48 @@ export default function MilestoneCards() {
 
   // Gallery view
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
-      <div style={{ padding: "24px 20px 16px" }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 16 }}>{rtl ? "\u2192" : "\u2190"}</span> {T("home")}
+    <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
+      <div className="px-5 pt-6 pb-4">
+        <button
+          onClick={() => nav("home")}
+          className="bg-transparent border-0 text-training text-sm font-semibold cursor-pointer p-0 mb-4 flex items-center gap-1.5"
+        >
+          <span className="text-base">{rtl ? "→" : "←"}</span> {T("home")}
         </button>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: 0, color: C.t1 }}>{T("milestoneCards")}</h2>
-        <p style={{ fontSize: 14, color: C.t3, marginTop: 4 }}>{T("monthlyProgress")}</p>
+        <h2 className="font-display text-[28px] font-black m-0 text-text">{T("milestoneCards")}</h2>
+        <p className="text-sm text-muted mt-1">{T("monthlyProgress")}</p>
       </div>
 
       {monthlyData.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "60px 40px", color: C.t3 }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>{"\uD83C\uDFC6"}</div>
-          <p style={{ fontSize: 15, lineHeight: 1.6 }}>{T("noReportsYet")}</p>
+        <div className="text-center px-10 py-16 text-muted">
+          <div className="text-5xl mb-4">🏆</div>
+          <p className="text-[15px] leading-relaxed">{T("noReportsYet")}</p>
         </div>
       ) : (
-        <div style={{ padding: "0 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="px-5 flex flex-col gap-3">
           {monthlyData.map((month: any) => (
             <button
               key={month.key}
               onClick={() => handleSelectMonth(month)}
-              style={{
-                display: "flex", alignItems: "center", gap: 14,
-                padding: "18px 20px", background: C.s1, borderRadius: C.rL,
-                border: `1px solid ${C.b1}`, cursor: "pointer",
-                color: C.t1, textAlign: "start", width: "100%",
-              }}
+              className="flex items-center gap-3.5 px-5 py-[18px] bg-surface rounded-3xl border border-border cursor-pointer text-text text-start w-full"
             >
               {/* Month icon */}
-              <div style={{
-                width: 52, height: 52, borderRadius: 16,
-                background: "rgba(34,197,94,0.08)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 24, flexShrink: 0,
-              }}>
-                <Calendar size={24} color={C.acc} />
+              <div className="w-[52px] h-[52px] rounded-2xl bg-training/[0.08] flex items-center justify-center text-2xl flex-shrink-0">
+                <Calendar size={24} className="text-training" />
               </div>
 
               {/* Info */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: C.t1 }}>{month.label}</div>
-                <div style={{ fontSize: 13, color: C.t3, marginTop: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
-                  <span>{"\uD83C\uDFAF"} {month.sessions} {T("sessionsThisMonth").toLowerCase()}</span>
-                  <span>{"\u26A1"} {month.xp} {T("xp")}</span>
-                  <span>{"\uD83C\uDF1F"} {month.newExercises.length}</span>
+              <div className="flex-1 min-w-0">
+                <div className="text-base font-bold text-text">{month.label}</div>
+                <div className="text-[13px] text-muted mt-1 flex gap-3 flex-wrap">
+                  <span>🎯 {month.sessions} {T("sessionsThisMonth").toLowerCase()}</span>
+                  <span>⚡ {month.xp} {T("xp")}</span>
+                  <span>🌟 {month.newExercises.length}</span>
                 </div>
               </div>
 
               {/* Arrow */}
-              <ChevronRight size={18} color={C.t3} />
+              <ChevronRight size={18} className="text-muted" />
             </button>
           ))}
         </div>

@@ -1,14 +1,6 @@
 import { PawPrint } from "lucide-react";
 import { useApp } from "../context/AppContext.jsx";
 
-const C = {
-  s1: "#131316",
-  b1: "rgba(255,255,255,0.06)",
-  t1: "#F5F5F7",
-  t3: "#71717A",
-  acc: "#22C55E",
-};
-
 export default function FeedbackPrompt() {
   const { showFeedbackPrompt, setShowFeedbackPrompt, setShowFeedback, T } = useApp();
 
@@ -24,71 +16,25 @@ export default function FeedbackPrompt() {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        bottom: 88,
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: "calc(100% - 40px)",
-        maxWidth: 440,
-        zIndex: 200,
-        animation: "slideUp 0.4s ease",
-      }}
-    >
-      <div
-        style={{
-          background: C.s1,
-          border: `1px solid ${C.b1}`,
-          borderRadius: 20,
-          padding: "20px 20px 16px",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.5)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+    <div className="fixed bottom-[88px] start-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[440px] z-[200] [animation:slideUp_0.4s_ease]">
+      <div className="bg-surface border border-border rounded-[20px] px-5 pt-5 pb-4 shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+        <div className="flex items-center gap-3 mb-3.5">
           <PawPrint size={28} color="#22C55E" />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>
-              {T("enjoyingPawPath")}
-            </div>
-            <div style={{ fontSize: 13, color: C.t3, marginTop: 2 }}>
-              {T("sendFeedback")}
-            </div>
+          <div className="flex-1">
+            <div className="text-[15px] font-bold text-text">{T("enjoyingPawPath")}</div>
+            <div className="text-[13px] text-muted mt-0.5">{T("sendFeedback")}</div>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
+        <div className="flex gap-2.5">
           <button
             onClick={handleRate}
-            style={{
-              flex: 1,
-              padding: "12px",
-              fontSize: 14,
-              fontWeight: 700,
-              fontFamily: "'DM Sans', sans-serif",
-              background: C.acc,
-              color: "#000",
-              border: "none",
-              borderRadius: 14,
-              cursor: "pointer",
-              boxShadow: "0 4px 16px rgba(34,197,94,0.2)",
-            }}
+            className="flex-1 py-3 text-[14px] font-bold bg-training text-black border-none rounded-[14px] cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.2)]"
           >
             {T("rateTheApp")}
           </button>
           <button
             onClick={handleDismiss}
-            style={{
-              flex: 1,
-              padding: "12px",
-              fontSize: 14,
-              fontWeight: 700,
-              fontFamily: "'DM Sans', sans-serif",
-              background: "rgba(255,255,255,0.04)",
-              color: C.t3,
-              border: `1px solid ${C.b1}`,
-              borderRadius: 14,
-              cursor: "pointer",
-            }}
+            className="flex-1 py-3 text-[14px] font-bold bg-white/[0.04] text-muted border border-border rounded-[14px] cursor-pointer"
           >
             {T("maybeLater")}
           </button>

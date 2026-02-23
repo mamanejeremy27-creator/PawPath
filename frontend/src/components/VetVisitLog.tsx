@@ -3,8 +3,8 @@ import { useApp } from "../context/AppContext.jsx";
 import { api } from "../lib/api.js";
 import BottomNav from "./BottomNav.jsx";
 import { ArrowLeft, Hospital, X } from "lucide-react";
+import { cn } from "../lib/cn";
 
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
 const LS_KEY = "pawpath_vet_visits";
 
 export default function VetVisitLog() {
@@ -84,91 +84,108 @@ export default function VetVisitLog() {
   const totalCost = visits.reduce((a, v) => a + (v.cost || 0), 0);
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
       {/* Header */}
-      <div style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => nav("healthDashboard")} style={{ background: "none", border: "none", cursor: "pointer", color: C.t3, padding: 4, display: "flex", alignItems: "center" }}>
+      <div className="px-5 pt-5 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => nav("healthDashboard")}
+            className="bg-transparent border-none cursor-pointer text-muted p-1 flex items-center"
+          >
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 2px", color: C.t1 }}>{T("healthVetVisits")}</h1>
-            <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{visits.length} {T("healthVisits")}</p>
+            <h1 className="font-display text-2xl font-black m-0 mb-0.5 text-text">{T("healthVetVisits")}</h1>
+            <p className="text-[13px] text-muted m-0">{visits.length} {T("healthVisits")}</p>
           </div>
         </div>
-        <button onClick={() => setShowForm(true)} style={{
-          padding: "10px 18px", borderRadius: 50,
-          background: C.acc, color: "#000", border: "none",
-          fontWeight: 800, fontSize: 13, cursor: "pointer",
-        }}>+ {T("healthAddVisit")}</button>
+        <button
+          onClick={() => setShowForm(true)}
+          className="px-[18px] py-2.5 rounded-full bg-training text-black border-none font-black text-[13px] cursor-pointer"
+        >
+          + {T("healthAddVisit")}
+        </button>
       </div>
 
       {/* Summary Stats */}
       {visits.length > 0 && (
-        <div style={{ display: "flex", gap: 10, padding: "16px 20px 0" }}>
-          <div style={{ flex: 1, textAlign: "center", padding: "14px 6px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: C.acc }}>{visits.length}</div>
-            <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600 }}>{T("healthTotalVisits")}</div>
+        <div className="flex gap-2.5 px-5 pt-4">
+          <div className="flex-1 text-center py-3.5 px-1.5 bg-surface rounded-2xl border border-border">
+            <div className="text-xl font-black text-training">{visits.length}</div>
+            <div className="text-[10px] text-muted uppercase tracking-[1px] font-semibold">{T("healthTotalVisits")}</div>
           </div>
-          <div style={{ flex: 1, textAlign: "center", padding: "14px 6px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>₪{totalCost.toLocaleString()}</div>
-            <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600 }}>{T("healthTotalCost")}</div>
+          <div className="flex-1 text-center py-3.5 px-1.5 bg-surface rounded-2xl border border-border">
+            <div className="text-xl font-black text-text">₪{totalCost.toLocaleString()}</div>
+            <div className="text-[10px] text-muted uppercase tracking-[1px] font-semibold">{T("healthTotalCost")}</div>
           </div>
         </div>
       )}
 
       {/* Loading */}
       {loading && (
-        <div style={{ textAlign: "center", padding: "40px 0" }}>
-          <div style={{ width: 32, height: 32, border: "3px solid rgba(255,255,255,0.1)", borderTopColor: C.acc, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto" }} />
+        <div className="text-center py-10">
+          <div className="w-8 h-8 border-[3px] border-white/10 border-t-training rounded-full animate-[spin_0.8s_linear_infinite] mx-auto" />
         </div>
       )}
 
       {/* Empty */}
       {!loading && visits.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px 20px" }}>
-          <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Hospital size={48} color={C.t3} /></div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: C.t1 }}>{T("healthNoVisits")}</div>
+        <div className="text-center py-10 px-5">
+          <div className="mb-3 flex justify-center"><Hospital size={48} className="text-muted" /></div>
+          <div className="text-base font-bold text-text">{T("healthNoVisits")}</div>
         </div>
       )}
 
       {/* Visit List */}
       {!loading && visits.length > 0 && (
-        <div style={{ padding: "16px 20px 0", display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="px-5 pt-4 flex flex-col gap-2">
           {visits.map((v, i) => {
             const isExpanded = expanded === v.id;
             return (
-              <div key={v.id || i} style={{ background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, overflow: "hidden" }}>
+              <div key={v.id || i} className="bg-surface rounded-2xl border border-border overflow-hidden">
                 <button
                   onClick={() => setExpanded(isExpanded ? null : v.id)}
-                  style={{ width: "100%", textAlign: "start", cursor: "pointer", padding: "14px 18px", background: "transparent", border: "none", color: C.t1, fontFamily: "inherit", display: "flex", alignItems: "center", gap: 14 }}
+                  className="w-full text-start cursor-pointer px-[18px] py-3.5 bg-transparent border-none text-text font-sans flex items-center gap-3.5"
                 >
-                  <div style={{ width: 40, height: 40, borderRadius: 12, background: "rgba(236,72,153,0.08)", border: "1px solid rgba(236,72,153,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Hospital size={18} color="#EC4899" /></div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700 }}>{v.reason || formatDate(v.date)}</div>
-                    <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(236,72,153,0.08)", border: "1px solid rgba(236,72,153,0.15)" }}>
+                    <Hospital size={18} style={{ color: "#EC4899" }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-bold">{v.reason || formatDate(v.date)}</div>
+                    <div className="text-xs text-muted mt-0.5">
                       {formatDate(v.date)}{(v.vet || v.vet_name) ? ` · ${v.vet || v.vet_name}` : ""}
                     </div>
                   </div>
-                  {v.cost > 0 && <div style={{ fontSize: 14, fontWeight: 800, color: C.acc, flexShrink: 0 }}>₪{v.cost}</div>}
-                  <span style={{ color: C.t3, fontSize: 14, transition: "transform 0.2s", transform: isExpanded ? "rotate(90deg)" : "none" }}>›</span>
+                  {v.cost > 0 && <div className="text-sm font-black text-training shrink-0">₪{v.cost}</div>}
+                  <span
+                    className="text-muted text-sm transition-transform duration-200"
+                    style={{ transform: isExpanded ? "rotate(90deg)" : "none" }}
+                  >›</span>
                 </button>
                 {isExpanded && (
-                  <div style={{ padding: "0 18px 14px", borderTop: `1px solid ${C.b1}` }}>
-                    {v.diagnosis && <div style={{ marginTop: 10 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5 }}>{T("healthDiagnosis")}</div>
-                      <div style={{ fontSize: 13, color: C.t2, marginTop: 4 }}>{v.diagnosis}</div>
-                    </div>}
-                    {v.treatment && <div style={{ marginTop: 10 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5 }}>{T("healthTreatment")}</div>
-                      <div style={{ fontSize: 13, color: C.t2, marginTop: 4 }}>{v.treatment}</div>
-                    </div>}
-                    {v.notes && <div style={{ marginTop: 10 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5 }}>{T("healthNotes")}</div>
-                      <div style={{ fontSize: 13, color: C.t2, marginTop: 4 }}>{v.notes}</div>
-                    </div>}
-                    <button onClick={(e) => { e.stopPropagation(); handleDelete(v.id); }}
-                      style={{ marginTop: 12, padding: "8px 16px", fontSize: 12, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: "#EF4444", border: "1px solid rgba(239,68,68,0.15)", borderRadius: 20, cursor: "pointer" }}>
+                  <div className="px-[18px] pb-3.5 border-t border-border">
+                    {v.diagnosis && (
+                      <div className="mt-2.5">
+                        <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px]">{T("healthDiagnosis")}</div>
+                        <div className="text-[13px] text-text-2 mt-1">{v.diagnosis}</div>
+                      </div>
+                    )}
+                    {v.treatment && (
+                      <div className="mt-2.5">
+                        <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px]">{T("healthTreatment")}</div>
+                        <div className="text-[13px] text-text-2 mt-1">{v.treatment}</div>
+                      </div>
+                    )}
+                    {v.notes && (
+                      <div className="mt-2.5">
+                        <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px]">{T("healthNotes")}</div>
+                        <div className="text-[13px] text-text-2 mt-1">{v.notes}</div>
+                      </div>
+                    )}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDelete(v.id); }}
+                      className="mt-3 px-4 py-2 text-xs font-semibold bg-danger/[0.08] text-danger border border-danger/15 rounded-[20px] cursor-pointer"
+                    >
                       {T("healthDelete")}
                     </button>
                   </div>
@@ -181,11 +198,16 @@ export default function VetVisitLog() {
 
       {/* Slide-up Form */}
       {showForm && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(12px)", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
-          <div style={{ width: "100%", maxWidth: 480, background: C.s1, borderRadius: "24px 24px 0 0", padding: "28px 24px 36px", animation: "slideUp 0.3s ease", maxHeight: "90vh", overflowY: "auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 800, margin: 0, color: C.t1 }}>{T("healthAddVisit")}</h3>
-              <button onClick={() => setShowForm(false)} style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={18} /></button>
+        <div className="fixed inset-0 z-[500] bg-black/70 backdrop-blur-xl flex items-end justify-center">
+          <div className="w-full max-w-[480px] bg-surface rounded-t-3xl px-6 pt-7 pb-9 animate-[slideUp_0.3s_ease] max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="font-display text-[22px] font-black m-0 text-text">{T("healthAddVisit")}</h3>
+              <button
+                onClick={() => setShowForm(false)}
+                className="bg-border border-none text-muted w-9 h-9 rounded-xl cursor-pointer flex items-center justify-center"
+              >
+                <X size={18} />
+              </button>
             </div>
 
             {[
@@ -196,23 +218,32 @@ export default function VetVisitLog() {
               { key: "treatment", type: "text", label: T("healthTreatment") },
               { key: "cost", type: "number", label: T("healthCost") },
             ].map(f => (
-              <div key={f.key} style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>{f.label}</div>
-                <input type={f.type} value={form[f.key]} onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+              <div key={f.key} className="mb-3.5">
+                <div className="text-[11px] font-bold text-muted tracking-[2px] uppercase mb-2">{f.label}</div>
+                <input
+                  type={f.type} value={form[f.key]} onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                   placeholder={f.label} step={f.type === "number" ? "0.01" : undefined}
-                  style={{ width: "100%", padding: "12px 14px", fontSize: 14, background: C.bg, border: `1px solid ${C.b1}`, borderRadius: C.r, color: C.t1, outline: "none", boxSizing: "border-box" }} />
+                  className="w-full px-3.5 py-3 text-sm bg-bg border border-border rounded-2xl text-text outline-none focus:border-health/50 transition-colors"
+                />
               </div>
             ))}
 
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>{T("healthNotes")}</div>
-              <textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+            <div className="mb-4">
+              <div className="text-[11px] font-bold text-muted tracking-[2px] uppercase mb-2">{T("healthNotes")}</div>
+              <textarea
+                value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
                 placeholder={T("healthNotesPlaceholder")} rows={2}
-                style={{ width: "100%", padding: "12px 14px", fontSize: 14, background: C.bg, border: `1px solid ${C.b1}`, borderRadius: C.r, color: C.t1, outline: "none", resize: "none", boxSizing: "border-box" }} />
+                className="w-full px-3.5 py-3 text-sm bg-bg border border-border rounded-2xl text-text outline-none resize-none"
+              />
             </div>
 
-            <button onClick={handleAdd} disabled={saving || !form.date}
-              style={{ width: "100%", padding: "18px", fontSize: 16, fontWeight: 800, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer", opacity: saving || !form.date ? 0.5 : 1 }}>
+            <button
+              onClick={handleAdd} disabled={saving || !form.date}
+              className={cn(
+                "w-full py-[18px] text-base font-black bg-training text-black border-none rounded-full cursor-pointer transition-opacity",
+                (saving || !form.date) ? "opacity-50" : "opacity-100"
+              )}
+            >
               {saving ? T("saving") : T("healthSave")}
             </button>
           </div>

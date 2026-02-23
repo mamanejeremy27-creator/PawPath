@@ -1,8 +1,6 @@
 import { useApp } from "../context/AppContext.jsx";
 import { ChevronRight } from "lucide-react";
 
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E" };
-
 export default function LifeStageBanner() {
   const { lifeStageData, dogProfile, T, nav } = useApp();
   if (!lifeStageData) return null;
@@ -14,48 +12,47 @@ export default function LifeStageBanner() {
   return (
     <div
       onClick={() => nav("lifeStageDetail")}
-      style={{
-        padding: "16px 20px",
-        background: C.s1,
-        borderRadius: 20,
-        border: `1px solid ${color}22`,
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        gap: 14,
-      }}
+      className="px-5 py-4 bg-surface rounded-[20px] cursor-pointer flex items-center gap-3.5"
+      style={{ border: `1px solid ${color}22` }}
     >
       {/* Emoji circle */}
-      <div style={{
-        width: 48, height: 48, borderRadius: "50%",
-        background: `${color}18`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 24, flexShrink: 0,
-      }}>
+      <div
+        className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shrink-0"
+        style={{ background: `${color}18` }}
+      >
         {emoji}
       </div>
 
       {/* Info */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-          <span style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{T(stageKey)}</span>
-          <span style={{ fontSize: 11, color, fontWeight: 600, background: `${color}18`, padding: "2px 8px", borderRadius: 8 }}>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-0.5">
+          <span className="text-[15px] font-bold text-text">{T(stageKey)}</span>
+          <span
+            className="text-[11px] font-semibold px-2 py-0.5 rounded-lg"
+            style={{ color, background: `${color}18` }}
+          >
             {T(sizeKey)}
           </span>
         </div>
-        <div style={{ fontSize: 12, color: C.t3 }}>
-          {dogProfile?.name} · {ageMonths} {T("monthsUntilNext").includes("months") ? "months" : T("daysAgo")}
+        <div className="text-[12px] text-muted">
+          {dogProfile?.name} · {ageMonths}{" "}
+          {T("monthsUntilNext").includes("months") ? "months" : T("daysAgo")}
         </div>
         {next && (
-          <div style={{ fontSize: 12, color: C.t2, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+          <div className="text-[12px] text-text-2 mt-1 flex items-center gap-1">
             <span>{next.emoji}</span>
-            <span>{next.monthsUntil} {T("monthsUntilNext")} {T(`stage${next.stage.charAt(0).toUpperCase() + next.stage.slice(1)}`)}</span>
+            <span>
+              {next.monthsUntil} {T("monthsUntilNext")}{" "}
+              {T(`stage${next.stage.charAt(0).toUpperCase() + next.stage.slice(1)}`)}
+            </span>
           </div>
         )}
       </div>
 
       {/* Arrow */}
-      <div style={{ flexShrink: 0 }}><ChevronRight size={16} color={C.t3} /></div>
+      <div className="shrink-0">
+        <ChevronRight size={16} color="#71717A" />
+      </div>
     </div>
   );
 }

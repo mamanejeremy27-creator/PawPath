@@ -1,68 +1,103 @@
 import { useApp } from "../context/AppContext.jsx";
 import { X, Clock } from "lucide-react";
+import { cn } from "../lib/cn";
 
-const C = { bg: "#0A0A0C", s1: "#131316", s3: "#222228", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", warn: "#F59E0B", danger: "#EF4444", r: 16 };
-const sectionLabel = (text) => <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{text}</div>;
+const sectionLabel = (text) => (
+  <div className="text-[11px] font-bold text-muted tracking-[2px] uppercase mb-3">{text}</div>
+);
 
 export default function RemindersModal() {
   const { showReminders, setShowReminders, reminders, setReminders, requestNotifPermission, T } = useApp();
   if (!showReminders) return null;
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(12px)", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
-      <div style={{ width: "100%", maxWidth: 480, background: C.s1, borderRadius: "24px 24px 0 0", padding: "28px 24px 36px", animation: "slideUp 0.3s ease" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-          <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 800, margin: 0, color: C.t1 }}>{T("trainingReminders")}</h3>
-          <button onClick={() => setShowReminders(false)} style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={18} /></button>
+    <div className="fixed inset-0 z-[500] bg-black/70 backdrop-blur-xl flex items-end justify-center">
+      <div className="w-full max-w-[480px] bg-surface rounded-t-3xl px-6 pt-7 pb-9 [animation:slideUp_0.3s_ease]">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="font-display text-[22px] font-extrabold m-0 text-text">{T("trainingReminders")}</h3>
+          <button
+            onClick={() => setShowReminders(false)}
+            className="bg-white/[0.06] border-none text-muted w-9 h-9 rounded-[10px] cursor-pointer flex items-center justify-center"
+          >
+            <X size={18} />
+          </button>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 0", borderBottom: `1px solid ${C.b1}`, marginBottom: 20 }}>
+        {/* Enable toggle row */}
+        <div className="flex justify-between items-center py-4 border-b border-border mb-5">
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{T("enableReminders")}</div>
-            <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{T("getNotified")}</div>
+            <div className="text-[15px] font-bold text-text">{T("enableReminders")}</div>
+            <div className="text-[12px] text-muted mt-0.5">{T("getNotified")}</div>
           </div>
-          <button onClick={() => {
-            if (!reminders.enabled && typeof Notification !== "undefined" && Notification.permission !== "granted") requestNotifPermission();
-            setReminders(r => ({ ...r, enabled: !r.enabled }));
-          }}
-            style={{ width: 52, height: 30, borderRadius: 15, background: reminders.enabled ? C.acc : C.s3, border: "none", cursor: "pointer", position: "relative", transition: "background 0.2s" }}>
-            <div style={{ width: 24, height: 24, borderRadius: 12, background: "#fff", position: "absolute", top: 3, left: reminders.enabled ? 25 : 3, transition: "left 0.2s", boxShadow: "0 2px 4px rgba(0,0,0,0.2)" }} />
+          <button
+            onClick={() => {
+              if (!reminders.enabled && typeof Notification !== "undefined" && Notification.permission !== "granted") requestNotifPermission();
+              setReminders(r => ({ ...r, enabled: !r.enabled }));
+            }}
+            className={cn(
+              "w-[52px] h-[30px] rounded-full border-none cursor-pointer relative transition-colors",
+              reminders.enabled ? "bg-training" : "bg-surface-2"
+            )}
+          >
+            <div
+              className="w-6 h-6 rounded-full bg-white absolute top-[3px] transition-[left] duration-200 shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
+              style={{ left: reminders.enabled ? 25 : 3 }}
+            />
           </button>
         </div>
 
         {reminders.enabled && (
           <>
             {sectionLabel(T("reminderTimes"))}
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+            <div className="flex flex-col gap-2.5 mb-5">
               {reminders.times.map((time, idx) => (
-                <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <Clock size={20} color={C.warn} />
-                  <input type="time" value={time}
+                <div key={idx} className="flex items-center gap-2.5">
+                  <Clock size={20} className="text-xp" />
+                  <input
+                    type="time"
+                    value={time}
                     onChange={e => { const nt = [...reminders.times]; nt[idx] = e.target.value; setReminders(r => ({ ...r, times: nt })); }}
-                    style={{ flex: 1, padding: "12px 16px", fontSize: 16, background: C.bg, border: `1px solid ${C.b2}`, borderRadius: C.r, color: C.t1, outline: "none" }} />
+                    className="flex-1 px-4 py-3 text-base bg-bg border border-border-2 rounded-2xl text-text outline-none"
+                  />
                   {reminders.times.length > 1 && (
-                    <button onClick={() => setReminders(r => ({ ...r, times: r.times.filter((_, i) => i !== idx) }))}
-                      style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(239,68,68,0.1)", border: "none", color: C.danger, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
+                    <button
+                      onClick={() => setReminders(r => ({ ...r, times: r.times.filter((_, i) => i !== idx) }))}
+                      className="w-9 h-9 rounded-[10px] bg-danger/10 border-none text-danger cursor-pointer flex items-center justify-center"
+                    >
+                      <X size={16} />
+                    </button>
                   )}
                 </div>
               ))}
             </div>
             {reminders.times.length < 4 && (
-              <button onClick={() => setReminders(r => ({ ...r, times: [...r.times, "12:00"] }))}
-                style={{ width: "100%", padding: "12px", background: C.b1, border: "none", borderRadius: C.r, color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 16 }}>
+              <button
+                onClick={() => setReminders(r => ({ ...r, times: [...r.times, "12:00"] }))}
+                className="w-full py-3 bg-white/[0.06] border-none rounded-2xl text-training text-[14px] font-semibold cursor-pointer mb-4"
+              >
                 {T("addAnother")}
               </button>
             )}
             {typeof Notification !== "undefined" && Notification.permission !== "granted" && (
-              <div style={{ padding: "14px 16px", background: "rgba(245,158,11,0.08)", borderRadius: C.r, border: "1px solid rgba(245,158,11,0.15)", marginBottom: 16 }}>
-                <p style={{ fontSize: 13, color: C.warn, margin: 0, lineHeight: 1.5 }}>{T("notifWarning")} <button onClick={requestNotifPermission} style={{ background: "none", border: "none", color: C.acc, fontWeight: 700, cursor: "pointer", textDecoration: "underline", fontSize: 13, padding: 0 }}>{T("enableNow")}</button></p>
+              <div className="px-4 py-3.5 bg-xp/[0.08] rounded-2xl border border-xp/[0.15] mb-4">
+                <p className="text-[13px] text-xp m-0 leading-relaxed">
+                  {T("notifWarning")}{" "}
+                  <button
+                    onClick={requestNotifPermission}
+                    className="bg-none border-none text-training font-bold cursor-pointer underline text-[13px] p-0"
+                  >
+                    {T("enableNow")}
+                  </button>
+                </p>
               </div>
             )}
           </>
         )}
 
-        <button onClick={() => setShowReminders(false)}
-          style={{ width: "100%", padding: "16px", fontSize: 15, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer" }}>
+        <button
+          onClick={() => setShowReminders(false)}
+          className="w-full py-4 text-[15px] font-bold bg-training text-black border-none rounded-full cursor-pointer"
+        >
           {T("save")}
         </button>
       </div>

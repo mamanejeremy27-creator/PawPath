@@ -5,8 +5,7 @@ import { api } from "../lib/api.js";
 import { Lock, Handshake, ChevronRight, AlertTriangle, PawPrint } from "lucide-react";
 import PostCard from "./PostCard.jsx";
 import BottomNav from "./BottomNav.jsx";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
+import { cn } from "../lib/cn";
 
 const PAGE_SIZE = 20;
 
@@ -75,14 +74,14 @@ export default function CommunityFeed() {
   // Not authenticated
   if (!isAuthenticated) {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, animation: "fadeIn 0.3s ease" }}>
-        <div style={{ padding: "20px" }}>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 4px", color: C.t1 }}>{T("community")}</h1>
-          <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{T("communitySubtitle")}</p>
+      <div className="min-h-screen bg-bg animate-[fadeIn_0.3s_ease]">
+        <div className="p-5">
+          <h1 className="font-display text-2xl font-extrabold mb-1 text-text">{T("community")}</h1>
+          <p className="text-[13px] text-muted m-0">{T("communitySubtitle")}</p>
         </div>
-        <div style={{ textAlign: "center", padding: "60px 20px", color: C.t3 }}>
-          <Lock size={40} color={C.t3} style={{ marginBottom: 12 }} />
-          <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{T("lbSignIn")}</div>
+        <div className="text-center py-16 px-5 text-muted">
+          <Lock size={40} className="text-muted mb-3 mx-auto" />
+          <div className="text-[15px] font-bold text-text">{T("lbSignIn")}</div>
         </div>
         <BottomNav active="community" />
       </div>
@@ -90,83 +89,67 @@ export default function CommunityFeed() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
       {/* Header */}
-      <div style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div className="px-5 pt-5 flex justify-between items-center">
         <div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 4px", color: C.t1 }}>{T("community")}</h1>
-          <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{T("communitySubtitle")}</p>
+          <h1 className="font-display text-2xl font-extrabold mb-1 text-text">{T("community")}</h1>
+          <p className="text-[13px] text-muted m-0">{T("communitySubtitle")}</p>
         </div>
         <button
           onClick={() => nav("createPost")}
-          style={{
-            padding: "10px 18px", borderRadius: 50,
-            background: C.acc, color: "#000", border: "none",
-            fontWeight: 800, fontSize: 13, cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(34,197,94,0.25)",
-          }}
+          className="px-[18px] py-2.5 rounded-full bg-training text-black border-none font-extrabold text-[13px] cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.25)]"
         >{T("createPost")}</button>
       </div>
 
       {/* Training Buddy Card */}
       {isAuthenticated && (
-        <div style={{ padding: "14px 20px 0" }}>
+        <div className="px-5 pt-3.5">
           <button
             onClick={() => nav("buddyDashboard")}
-            style={{
-              width: "100%", padding: "16px 20px",
-              background: "linear-gradient(135deg, rgba(34,197,94,0.08), rgba(139,92,246,0.08))",
-              border: "1px solid rgba(34,197,94,0.2)",
-              borderRadius: C.rL, cursor: "pointer",
-              display: "flex", alignItems: "center", gap: 14,
-              textAlign: "start",
-            }}
+            className="w-full px-5 py-4 bg-gradient-to-br from-training/[0.08] to-achieve/[0.08] border border-training/20 rounded-3xl cursor-pointer flex items-center gap-3.5 text-start"
           >
-            <Handshake size={28} color={C.acc} />
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("buddySection")}</div>
-              <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{T("buddySectionSub")}</div>
+            <Handshake size={28} className="text-training" />
+            <div className="flex-1">
+              <div className="text-sm font-bold text-text">{T("buddySection")}</div>
+              <div className="text-xs text-muted mt-0.5">{T("buddySectionSub")}</div>
             </div>
-            <ChevronRight size={16} color={C.t3} />
+            <ChevronRight size={16} className="text-muted" />
           </button>
         </div>
       )}
 
       {/* Loading */}
       {loading && (
-        <div style={{ textAlign: "center", padding: "60px 0" }}>
-          <div style={{ width: 32, height: 32, border: "3px solid rgba(255,255,255,0.1)", borderTopColor: C.acc, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto" }} />
+        <div className="text-center py-16">
+          <div className="w-8 h-8 border-[3px] border-white/10 border-t-training rounded-full animate-spin mx-auto" />
         </div>
       )}
 
       {/* Error */}
       {!loading && error && (
-        <div style={{ textAlign: "center", padding: "60px 20px", color: C.t3 }}>
-          <AlertTriangle size={32} color={C.t3} style={{ marginBottom: 8 }} />
-          <div style={{ fontSize: 14, fontWeight: 600 }}>{T("cmtUnavailable")}</div>
+        <div className="text-center py-16 px-5 text-muted">
+          <AlertTriangle size={32} className="text-muted mb-2 mx-auto" />
+          <div className="text-sm font-semibold">{T("cmtUnavailable")}</div>
         </div>
       )}
 
       {/* Empty state */}
       {!loading && !error && posts.length === 0 && (
-        <div style={{ textAlign: "center", padding: "60px 20px" }}>
-          <PawPrint size={48} color={C.t3} style={{ marginBottom: 12 }} />
-          <div style={{ fontSize: 16, fontWeight: 700, color: C.t1 }}>{T("noPosts")}</div>
-          <div style={{ fontSize: 13, color: C.t3, marginTop: 6 }}>{T("noPostsSub")}</div>
+        <div className="text-center py-16 px-5">
+          <PawPrint size={48} className="text-muted mb-3 mx-auto" />
+          <div className="text-base font-bold text-text">{T("noPosts")}</div>
+          <div className="text-[13px] text-muted mt-1.5">{T("noPostsSub")}</div>
           <button
             onClick={() => nav("createPost")}
-            style={{
-              marginTop: 20, padding: "14px 28px", borderRadius: 50,
-              background: C.acc, color: "#000", border: "none",
-              fontWeight: 800, fontSize: 14, cursor: "pointer",
-            }}
+            className="mt-5 px-7 py-3.5 rounded-full bg-training text-black border-none font-extrabold text-sm cursor-pointer"
           >{T("createPost")}</button>
         </div>
       )}
 
       {/* Posts */}
       {!loading && posts.length > 0 && (
-        <div style={{ padding: "16px 20px 0", display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="px-5 pt-4 flex flex-col gap-3">
           {posts.map(post => (
             <PostCard
               key={post.id}
@@ -182,16 +165,13 @@ export default function CommunityFeed() {
             <button
               onClick={loadMore}
               disabled={loadingMore}
-              style={{
-                padding: "14px", borderRadius: C.r,
-                background: C.s1, border: `1px solid ${C.b1}`,
-                color: C.t3, fontWeight: 700, fontSize: 13,
-                cursor: loadingMore ? "default" : "pointer",
-                textAlign: "center",
-              }}
+              className={cn(
+                "py-3.5 rounded-2xl bg-surface border border-border text-muted font-bold text-[13px] text-center",
+                loadingMore ? "cursor-default" : "cursor-pointer"
+              )}
             >
               {loadingMore ? (
-                <div style={{ width: 20, height: 20, border: "2px solid rgba(255,255,255,0.1)", borderTopColor: C.acc, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto" }} />
+                <div className="w-5 h-5 border-2 border-white/10 border-t-training rounded-full animate-spin mx-auto" />
               ) : T("feedLoadMore")}
             </button>
           )}

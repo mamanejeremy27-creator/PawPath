@@ -3,8 +3,8 @@ import { useApp } from "../context/AppContext.jsx";
 import { DIAGNOSTIC_CATEGORIES, getDiagnosticExercises } from "../data/diagnostic.js";
 import { ArrowLeft, AlertTriangle, CheckCircle2, Circle, ChevronRight } from "lucide-react";
 import Icon from "./ui/Icon.jsx";
+import { cn } from "../lib/cn";
 
-const C = { bg: "#0A0A0C", s1: "#131316", s2: "#1F1F23", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", amber: "#F59E0B", danger: "#EF4444", r: 16, rL: 24 };
 const DIAG_STORAGE_KEY = "pawpath_diagnosticHistory";
 
 function saveDiagnosticResult(result) {
@@ -40,27 +40,27 @@ export default function DiagnosticFlow() {
   // ─── Step 1: Category Selection Grid ───
   if (step === "categories") {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, paddingBottom: 40, animation: "fadeIn 0.3s ease" }}>
-        <div style={{ padding: "24px 20px 16px" }}>
-          <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+      <div className="min-h-screen bg-bg pb-10 [animation:fadeIn_0.3s_ease]">
+        <div className="px-5 pt-6 pb-4">
+          <button
+            onClick={() => nav("home")}
+            className="bg-transparent border-none text-training text-[14px] font-semibold cursor-pointer p-0 mb-4 flex items-center gap-1.5"
+          >
             <ArrowLeft size={16} /> {T("home")}
           </button>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 900, margin: 0, color: C.t1 }}>{T("diagTitle")}</h1>
-          <p style={{ fontSize: 14, color: C.t2, marginTop: 8, lineHeight: 1.6 }}>{T("diagSubtitle")}</p>
+          <h1 className="font-display text-[26px] font-black m-0 text-text">{T("diagTitle")}</h1>
+          <p className="text-[14px] text-text-2 mt-2 leading-relaxed">{T("diagSubtitle")}</p>
         </div>
-        <div style={{ padding: "0 20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <div className="px-5 grid grid-cols-2 gap-2.5">
           {DIAGNOSTIC_CATEGORIES.map((cat, i) => (
             <button
               key={cat.id}
               onClick={() => { setSelectedCat(cat); setStep("followUps"); setCurrentQ(0); setAnswers({}); }}
-              style={{
-                padding: "20px 14px", background: C.s1, borderRadius: C.rL,
-                border: `1px solid ${C.b1}`, cursor: "pointer", color: C.t1,
-                textAlign: "center", animation: `fadeIn 0.3s ease ${i * 0.04}s both`,
-              }}
+              className="px-3.5 py-5 bg-surface rounded-3xl border border-border cursor-pointer text-text text-center"
+              style={{ animation: `fadeIn 0.3s ease ${i * 0.04}s both` }}
             >
-              <div style={{ marginBottom: 8, display: "flex", justifyContent: "center" }}><Icon name={(cat.icon || "Stethoscope") as any} size={32} color={C.acc} /></div>
-              <div style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.4 }}>{cat.name[lang] || cat.name.en}</div>
+              <div className="mb-2 flex justify-center"><Icon name={(cat.icon || "Stethoscope") as any} size={32} color="#22C55E" /></div>
+              <div className="text-[13px] font-bold leading-snug">{cat.name[lang] || cat.name.en}</div>
             </button>
           ))}
         </div>
@@ -89,26 +89,33 @@ export default function DiagnosticFlow() {
     }
 
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, paddingBottom: 40, animation: "fadeIn 0.3s ease" }}>
-        <div style={{ padding: "24px 20px 16px" }}>
-          <button onClick={() => { if (currentQ > 0) { setCurrentQ(currentQ - 1); } else { reset(); } }} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+      <div className="min-h-screen bg-bg pb-10 [animation:fadeIn_0.3s_ease]">
+        <div className="px-5 pt-6 pb-4">
+          <button
+            onClick={() => { if (currentQ > 0) { setCurrentQ(currentQ - 1); } else { reset(); } }}
+            className="bg-transparent border-none text-training text-[14px] font-semibold cursor-pointer p-0 mb-4 flex items-center gap-1.5"
+          >
             <ArrowLeft size={16} /> {T("back")}
           </button>
 
           {/* Progress dots */}
-          <div style={{ display: "flex", gap: 6, marginBottom: 20 }}>
+          <div className="flex gap-1.5 mb-5">
             {questions.map((_, i) => (
-              <div key={i} style={{ height: 4, flex: 1, borderRadius: 2, background: i <= currentQ ? C.acc : C.b1, transition: "background 0.3s" }} />
+              <div
+                key={i}
+                className="h-1 flex-1 rounded-sm transition-colors duration-300"
+                style={{ background: i <= currentQ ? "#22C55E" : "rgba(255,255,255,0.06)" }}
+              />
             ))}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-            <Icon name={selectedCat.icon || "Stethoscope"} size={28} color={C.acc} />
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 800, margin: 0, color: C.t1 }}>{q.question[lang] || q.question.en}</h2>
+          <div className="flex items-center gap-2.5 mb-5">
+            <Icon name={selectedCat.icon || "Stethoscope"} size={28} color="#22C55E" />
+            <h2 className="font-display text-[22px] font-extrabold m-0 text-text">{q.question[lang] || q.question.en}</h2>
           </div>
         </div>
 
-        <div style={{ padding: "0 20px", display: "flex", flexDirection: "column", gap: 10 }}>
+        <div className="px-5 flex flex-col gap-2.5">
           {q.options.map(opt => {
             const selected = answers[q.id] === opt.id;
             return (
@@ -119,12 +126,10 @@ export default function DiagnosticFlow() {
                   setAnswers(newAnswers);
                   setTimeout(() => setCurrentQ(currentQ + 1), 200);
                 }}
-                style={{
-                  padding: "18px 20px", background: selected ? "rgba(34,197,94,0.08)" : C.s1,
-                  borderRadius: C.rL, border: `1px solid ${selected ? "rgba(34,197,94,0.3)" : C.b1}`,
-                  cursor: "pointer", color: C.t1, textAlign: "start", fontSize: 14, fontWeight: 600,
-                  transition: "all 0.2s",
-                }}
+                className={cn(
+                  "px-5 py-[18px] rounded-3xl border cursor-pointer text-text text-start text-[14px] font-semibold transition-all",
+                  selected ? "bg-training/[0.08] border-training/30" : "bg-surface border-border"
+                )}
               >
                 {opt.label[lang] || opt.label.en}
               </button>
@@ -145,35 +150,34 @@ export default function DiagnosticFlow() {
     const recProg = programs.find(p => p.id === selectedCat.recommendedProgram);
 
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, paddingBottom: 40, animation: "fadeIn 0.3s ease" }}>
-        <div style={{ padding: "24px 20px 16px" }}>
-          <button onClick={reset} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+      <div className="min-h-screen bg-bg pb-10 [animation:fadeIn_0.3s_ease]">
+        <div className="px-5 pt-6 pb-4">
+          <button
+            onClick={reset}
+            className="bg-transparent border-none text-training text-[14px] font-semibold cursor-pointer p-0 mb-4 flex items-center gap-1.5"
+          >
             <ArrowLeft size={16} /> {T("diagStartOver")}
           </button>
         </div>
 
-        <div style={{ padding: "0 20px" }}>
+        <div className="px-5">
           {/* Header */}
-          <div style={{ textAlign: "center", marginBottom: 24 }}>
-            <div style={{ marginBottom: 8, display: "flex", justifyContent: "center" }}><Icon name={selectedCat.icon || "Stethoscope"} size={48} color={C.acc} /></div>
-            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 900, margin: 0, color: C.t1 }}>{T("diagYourPlan")}</h1>
-            <p style={{ fontSize: 14, color: C.t2, marginTop: 6 }}>{selectedCat.name[lang] || selectedCat.name.en}</p>
-            <div style={{ display: "inline-block", padding: "6px 16px", borderRadius: 20, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", fontSize: 12, fontWeight: 700, color: C.acc, marginTop: 10 }}>
+          <div className="text-center mb-6">
+            <div className="mb-2 flex justify-center"><Icon name={selectedCat.icon || "Stethoscope"} size={48} color="#22C55E" /></div>
+            <h1 className="font-display text-2xl font-black m-0 text-text">{T("diagYourPlan")}</h1>
+            <p className="text-[14px] text-text-2 mt-1.5">{selectedCat.name[lang] || selectedCat.name.en}</p>
+            <div className="inline-block px-4 py-1.5 rounded-full bg-training/[0.08] border border-training/20 text-[12px] font-bold text-training mt-2.5">
               {selectedCat.timeEstimate[lang] || selectedCat.timeEstimate.en}
             </div>
           </div>
 
           {/* Professional Help Warning */}
           {showAggressionWarning && (
-            <div style={{
-              padding: "16px 18px", marginBottom: 16, background: "rgba(239,68,68,0.06)",
-              borderRadius: C.rL, border: "1px solid rgba(239,68,68,0.2)",
-              display: "flex", gap: 12, alignItems: "flex-start",
-            }}>
-              <AlertTriangle size={20} color={C.danger} style={{ flexShrink: 0 }} />
+            <div className="px-[18px] py-4 mb-4 bg-danger/[0.06] rounded-3xl border border-danger/20 flex gap-3 items-start">
+              <AlertTriangle size={20} className="text-danger flex-shrink-0" />
               <div>
-                <div style={{ fontSize: 13, fontWeight: 800, color: C.danger }}>{T("diagProWarningTitle")}</div>
-                <p style={{ fontSize: 12, color: C.t2, margin: "6px 0 0", lineHeight: 1.6 }}>{T("diagProWarning")}</p>
+                <div className="text-[13px] font-extrabold text-danger">{T("diagProWarningTitle")}</div>
+                <p className="text-[12px] text-text-2 mt-1.5 mb-0 leading-relaxed">{T("diagProWarning")}</p>
               </div>
             </div>
           )}
@@ -182,29 +186,25 @@ export default function DiagnosticFlow() {
           {recProg && (
             <button
               onClick={() => nav("program", { program: recProg })}
-              style={{
-                width: "100%", padding: "16px 18px", marginBottom: 16,
-                background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}`,
-                cursor: "pointer", color: C.t1, textAlign: "start",
-                display: "flex", alignItems: "center", gap: 14,
-              }}
+              className="w-full px-[18px] py-4 mb-4 bg-surface rounded-3xl border border-border cursor-pointer text-text text-start flex items-center gap-3.5"
             >
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: recProg.gradient, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Icon name={recProg.icon} size={22} color="#fff" /></div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.acc, textTransform: "uppercase", letterSpacing: 1 }}>{T("diagRecommendedProgram")}</div>
-                <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2 }}>{recProg.name}</div>
+              <div className="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0" style={{ background: recProg.gradient }}>
+                <Icon name={recProg.icon} size={22} color="#fff" />
               </div>
-              <ChevronRight size={16} color={C.t3} />
+              <div className="flex-1">
+                <div className="text-[11px] font-bold text-training uppercase tracking-[1px]">{T("diagRecommendedProgram")}</div>
+                <div className="text-[15px] font-bold mt-0.5">{recProg.name}</div>
+              </div>
+              <ChevronRight size={16} className="text-muted" />
             </button>
           )}
 
           {/* Exercises */}
-          <div style={{ marginBottom: 16 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 800, color: C.t1, margin: "0 0 12px", textTransform: "uppercase", letterSpacing: 1 }}>{T("diagExercisesToStart")}</h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div className="mb-4">
+            <h3 className="text-[14px] font-extrabold text-text mb-3 uppercase tracking-[1px]">{T("diagExercisesToStart")}</h3>
+            <div className="flex flex-col gap-2">
               {exercises.map(({ id, reason }) => {
                 const done = completedExercises.includes(id);
-                // Find exercise in programs
                 let exercise = null, exProg = null, exLvl = null;
                 for (const p of programs) {
                   for (const l of p.levels) {
@@ -216,24 +216,26 @@ export default function DiagnosticFlow() {
                 if (!exercise) return null;
 
                 return (
-                  <div key={id} style={{
-                    padding: "14px 16px", background: C.s1, borderRadius: C.rL,
-                    border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 12,
-                  }}>
-                    {done ? <CheckCircle2 size={16} color={C.acc} style={{ flexShrink: 0 }} /> : <Circle size={16} color={C.t3} style={{ flexShrink: 0 }} />}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{exercise.name}</div>
-                      <div style={{ fontSize: 11, color: C.t3, marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}><Icon name={exProg.icon} size={11} color={C.t3} /> {exProg.name}</div>
-                      <div style={{ fontSize: 12, color: C.t2, marginTop: 4, lineHeight: 1.5 }}>{reason[lang] || reason.en}</div>
+                  <div
+                    key={id}
+                    className="px-4 py-3.5 bg-surface rounded-3xl border border-border flex items-center gap-3"
+                  >
+                    {done
+                      ? <CheckCircle2 size={16} className="text-training flex-shrink-0" />
+                      : <Circle size={16} className="text-muted flex-shrink-0" />
+                    }
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[14px] font-bold text-text">{exercise.name}</div>
+                      <div className="text-[11px] text-muted mt-0.5 flex items-center gap-1">
+                        <Icon name={exProg.icon} size={11} color="#71717A" /> {exProg.name}
+                      </div>
+                      <div className="text-[12px] text-text-2 mt-1 leading-relaxed">{reason[lang] || reason.en}</div>
                     </div>
                     {!done && (
                       <button
                         onClick={() => nav("exercise", { exercise, level: exLvl, program: exProg })}
-                        style={{
-                          padding: "6px 14px", fontSize: 12, fontWeight: 800,
-                          background: exProg.gradient || C.acc, color: "#fff",
-                          border: "none", borderRadius: 8, cursor: "pointer", flexShrink: 0,
-                        }}
+                        className="px-3.5 py-1.5 text-[12px] font-extrabold text-white border-none rounded-lg cursor-pointer flex-shrink-0"
+                        style={{ background: exProg.gradient || "#22C55E" }}
                       >
                         {T("challengeGo")}
                       </button>
@@ -245,15 +247,12 @@ export default function DiagnosticFlow() {
           </div>
 
           {/* Quick Tips */}
-          <div style={{
-            padding: "18px 20px", background: "rgba(245,158,11,0.06)",
-            borderRadius: C.rL, border: "1px solid rgba(245,158,11,0.12)", marginBottom: 16,
-          }}>
-            <h4 style={{ fontSize: 12, fontWeight: 800, color: C.amber, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 12px" }}>{T("diagQuickTips")}</h4>
+          <div className="px-5 py-[18px] bg-xp/[0.06] rounded-3xl border border-xp/[0.12] mb-4">
+            <h4 className="text-[12px] font-extrabold text-xp uppercase tracking-[1px] mb-3">{T("diagQuickTips")}</h4>
             {selectedCat.quickTips.map((tip, i) => (
-              <div key={i} style={{ display: "flex", gap: 10, marginBottom: i < selectedCat.quickTips.length - 1 ? 12 : 0, alignItems: "flex-start" }}>
-                <span style={{ fontSize: 12, color: C.amber, flexShrink: 0, marginTop: 1 }}>•</span>
-                <p style={{ fontSize: 13, color: C.t2, margin: 0, lineHeight: 1.6 }}>{tip[lang] || tip.en}</p>
+              <div key={i} className={cn("flex gap-2.5 items-start", i < selectedCat.quickTips.length - 1 ? "mb-3" : "")}>
+                <span className="text-[12px] text-xp flex-shrink-0 mt-px">•</span>
+                <p className="text-[13px] text-text-2 m-0 leading-relaxed">{tip[lang] || tip.en}</p>
               </div>
             ))}
           </div>
@@ -261,21 +260,13 @@ export default function DiagnosticFlow() {
           {/* Action Buttons */}
           <button
             onClick={reset}
-            style={{
-              width: "100%", padding: "18px", fontSize: 15, fontWeight: 700,
-              background: C.s1, color: C.t1, border: `1px solid ${C.b1}`,
-              borderRadius: 50, cursor: "pointer", marginBottom: 10,
-            }}
+            className="w-full py-[18px] text-[15px] font-bold bg-surface text-text border border-border rounded-full cursor-pointer mb-2.5"
           >
             {T("diagTryAnother")}
           </button>
           <button
             onClick={() => nav("home")}
-            style={{
-              width: "100%", padding: "18px", fontSize: 15, fontWeight: 700,
-              background: C.acc, color: "#000", border: "none",
-              borderRadius: 50, cursor: "pointer",
-            }}
+            className="w-full py-[18px] text-[15px] font-bold bg-training text-black border-none rounded-full cursor-pointer"
           >
             {T("diagBackToTraining")}
           </button>

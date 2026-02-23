@@ -1,18 +1,50 @@
 import { useApp } from "../context/AppContext.jsx";
 
-const C = { bg: "#0A0A0C", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E" };
-
 export default function Splash() {
   const { setScreen, T } = useApp();
 
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: C.bg, position: "relative", overflow: "hidden" }}>
-      <div style={{ position: "absolute", top: "-30%", right: "-20%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,197,94,0.07) 0%, transparent 70%)" }} />
-      <div style={{ position: "absolute", bottom: "-20%", left: "-20%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%)" }} />
-      <div style={{ zIndex: 2, textAlign: "center", animation: "fadeInUp 0.8s ease" }}>
-        <img src="/pawpath-logo.svg" alt="PawPath" style={{ width: 220, marginBottom: 24, filter: "drop-shadow(0 0 40px rgba(34,197,94,0.3))" }} />
-        <p style={{ fontSize: 14, color: C.t3, marginTop: 12, letterSpacing: 4, textTransform: "uppercase", fontWeight: 500 }}>{T("tagline")}</p>
-        <button onClick={() => setScreen("onboard")} style={{ marginTop: 56, padding: "18px 56px", fontSize: 16, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer", boxShadow: "0 8px 32px rgba(34,197,94,0.3)" }}>{T("getStarted")}</button>
+    <div className="h-screen flex flex-col items-center justify-center bg-bg relative overflow-hidden">
+      {/* Atmospheric glows */}
+      <div
+        className="absolute rounded-full pointer-events-none"
+        style={{
+          top: "-30%",
+          insetInlineEnd: "-20%",
+          width: 500,
+          height: 500,
+          background: "radial-gradient(circle, rgba(34,197,94,0.07) 0%, transparent 70%)",
+        }}
+      />
+      <div
+        className="absolute rounded-full pointer-events-none"
+        style={{
+          bottom: "-20%",
+          insetInlineStart: "-20%",
+          width: 400,
+          height: 400,
+          background: "radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10 text-center" style={{ animation: "fadeInUp 0.8s ease" }}>
+        <img
+          src="/pawpath-logo.svg"
+          alt="PawPath"
+          className="mb-6 mx-auto"
+          style={{ width: 220, filter: "drop-shadow(0 0 40px rgba(34,197,94,0.3))" }}
+        />
+        <p className="text-[14px] text-muted mt-3 tracking-[4px] uppercase font-medium">
+          {T("tagline")}
+        </p>
+        <button
+          onClick={() => setScreen("onboard")}
+          className="mt-14 py-[18px] px-14 text-base font-bold bg-training text-black border-none rounded-full cursor-pointer"
+          style={{ boxShadow: "0 8px 32px rgba(34,197,94,0.3)" }}
+        >
+          {T("getStarted")}
+        </button>
       </div>
     </div>
   );

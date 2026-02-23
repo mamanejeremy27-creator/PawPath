@@ -1,24 +1,13 @@
 import { useState } from "react";
 import { Bug, Lightbulb, Star, FileText, X, Inbox, Dog, Flame } from "lucide-react";
 import { useApp } from "../context/AppContext.jsx";
-
-const C = {
-  bg: "#0A0A0C",
-  s1: "#131316",
-  b1: "rgba(255,255,255,0.06)",
-  t1: "#F5F5F7",
-  t2: "#A1A1AA",
-  t3: "#71717A",
-  acc: "#22C55E",
-  rL: 24,
-  r: 16,
-};
+import { cn } from "../lib/cn";
 
 const TYPE_META = {
-  bug: { icon: Bug, color: "#EF4444" },
-  feature: { icon: Lightbulb, color: "#F59E0B" },
-  rating: { icon: Star, color: "#8B5CF6" },
-  general: { icon: FileText, color: "#3B82F6" },
+  bug: { icon: Bug, colorClass: "text-danger", bgClass: "bg-danger/10", borderClass: "border-danger/20" },
+  feature: { icon: Lightbulb, colorClass: "text-xp", bgClass: "bg-xp/10", borderClass: "border-xp/20" },
+  rating: { icon: Star, colorClass: "text-achieve", bgClass: "bg-achieve/10", borderClass: "border-achieve/20" },
+  general: { icon: FileText, colorClass: "text-health", bgClass: "bg-health/10", borderClass: "border-health/20" },
 };
 
 const FILTERS = [
@@ -43,7 +32,6 @@ export default function FeedbackAdmin() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }).catch(() => {
-      // fallback
       const ta = document.createElement("textarea");
       ta.value = JSON.stringify(feedback, null, 2);
       document.body.appendChild(ta);
@@ -61,66 +49,28 @@ export default function FeedbackAdmin() {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 300,
-        background: C.bg,
-        overflowY: "auto",
-        animation: "slideUp 0.3s ease",
-      }}
-    >
+    <div className="fixed inset-0 z-[300] bg-bg overflow-y-auto [animation:slideUp_0.3s_ease]">
       {/* Header */}
-      <div style={{ padding: "24px 20px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div className="px-5 pt-6 pb-4 flex justify-between items-center">
         <div>
-          <h2
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: 24,
-              fontWeight: 800,
-              margin: 0,
-              color: C.t1,
-            }}
-          >
-            {T("feedbackAdmin")}
-          </h2>
-          <p style={{ fontSize: 13, color: C.t3, marginTop: 4 }}>
+          <h2 className="font-display text-2xl font-extrabold m-0 text-text">{T("feedbackAdmin")}</h2>
+          <p className="text-[13px] text-muted mt-1">
             {filtered.length} {filtered.length === 1 ? "entry" : "entries"}
           </p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="flex gap-2">
           <button
             onClick={handleCopy}
-            style={{
-              background: C.s1,
-              border: `1px solid ${C.b1}`,
-              color: copied ? C.acc : C.t2,
-              padding: "8px 16px",
-              borderRadius: 10,
-              cursor: "pointer",
-              fontSize: 13,
-              fontWeight: 600,
-              fontFamily: "'DM Sans', sans-serif",
-              transition: "all 0.15s",
-            }}
+            className={cn(
+              "bg-surface border border-border px-4 py-2 rounded-[10px] cursor-pointer text-[13px] font-semibold transition-all",
+              copied ? "text-training" : "text-text-2"
+            )}
           >
             {copied ? T("copied") : T("copyJson")}
           </button>
           <button
             onClick={() => setShowFeedbackAdmin(false)}
-            style={{
-              background: C.s1,
-              border: `1px solid ${C.b1}`,
-              color: C.t1,
-              width: 38,
-              height: 38,
-              borderRadius: 10,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+            className="bg-surface border border-border text-text w-[38px] h-[38px] rounded-[10px] cursor-pointer flex items-center justify-center"
           >
             <X size={16} />
           </button>
@@ -128,24 +78,17 @@ export default function FeedbackAdmin() {
       </div>
 
       {/* Filters */}
-      <div style={{ display: "flex", gap: 8, padding: "0 20px 14px", overflowX: "auto" }}>
+      <div className="flex gap-2 px-5 pb-3.5 overflow-x-auto">
         {FILTERS.map(f => (
           <button
             key={f.id}
             onClick={() => setFilter(f.id)}
-            style={{
-              padding: "7px 16px",
-              fontSize: 13,
-              fontWeight: 600,
-              fontFamily: "'DM Sans', sans-serif",
-              background: filter === f.id ? C.acc : C.s1,
-              color: filter === f.id ? "#000" : C.t2,
-              border: `1px solid ${filter === f.id ? C.acc : C.b1}`,
-              borderRadius: 20,
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-              transition: "all 0.15s",
-            }}
+            className={cn(
+              "px-4 py-[7px] text-[13px] font-semibold rounded-full cursor-pointer whitespace-nowrap transition-all border",
+              filter === f.id
+                ? "bg-training text-black border-training"
+                : "bg-surface text-text-2 border-border"
+            )}
           >
             {T(f.labelKey)}
           </button>
@@ -153,11 +96,11 @@ export default function FeedbackAdmin() {
       </div>
 
       {/* Entries */}
-      <div style={{ padding: "0 20px 40px" }}>
+      <div className="px-5 pb-10">
         {filtered.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "60px 20px", color: C.t3 }}>
-            <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Inbox size={40} color={C.t3} /></div>
-            <div style={{ fontSize: 15, fontWeight: 600 }}>{T("noFeedback")}</div>
+          <div className="text-center py-[60px] px-5 text-muted">
+            <div className="mb-3 flex justify-center"><Inbox size={40} className="text-muted" /></div>
+            <div className="text-[15px] font-semibold">{T("noFeedback")}</div>
           </div>
         ) : (
           filtered.map((entry, i) => {
@@ -165,81 +108,53 @@ export default function FeedbackAdmin() {
             return (
               <div
                 key={entry.id}
-                style={{
-                  padding: "18px 20px",
-                  background: C.s1,
-                  borderRadius: C.rL,
-                  border: `1px solid ${C.b1}`,
-                  marginBottom: 8,
-                  animation: `fadeIn 0.3s ease ${i * 0.04}s both`,
-                }}
+                className="px-5 py-[18px] bg-surface rounded-3xl border border-border mb-2"
+                style={{ animation: `fadeIn 0.3s ease ${i * 0.04}s both` }}
               >
                 {/* Top row: type badge + timestamp */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                  <div
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 6,
-                      padding: "4px 12px",
-                      background: `${meta.color}15`,
-                      border: `1px solid ${meta.color}30`,
-                      borderRadius: 12,
-                      fontSize: 12,
-                      fontWeight: 700,
-                      color: meta.color,
-                    }}
-                  >
+                <div className="flex justify-between items-center mb-2.5">
+                  <div className={cn(
+                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[12px] font-bold border",
+                    meta.bgClass, meta.borderClass, meta.colorClass
+                  )}>
                     <meta.icon size={12} />
                     <span>{entry.type}</span>
                   </div>
-                  <span style={{ fontSize: 12, color: C.t3 }}>{formatDate(entry.timestamp)}</span>
+                  <span className="text-[12px] text-muted">{formatDate(entry.timestamp)}</span>
                 </div>
 
                 {/* Rating if applicable */}
                 {entry.type === "rating" && entry.rating && (
-                  <div style={{ marginBottom: 8, fontSize: 16 }}>
+                  <div className="mb-2 text-base">
                     {"⭐".repeat(entry.rating)}{"☆".repeat(5 - entry.rating)}
                   </div>
                 )}
 
                 {/* Message */}
-                <p style={{ fontSize: 14, color: C.t1, margin: 0, lineHeight: 1.6 }}>
-                  {entry.message}
-                </p>
+                <p className="text-[14px] text-text m-0 leading-relaxed">{entry.message}</p>
 
                 {/* Contact */}
                 {entry.contact && (
-                  <div style={{ marginTop: 8, fontSize: 12, color: C.t2 }}>
+                  <div className="mt-2 text-[12px] text-text-2">
                     {T("contactLabel")}: {entry.contact}
                   </div>
                 )}
 
                 {/* Context */}
                 {entry.context && (
-                  <div
-                    style={{
-                      marginTop: 12,
-                      padding: "10px 12px",
-                      background: C.bg,
-                      borderRadius: 10,
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "4px 12px",
-                    }}
-                  >
+                  <div className="mt-3 px-3 py-2.5 bg-bg rounded-[10px] flex flex-wrap gap-x-3 gap-y-1">
                     {entry.context.dogName && (
-                      <span style={{ fontSize: 11, color: C.t3, display: "inline-flex", alignItems: "center", gap: 3 }}><Dog size={11} /> {entry.context.dogName}</span>
+                      <span className="text-[11px] text-muted inline-flex items-center gap-0.5"><Dog size={11} /> {entry.context.dogName}</span>
                     )}
                     {entry.context.dogBreed && (
-                      <span style={{ fontSize: 11, color: C.t3 }}>{entry.context.dogBreed}</span>
+                      <span className="text-[11px] text-muted">{entry.context.dogBreed}</span>
                     )}
-                    <span style={{ fontSize: 11, color: C.t3 }}>Lv.{entry.context.playerLevel}</span>
-                    <span style={{ fontSize: 11, color: C.t3 }}>{entry.context.totalXP} XP</span>
-                    <span style={{ fontSize: 11, color: C.t3, display: "inline-flex", alignItems: "center", gap: 3 }}><Flame size={11} /> {entry.context.currentStreak}</span>
-                    <span style={{ fontSize: 11, color: C.t3 }}>{entry.context.totalExercises} ex.</span>
-                    <span style={{ fontSize: 11, color: C.t3 }}>{entry.context.language}</span>
-                    <span style={{ fontSize: 11, color: C.t3 }}>@{entry.context.screen}</span>
+                    <span className="text-[11px] text-muted">Lv.{entry.context.playerLevel}</span>
+                    <span className="text-[11px] text-muted">{entry.context.totalXP} XP</span>
+                    <span className="text-[11px] text-muted inline-flex items-center gap-0.5"><Flame size={11} /> {entry.context.currentStreak}</span>
+                    <span className="text-[11px] text-muted">{entry.context.totalExercises} ex.</span>
+                    <span className="text-[11px] text-muted">{entry.context.language}</span>
+                    <span className="text-[11px] text-muted">@{entry.context.screen}</span>
                   </div>
                 )}
               </div>

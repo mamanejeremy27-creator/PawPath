@@ -1,7 +1,6 @@
 import { useApp } from "../context/AppContext.jsx";
 import Icon from "./ui/Icon.jsx";
-
-const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16 };
+import { cn } from "../lib/cn";
 
 export default function SkillHealth() {
   const { skillHealthData, nav, T } = useApp();
@@ -11,35 +10,36 @@ export default function SkillHealth() {
   const needsReview = skillHealthData.filter(s => s.label !== "fresh").length;
 
   return (
-    <div style={{ padding: "20px 20px 0" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: C.t1 }}>{T("skillHealth")}</h2>
-        <span style={{ fontSize: 12, color: needsReview > 0 ? "#F59E0B" : C.acc, fontWeight: 600 }}>
+    <div className="px-5 pt-5">
+      {/* Section header */}
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-lg font-extrabold m-0 text-text">{T("skillHealth")}</h2>
+        <span className={cn("text-xs font-semibold", needsReview > 0 ? "text-xp" : "text-training")}>
           {needsReview > 0 ? `${needsReview} ${T("skillsNeedReview")}` : T("allSkillsFresh")}
         </span>
       </div>
-      <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 4, scrollbarWidth: "none" }}>
+
+      {/* Horizontal scroll strip */}
+      <div className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none]">
         {skillHealthData.map(s => (
           <button
             key={s.exerciseId}
             onClick={() => nav("exercise", { program: s.program, level: s.level, exercise: s.exercise })}
-            style={{
-              flexShrink: 0, width: 60, height: 72, display: "flex", flexDirection: "column",
-              alignItems: "center", justifyContent: "center", gap: 4,
-              background: C.s1, borderRadius: 14, border: `2px solid ${s.color}`,
-              cursor: "pointer", color: C.t1, padding: 0,
-            }}
+            className="shrink-0 w-[60px] h-[72px] flex flex-col items-center justify-center gap-1 bg-surface rounded-2xl cursor-pointer text-text p-0 border-2"
+            style={{ borderColor: s.color }}
           >
-            <div style={{
-              width: 34, height: 34, borderRadius: 10,
-              background: s.program.gradient, display: "flex",
-              alignItems: "center", justifyContent: "center", fontSize: 16,
-            }}>
+            {/* Program icon square — gradient is dynamic */}
+            <div
+              className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center"
+              style={{ background: s.program.gradient }}
+            >
               <Icon name={s.program.icon} size={16} color="#fff" />
             </div>
-            <div style={{
-              width: 8, height: 8, borderRadius: "50%", background: s.color,
-            }} />
+            {/* Freshness dot — colour is dynamic */}
+            <div
+              className="w-2 h-2 rounded-full"
+              style={{ background: s.color }}
+            />
           </button>
         ))}
       </div>

@@ -4,8 +4,7 @@ import { api } from "../lib/api.js";
 import PhotoImg from "./PhotoImg.jsx";
 import BottomNav from "./BottomNav.jsx";
 import { ArrowLeft, AlertCircle, Dog } from "lucide-react";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
+import { GlowBadge } from "./ui/GlowBadge";
 
 export default function LostDogFeedList() {
   const { nav, T } = useApp();
@@ -46,62 +45,66 @@ export default function LostDogFeedList() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
-      <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t1, cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><ArrowLeft size={24} /></button>
-        <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: C.danger, display: "flex", alignItems: "center", gap: 8 }}><AlertCircle size={20} /> {T("lostDogsNearYou")}</h1>
+    <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
+      <div className="px-5 pt-5 flex items-center gap-3">
+        <button onClick={() => nav("home")} className="bg-transparent border-none text-text cursor-pointer p-0 flex items-center"><ArrowLeft size={24} /></button>
+        <h1 className="text-[20px] font-extrabold m-0 text-danger flex items-center gap-2"><AlertCircle size={20} /> {T("lostDogsNearYou")}</h1>
       </div>
 
       {loading ? (
-        <div style={{ display: "flex", justifyContent: "center", padding: 40 }}>
-          <div style={{ width: 32, height: 32, border: "3px solid rgba(255,255,255,0.1)", borderTopColor: C.danger, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        <div className="flex justify-center p-10">
+          <div className="w-8 h-8 border-[3px] border-white/10 border-t-danger rounded-full animate-spin" />
         </div>
       ) : alerts.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "60px 20px", color: C.t3 }}>
-          <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Dog size={40} color={C.t3} /></div>
-          <p style={{ fontSize: 14 }}>{T("lostNoNearbyAlerts")}</p>
+        <div className="text-center py-16 px-5 text-muted">
+          <div className="mb-3 flex justify-center"><Dog size={40} className="text-muted" /></div>
+          <p className="text-sm">{T("lostNoNearbyAlerts")}</p>
         </div>
       ) : (
-        <div style={{ padding: "16px 20px 0", display: "flex", flexDirection: "column", gap: 10 }}>
+        <div className="px-5 pt-4 flex flex-col gap-[10px]">
           {alerts.map(alert => {
             const distText = alert._distance < 1
               ? `${Math.round(alert._distance * 1000)}m`
               : `${alert._distance.toFixed(1)} km`;
             return (
-              <div key={alert.id} style={{ padding: "16px 18px", background: C.s1, borderRadius: C.rL, border: "1px solid rgba(239,68,68,0.15)" }}>
-                <div style={{ display: "flex", gap: 12 }}>
-                  <div style={{ width: 56, height: 56, borderRadius: 14, overflow: "hidden", flexShrink: 0, background: C.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div key={alert.id} className="px-[18px] py-4 bg-surface rounded-3xl border border-danger/15">
+                <div className="flex gap-3">
+                  <div className="w-14 h-14 rounded-[14px] overflow-hidden shrink-0 bg-bg flex items-center justify-center">
                     {alert.dog_photo ? (
                       <PhotoImg src={alert.dog_photo} style={{ width: 56, height: 56, objectFit: "cover" }} />
                     ) : (
-                      <Dog size={28} color={C.t3} />
+                      <Dog size={28} className="text-muted" />
                     )}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 16, fontWeight: 800, color: C.t1 }}>{alert.dog_name}</div>
-                    <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-base font-extrabold text-text">{alert.dog_name}</div>
+                    <div className="text-xs text-muted mt-0.5">
                       {alert.dog_breed && `${alert.dog_breed} · `}
-                      <span style={{ color: C.danger, fontWeight: 600 }}>{distText} {T("lostAway")}</span>
+                      <span className="text-danger font-semibold">{distText} {T("lostAway")}</span>
                     </div>
-                    <div style={{ fontSize: 11, color: C.t3, marginTop: 2 }}>
+                    <div className="text-[11px] text-muted mt-0.5">
                       {T("lostLastSeen")} {timeSince(alert.created_at)} {T("lostAgo")}
                       {alert.last_location_name && ` · ${alert.last_location_name}`}
                     </div>
                     {alert.description && (
-                      <div style={{ fontSize: 12, color: C.t2, marginTop: 6, fontStyle: "italic", lineHeight: 1.4 }}>"{alert.description}"</div>
+                      <div className="text-xs text-text-2 mt-1.5 italic leading-[1.4]">"{alert.description}"</div>
                     )}
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-                  <button onClick={() => nav("reportSighting", { reportId: alert.id })}
-                    style={{ flex: 1, padding: "10px 16px", fontSize: 13, fontWeight: 700, background: C.danger, color: "#fff", border: "none", borderRadius: 50, cursor: "pointer" }}>
+                <div className="flex gap-2 mt-3">
+                  <button
+                    onClick={() => nav("reportSighting", { reportId: alert.id })}
+                    className="flex-1 px-4 py-[10px] text-[13px] font-bold bg-danger text-white border-none rounded-full cursor-pointer"
+                  >
                     {T("lostISpotted")}
                   </button>
-                  <button onClick={() => {
-                    const text = `🚨 ${alert.dog_name}${alert.dog_breed ? ` (${alert.dog_breed})` : ""}`;
-                    if (navigator.share) navigator.share({ title: T("lostDogAlert"), text }).catch(() => {});
-                  }}
-                    style={{ padding: "10px 16px", fontSize: 13, fontWeight: 700, background: "transparent", color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
+                  <button
+                    onClick={() => {
+                      const text = `🚨 ${alert.dog_name}${alert.dog_breed ? ` (${alert.dog_breed})` : ""}`;
+                      if (navigator.share) navigator.share({ title: T("lostDogAlert"), text }).catch(() => {});
+                    }}
+                    className="px-4 py-[10px] text-[13px] font-bold bg-transparent text-text border border-border rounded-full cursor-pointer"
+                  >
                     {T("lostShare")}
                   </button>
                 </div>

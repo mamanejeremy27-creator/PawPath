@@ -15,8 +15,7 @@ import LanguageToggle from "./LanguageToggle.jsx";
 import { api } from "../lib/api.js";
 import NotificationPreferences from "./NotificationPreferences.jsx";
 import { compressPhotoToBlob, compressPhoto } from "../utils/photoCompressor.js";
-
-const C = { bg: "#0A0A0C", s1: "#131316", s2: "#1A1A1F", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t3: "#71717A", t4: "#52525B", acc: "#22C55E", danger: "#EF4444", r: 16 };
+import { cn } from "../lib/cn";
 
 export default function Profile() {
   const { dogProfile, setDogProfile, totalXP, currentStreak, completedExercises, completedLevels, earnedBadges, totalSessions, journal, playerLevel, resetAllData, T, badges, setShowFeedbackAdmin, dogs, activeDogId, switchDog, removeDog, dogCount, setShowAddDog, nav, challengeState, lang, appSettings, setAppSettings, toggleAccessory, AVATAR_ACCESSORIES, streakData, isAuthenticated, rtl } = useApp();
@@ -108,7 +107,10 @@ export default function Profile() {
   ];
 
   const pencil = (field) => (
-    <button onClick={() => startEdit(field)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: C.t3, opacity: 0.7, display: "inline-flex", alignItems: "center" }}>
+    <button
+      onClick={() => startEdit(field)}
+      className="bg-transparent border-0 cursor-pointer p-1 text-muted opacity-70 inline-flex items-center"
+    >
       <Pencil size={14} />
     </button>
   );
@@ -116,99 +118,159 @@ export default function Profile() {
   const dogEntries = Object.entries(dogs);
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
       {/* Toast */}
       {toast && (
-        <div style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 10000, padding: "10px 24px", background: C.acc, color: "#000", fontSize: 14, fontWeight: 700, borderRadius: 50, boxShadow: "0 4px 20px rgba(34,197,94,0.4)", animation: "fadeIn 0.3s ease" }}>
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[10000] px-6 py-2.5 bg-training text-black text-sm font-bold rounded-full shadow-[0_4px_20px_rgba(34,197,94,0.4)] animate-[fadeIn_0.3s_ease]">
           {toast}
         </div>
       )}
 
-      <input ref={photoRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handlePhotoSelect} />
+      <input ref={photoRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoSelect} />
 
-      <div style={{ textAlign: "center", padding: "40px 20px 24px", position: "relative" }}>
-        <div style={{ position: "absolute", top: 20, insetInlineEnd: 20 }}>
+      <div className="text-center px-5 pt-10 pb-6 relative">
+        <div className="absolute top-5 end-5">
           <LanguageToggle />
         </div>
 
         {/* Tappable avatar for photo upload */}
-        <div onClick={() => photoRef.current?.click()} style={{ cursor: "pointer", display: "inline-block", position: "relative" }}>
+        <div onClick={() => photoRef.current?.click()} className="cursor-pointer inline-block relative">
           <DogAvatar key={activeDogId} size="large" dogId={activeDogId} />
-          <div style={{ position: "absolute", bottom: -2, insetInlineEnd: -2, width: 28, height: 28, borderRadius: "50%", background: C.acc, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.3)", color: "#000" }}>
+          <div className="absolute -bottom-0.5 -end-0.5 w-7 h-7 rounded-full bg-training flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.3)] text-black">
             <Camera size={14} />
           </div>
         </div>
-        <div style={{ fontSize: 11, color: C.t3, marginTop: 6 }}>{T("tapToChangePhoto")}</div>
+        <div className="text-[11px] text-muted mt-1.5">{T("tapToChangePhoto")}</div>
 
         {/* Editable name */}
         {editing === "name" ? (
-          <div style={{ marginTop: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-            <input autoFocus value={editName} onChange={e => setEditName(e.target.value)} onKeyDown={e => e.key === "Enter" && saveField("name", editName.trim())} style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Playfair Display', serif", background: C.s1, border: `1px solid ${C.acc}`, borderRadius: 12, color: C.t1, padding: "8px 14px", textAlign: "center", outline: "none", width: 200 }} />
-            <button onClick={() => saveField("name", editName.trim())} style={{ padding: "8px 16px", background: C.acc, color: "#000", border: "none", borderRadius: 20, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{"\u2713"}</button>
-            <button onClick={() => setEditing(null)} style={{ padding: "8px 12px", background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 20, fontSize: 13, cursor: "pointer" }}>{"\u2717"}</button>
+          <div className="mt-3 flex items-center justify-center gap-2">
+            <input
+              autoFocus
+              value={editName}
+              onChange={e => setEditName(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && saveField("name", editName.trim())}
+              className="text-[22px] font-black font-display bg-surface border border-training rounded-xl text-text px-3.5 py-2 text-center outline-none w-[200px]"
+            />
+            <button
+              onClick={() => saveField("name", editName.trim())}
+              className="px-4 py-2 bg-training text-black border-0 rounded-full text-[13px] font-bold cursor-pointer"
+            >
+              ✓
+            </button>
+            <button
+              onClick={() => setEditing(null)}
+              className="px-3 py-2 bg-transparent text-muted border border-border rounded-full text-[13px] cursor-pointer"
+            >
+              ✗
+            </button>
           </div>
         ) : (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 16 }}>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: 0, color: C.t1 }}>{dogProfile?.name}</h2>
+          <div className="flex items-center justify-center gap-1.5 mt-4">
+            <h2 className="font-display text-[28px] font-black m-0 text-text">{dogProfile?.name}</h2>
             {pencil("name")}
           </div>
         )}
 
         {/* Editable breed + age */}
         {editing === "breed" ? (
-          <div style={{ marginTop: 8, position: "relative", maxWidth: 280, margin: "8px auto 0" }}>
-            <input autoFocus value={editBreed} onChange={e => handleBreedInput(e.target.value)} onKeyDown={e => e.key === "Enter" && saveField("breed", editBreed.trim())} style={{ width: "100%", fontSize: 14, background: C.s1, border: `1px solid ${C.acc}`, borderRadius: 12, color: C.t1, padding: "10px 14px", textAlign: "center", outline: "none" }} placeholder={T("breedPlaceholder")} />
+          <div className="mt-2 relative max-w-[280px] mx-auto">
+            <input
+              autoFocus
+              value={editBreed}
+              onChange={e => handleBreedInput(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && saveField("breed", editBreed.trim())}
+              className="w-full text-sm bg-surface border border-training rounded-xl text-text px-3.5 py-2.5 text-center outline-none"
+              placeholder={T("breedPlaceholder")}
+            />
             {showBreeds && breedSug.length > 0 && (
-              <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: C.s2, border: `1px solid ${C.b2}`, borderRadius: C.r, marginTop: 4, zIndex: 50, maxHeight: 220, overflowY: "auto", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+              <div className="absolute top-full start-0 end-0 bg-surface-2 border border-border-2 rounded-2xl mt-1 z-50 max-h-[220px] overflow-y-auto shadow-[0_16px_48px_rgba(0,0,0,0.5)]">
                 {breedSug.map(b => {
                   const hasProfile = !!matchBreed(b);
                   return (
-                    <button key={b} onClick={() => { saveField("breed", b); }} style={{ display: "block", width: "100%", padding: "13px 20px", fontSize: 15, background: "none", border: "none", borderBottom: `1px solid ${C.b1}`, color: C.t1, textAlign: "start", cursor: "pointer" }}>
-                      {hasProfile ? <><Dog size={14} style={{ display: "inline", verticalAlign: "middle", marginInlineEnd: 4 }} /></> : null}{b}
+                    <button
+                      key={b}
+                      onClick={() => { saveField("breed", b); }}
+                      className="block w-full px-5 py-3.5 text-[15px] bg-transparent border-0 border-b border-border text-text text-start cursor-pointer"
+                    >
+                      {hasProfile ? <Dog size={14} className="inline align-middle me-1" /> : null}{b}
                     </button>
                   );
                 })}
               </div>
             )}
-            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 8 }}>
-              <button onClick={() => saveField("breed", editBreed.trim())} style={{ padding: "6px 16px", background: C.acc, color: "#000", border: "none", borderRadius: 20, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{"\u2713"}</button>
-              <button onClick={() => { setEditing(null); setShowBreeds(false); }} style={{ padding: "6px 12px", background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 20, fontSize: 12, cursor: "pointer" }}>{"\u2717"}</button>
+            <div className="flex justify-center gap-2 mt-2">
+              <button
+                onClick={() => saveField("breed", editBreed.trim())}
+                className="px-4 py-1.5 bg-training text-black border-0 rounded-full text-xs font-bold cursor-pointer"
+              >
+                ✓
+              </button>
+              <button
+                onClick={() => { setEditing(null); setShowBreeds(false); }}
+                className="px-3 py-1.5 bg-transparent text-muted border border-border rounded-full text-xs cursor-pointer"
+              >
+                ✗
+              </button>
             </div>
           </div>
         ) : editing === "age" ? (
-          <div style={{ marginTop: 8, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-            <select autoFocus value={editAge} onChange={e => saveField("age", e.target.value)} style={{ fontSize: 14, background: C.s1, border: `1px solid ${C.acc}`, borderRadius: 12, color: C.t1, padding: "10px 14px", outline: "none", appearance: "none" }}>
+          <div className="mt-2 flex items-center justify-center gap-2">
+            <select
+              autoFocus
+              value={editAge}
+              onChange={e => saveField("age", e.target.value)}
+              className="text-sm bg-surface border border-training rounded-xl text-text px-3.5 py-2.5 outline-none appearance-none"
+            >
               <option value="">{T("selectAge")}</option>
               {ageOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
-            <button onClick={() => setEditing(null)} style={{ padding: "6px 12px", background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 20, fontSize: 12, cursor: "pointer" }}>{"\u2717"}</button>
+            <button
+              onClick={() => setEditing(null)}
+              className="px-3 py-1.5 bg-transparent text-muted border border-border rounded-full text-xs cursor-pointer"
+            >
+              ✗
+            </button>
           </div>
         ) : editing === "birthday" ? (
-          <div style={{ marginTop: 8, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-            <input autoFocus type="date" value={editBirthday} onChange={e => saveField("birthday", e.target.value)} style={{ fontSize: 14, background: C.s1, border: `1px solid ${C.acc}`, borderRadius: 12, color: C.t1, padding: "10px 14px", outline: "none" }} />
-            <button onClick={() => setEditing(null)} style={{ padding: "6px 12px", background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 20, fontSize: 12, cursor: "pointer" }}>{"\u2717"}</button>
+          <div className="mt-2 flex items-center justify-center gap-2">
+            <input
+              autoFocus
+              type="date"
+              value={editBirthday}
+              onChange={e => saveField("birthday", e.target.value)}
+              className="text-sm bg-surface border border-training rounded-xl text-text px-3.5 py-2.5 outline-none"
+            />
+            <button
+              onClick={() => setEditing(null)}
+              className="px-3 py-1.5 bg-transparent text-muted border border-border rounded-full text-xs cursor-pointer"
+            >
+              ✗
+            </button>
           </div>
         ) : (
-          <div style={{ marginTop: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 14, color: C.t3 }}>{dogProfile?.breed}</span>
+          <div className="mt-1 flex items-center justify-center gap-1 flex-wrap">
+            <span className="text-sm text-muted">{dogProfile?.breed}</span>
             {pencil("breed")}
-            <span style={{ fontSize: 14, color: C.t3 }}>{" · "}</span>
-            <span style={{ fontSize: 14, color: C.t3 }}>{dogProfile?.age}</span>
+            <span className="text-sm text-muted"> · </span>
+            <span className="text-sm text-muted">{dogProfile?.age}</span>
             {pencil("age")}
             {dogProfile?.birthday && (
               <>
-                <span style={{ fontSize: 14, color: C.t3 }}>{" · "}</span>
-                <span style={{ fontSize: 14, color: C.t3 }}>{dogProfile.birthday}</span>
+                <span className="text-sm text-muted"> · </span>
+                <span className="text-sm text-muted">{dogProfile.birthday}</span>
               </>
             )}
             {pencil("birthday")}
           </div>
         )}
 
-        <div style={{ marginTop: 12, display: "inline-block", padding: "8px 22px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 24, color: C.acc, fontSize: 14, fontWeight: 700 }}>{T("level")} {playerLevel.level} — {playerLevel.title}</div>
+        <div className="mt-3 inline-block px-[22px] py-2 bg-training/10 border border-training/20 rounded-full text-training text-sm font-bold">
+          {T("level")} {playerLevel.level} — {playerLevel.title}
+        </div>
       </div>
 
-      <div style={{ padding: "0 20px" }}>
+      <div className="px-5">
         {/* Stats */}
         {[
           [T("totalXP"), `${totalXP} ${T("xp")}`],
@@ -219,9 +281,9 @@ export default function Profile() {
           [T("sessions"), totalSessions],
           [T("journalEntries"), journal.length],
         ].map(([l, v], i) => (
-          <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "16px 0", borderBottom: `1px solid ${C.b1}` }}>
-            <span style={{ fontSize: 15, color: C.t3 }}>{l}</span>
-            <span style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{v}</span>
+          <div key={i} className="flex justify-between py-4 border-b border-border">
+            <span className="text-[15px] text-muted">{l}</span>
+            <span className="text-[15px] font-bold text-text">{v}</span>
           </div>
         ))}
 
@@ -234,34 +296,38 @@ export default function Profile() {
           const sizeLabel = breedData.size === "small" ? T("sizeSmall") : breedData.size === "large" ? T("sizeLarge") : T("sizeMedium");
           const breedTipText = breedData.breedTips[lang] || breedData.breedTips.en;
           return (
-            <div style={{ marginTop: 32 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("breedProfile")}</h3>
-              <div style={{ padding: "18px 20px", background: C.s1, borderRadius: 16, border: `1px solid ${C.b1}` }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                  <Dog size={22} color={C.acc} />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{breedData.name[lang] || breedData.name.en}</div>
+            <div className="mt-8">
+              <h3 className="text-base font-bold text-text m-0 mb-4">{T("breedProfile")}</h3>
+              <div className="px-5 py-[18px] bg-surface rounded-2xl border border-border">
+                <div className="flex items-center gap-2.5 mb-4">
+                  <Dog size={22} className="text-training" />
+                  <div className="flex-1">
+                    <div className="text-[15px] font-bold text-text">{breedData.name[lang] || breedData.name.en}</div>
                   </div>
-                  <span style={{ padding: "3px 10px", borderRadius: 8, background: "rgba(255,255,255,0.06)", fontSize: 11, fontWeight: 600, color: C.t3 }}>{sizeLabel}</span>
+                  <span className="px-2.5 py-[3px] rounded-lg bg-border text-[11px] font-semibold text-muted">{sizeLabel}</span>
                 </div>
                 {traitKeys.map(key => (
-                  <div key={key} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                    <span style={{ fontSize: 12, color: C.t3, width: 90, flexShrink: 0, textAlign: "start" }}>{traitLabels[key]}</span>
-                    <div style={{ flex: 1, display: "flex", gap: 4 }}>
+                  <div key={key} className="flex items-center gap-2.5 mb-2">
+                    <span className="text-xs text-muted w-[90px] flex-shrink-0 text-start">{traitLabels[key]}</span>
+                    <div className="flex-1 flex gap-1">
                       {[1, 2, 3, 4, 5].map(n => (
-                        <div key={n} style={{ flex: 1, height: 6, borderRadius: 3, background: n <= breedData.traits[key] ? C.acc : C.b1, transition: "background 0.3s" }} />
+                        <div
+                          key={n}
+                          className="flex-1 h-1.5 rounded-[3px] transition-[background] duration-300"
+                          style={{ background: n <= breedData.traits[key] ? "#22C55E" : "rgba(255,255,255,0.06)" }}
+                        />
                       ))}
                     </div>
-                    <span style={{ fontSize: 11, color: C.t3, width: 16, textAlign: "center" }}>{breedData.traits[key]}</span>
+                    <span className="text-[11px] text-muted w-4 text-center">{breedData.traits[key]}</span>
                   </div>
                 ))}
-                <div style={{ marginTop: 14, padding: "12px 14px", background: "rgba(34,197,94,0.04)", borderRadius: 12, border: "1px solid rgba(34,197,94,0.08)" }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: C.acc, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>{T("breedTips")}</div>
-                  <p style={{ fontSize: 13, color: C.t3, margin: 0, lineHeight: 1.6 }}>{breedTipText}</p>
+                <div className="mt-3.5 px-3.5 py-3 bg-training/[0.04] rounded-xl border border-training/[0.08]">
+                  <div className="text-[11px] font-bold text-training uppercase tracking-[1px] mb-1.5">{T("breedTips")}</div>
+                  <p className="text-[13px] text-muted m-0 leading-relaxed">{breedTipText}</p>
                 </div>
-                <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                <div className="mt-3 flex flex-wrap gap-1.5">
                   {breedData.priorityPrograms.map(pid => (
-                    <span key={pid} style={{ padding: "3px 10px", borderRadius: 8, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)", fontSize: 11, fontWeight: 600, color: C.acc }}>{pid}</span>
+                    <span key={pid} className="px-2.5 py-[3px] rounded-lg bg-training/[0.08] border border-training/15 text-[11px] font-semibold text-training">{pid}</span>
                   ))}
                 </div>
               </div>
@@ -270,37 +336,52 @@ export default function Profile() {
         })()}
 
         {/* My Dogs section */}
-        <div style={{ marginTop: 32 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("myDogs")}</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <div className="mt-8">
+          <h3 className="text-base font-bold text-text m-0 mb-4">{T("myDogs")}</h3>
+          <div className="flex flex-col gap-2.5">
             {dogEntries.map(([id, dog]) => {
               const d = dog as any;
               const isActive = id === activeDogId;
               return (
-                <div key={id} style={{ padding: "16px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${isActive ? "rgba(34,197,94,0.3)" : C.b1}`, display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ flexShrink: 0 }}>
+                <div
+                  key={id}
+                  className={cn(
+                    "px-[18px] py-4 bg-surface rounded-2xl border flex items-center gap-3",
+                    isActive ? "border-training/30" : "border-border"
+                  )}
+                >
+                  <div className="flex-shrink-0">
                     <DogAvatar size="small" photo={d.profile?.photo} dogId={id} />
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{d.profile?.name}</div>
-                    <div style={{ fontSize: 12, color: C.t3 }}>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[15px] font-bold text-text">{d.profile?.name}</div>
+                    <div className="text-xs text-muted">
                       {d.profile?.breed}
-                      {isActive && <span style={{ color: C.acc, marginInlineStart: 8, fontWeight: 600 }}>{T("activeDog")}</span>}
+                      {isActive && <span className="text-training ms-2 font-semibold">{T("activeDog")}</span>}
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  <div className="flex gap-1.5 flex-wrap">
                     {!isActive && (
-                      <button onClick={() => switchDog(id)} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "rgba(34,197,94,0.1)", color: C.acc, border: "none", borderRadius: 20, cursor: "pointer" }}>
+                      <button
+                        onClick={() => switchDog(id)}
+                        className="px-3.5 py-1.5 text-xs font-semibold bg-training/10 text-training border-0 rounded-full cursor-pointer"
+                      >
                         {T("switchDog")}
                       </button>
                     )}
                     {isActive && (
-                      <button onClick={() => nav("reportLostDog")} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: C.danger, border: "none", borderRadius: 20, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                      <button
+                        onClick={() => nav("reportLostDog")}
+                        className="px-3.5 py-1.5 text-xs font-semibold bg-danger/[0.08] text-danger border-0 rounded-full cursor-pointer inline-flex items-center gap-1"
+                      >
                         <AlertTriangle size={12} /> {T("lostEmergency")}
                       </button>
                     )}
                     {dogCount > 1 && (
-                      <button onClick={() => setConfirmRemove(id)} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: C.danger, border: "none", borderRadius: 20, cursor: "pointer" }}>
+                      <button
+                        onClick={() => setConfirmRemove(id)}
+                        className="px-3.5 py-1.5 text-xs font-semibold bg-danger/[0.08] text-danger border-0 rounded-full cursor-pointer"
+                      >
                         {T("removeDog")}
                       </button>
                     )}
@@ -310,7 +391,10 @@ export default function Profile() {
             })}
 
             {dogCount < 2 && (
-              <button onClick={() => setShowAddDog(true)} style={{ padding: "16px", background: "transparent", border: `1px dashed ${C.t3}`, borderRadius: C.r, color: C.t3, fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+              <button
+                onClick={() => setShowAddDog(true)}
+                className="py-4 bg-transparent border border-dashed border-muted rounded-2xl text-muted text-sm font-semibold cursor-pointer flex items-center justify-center gap-1.5"
+              >
                 + {T("addDog")}
               </button>
             )}
@@ -318,44 +402,42 @@ export default function Profile() {
         </div>
 
         {/* Challenge History */}
-        <div style={{ marginTop: 32 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("challengeHistory")}</h3>
+        <div className="mt-8">
+          <h3 className="text-base font-bold text-text m-0 mb-4">{T("challengeHistory")}</h3>
           {challengeState.history.length > 0 ? (
             <>
-              <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
-                <div style={{ flex: 1, textAlign: "center", padding: "12px 6px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>{challengeState.stats.totalCompleted}</div>
-                  <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600 }}>{T("completed")}</div>
-                </div>
-                <div style={{ flex: 1, textAlign: "center", padding: "12px 6px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>{challengeState.stats.currentStreak}</div>
-                  <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600 }}>{T("weeks")}</div>
-                </div>
-                <div style={{ flex: 1, textAlign: "center", padding: "12px 6px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>{challengeState.stats.bestStreak}</div>
-                  <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600 }}>{T("challengeBestStreak")}</div>
-                </div>
+              <div className="flex gap-2.5 mb-3.5">
+                {[
+                  [challengeState.stats.totalCompleted, T("completed")],
+                  [challengeState.stats.currentStreak, T("weeks")],
+                  [challengeState.stats.bestStreak, T("challengeBestStreak")],
+                ].map(([val, lbl], i) => (
+                  <div key={i} className="flex-1 text-center py-3 px-1.5 bg-surface rounded-2xl border border-border">
+                    <div className="text-xl font-black text-text">{val}</div>
+                    <div className="text-[10px] text-muted uppercase tracking-[1px] font-semibold">{lbl}</div>
+                  </div>
+                ))}
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div className="flex flex-col gap-1.5">
                 {challengeState.history.slice().reverse().map((h, i) => {
                   const chDef = CHALLENGES.find(c => c.id === h.challengeId);
                   return (
-                    <div key={i} style={{ padding: "12px 16px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 12 }}>
-                      <Icon name={(chDef?.icon || "Trophy") as any} size={20} color={C.t1} />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{lang === "he" ? chDef?.nameHe : chDef?.name}</div>
-                        <div style={{ fontSize: 11, color: C.t3, marginTop: 2 }}>
+                    <div key={i} className="px-4 py-3 bg-surface rounded-2xl border border-border flex items-center gap-3">
+                      <Icon name={(chDef?.icon || "Trophy") as any} size={20} className="text-text" />
+                      <div className="flex-1">
+                        <div className="text-[13px] font-bold text-text">{lang === "he" ? chDef?.nameHe : chDef?.name}</div>
+                        <div className="text-[11px] text-muted mt-0.5">
                           {h.completedDays.length}/7 {T("challengeDay")}s · {h.fullComplete ? T("fullCompletion") : T("partialCompletion")} · +{h.xpEarned} XP
                         </div>
                       </div>
-                      {h.fullComplete && <CheckCircle2 size={14} color={C.acc} />}
+                      {h.fullComplete && <CheckCircle2 size={14} className="text-training" />}
                     </div>
                   );
                 })}
               </div>
             </>
           ) : (
-            <p style={{ fontSize: 13, color: C.t3, lineHeight: 1.6 }}>{T("noChallengesYet")}</p>
+            <p className="text-[13px] text-muted leading-relaxed">{T("noChallengesYet")}</p>
           )}
         </div>
 
@@ -364,24 +446,27 @@ export default function Profile() {
           const diagHistory = getDiagnosticHistory();
           if (diagHistory.length === 0) return null;
           return (
-            <div style={{ marginTop: 32 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("diagHistory")}</h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div className="mt-8">
+              <h3 className="text-base font-bold text-text m-0 mb-4">{T("diagHistory")}</h3>
+              <div className="flex flex-col gap-1.5">
                 {diagHistory.slice(0, 10).map((h, i) => {
                   const cat = DIAGNOSTIC_CATEGORIES.find(c => c.id === h.categoryId);
                   if (!cat) return null;
                   return (
-                    <div key={i} style={{ padding: "12px 16px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 12 }}>
-                      <span style={{ fontSize: 20 }}>{(cat as any).emoji}</span>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{cat.name[lang] || cat.name.en}</div>
-                        <div style={{ fontSize: 11, color: C.t3, marginTop: 2 }}>
+                    <div key={i} className="px-4 py-3 bg-surface rounded-2xl border border-border flex items-center gap-3">
+                      <span className="text-xl">{(cat as any).emoji}</span>
+                      <div className="flex-1">
+                        <div className="text-[13px] font-bold text-text">{cat.name[lang] || cat.name.en}</div>
+                        <div className="text-[11px] text-muted mt-0.5">
                           {new Date(h.date).toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { month: "short", day: "numeric" })}
                           {h.dogName ? ` · ${h.dogName}` : ""}
                           {` · ${h.exerciseCount} ${T("exercises")}`}
                         </div>
                       </div>
-                      <button onClick={() => nav("diagnostic")} style={{ padding: "4px 12px", fontSize: 11, fontWeight: 600, background: "rgba(34,197,94,0.08)", color: C.acc, border: "none", borderRadius: 16, cursor: "pointer" }}>
+                      <button
+                        onClick={() => nav("diagnostic")}
+                        className="px-3 py-1 text-[11px] font-semibold bg-training/[0.08] text-training border-0 rounded-2xl cursor-pointer"
+                      >
                         {T("diagRetake")}
                       </button>
                     </div>
@@ -393,15 +478,17 @@ export default function Profile() {
         })()}
 
         {/* Vet & Health */}
-        <div style={{ marginTop: 32 }}>
-          <button onClick={() => nav("healthDashboard")}
-            style={{ width: "100%", padding: "16px 20px", background: "linear-gradient(135deg, rgba(236,72,153,0.08), rgba(239,68,68,0.06))", border: "1px solid rgba(236,72,153,0.2)", borderRadius: C.r, cursor: "pointer", display: "flex", alignItems: "center", gap: 14, color: C.t1, textAlign: "start" }}>
+        <div className="mt-8">
+          <button
+            onClick={() => nav("healthDashboard")}
+            className="w-full px-5 py-4 bg-[linear-gradient(135deg,rgba(236,72,153,0.08),rgba(239,68,68,0.06))] border border-[rgba(236,72,153,0.2)] rounded-2xl cursor-pointer flex items-center gap-3.5 text-text text-start"
+          >
             <Heart size={24} color="#EC4899" fill="#EC4899" />
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("healthDashboard")}</div>
-              <div style={{ fontSize: 12, color: "#EC4899", fontWeight: 600, marginTop: 2 }}>{T("healthDashboardSub")}</div>
+            <div className="flex-1">
+              <div className="text-sm font-bold text-text">{T("healthDashboard")}</div>
+              <div className="text-xs font-semibold mt-0.5" style={{ color: "#EC4899" }}>{T("healthDashboardSub")}</div>
             </div>
-            <Icon name="ChevronRight" size={18} color={C.t3} />
+            <Icon name="ChevronRight" size={18} className="text-muted" />
           </button>
         </div>
 
@@ -409,27 +496,46 @@ export default function Profile() {
         <ThemeSelector />
 
         {/* Avatar Accessories */}
-        <div style={{ marginTop: 32 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("accessories")}</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="mt-8">
+          <h3 className="text-base font-bold text-text m-0 mb-4">{T("accessories")}</h3>
+          <div className="flex flex-col gap-2">
             {AVATAR_ACCESSORIES.map(acc => {
               const isUnlocked = appSettings.unlockedAccessories.includes(acc.id);
               const isActive = appSettings.activeAccessories.includes(acc.id);
               return (
-                <div key={acc.id} style={{ padding: "14px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${isActive ? "rgba(34,197,94,0.3)" : C.b1}`, display: "flex", alignItems: "center", gap: 14, opacity: isUnlocked ? 1 : 0.4 }}>
-                  <span style={{ fontSize: 28 }}>{acc.emoji}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: isUnlocked ? C.t1 : C.t3 }}>{lang === "he" ? (acc.nameHe || acc.name) : acc.name}</div>
+                <div
+                  key={acc.id}
+                  className={cn(
+                    "px-[18px] py-3.5 bg-surface rounded-2xl border flex items-center gap-3.5",
+                    isActive ? "border-training/30" : "border-border",
+                    !isUnlocked && "opacity-40"
+                  )}
+                >
+                  <span className="text-[28px]">{acc.emoji}</span>
+                  <div className="flex-1">
+                    <div className={cn("text-sm font-bold", isUnlocked ? "text-text" : "text-muted")}>
+                      {lang === "he" ? (acc.nameHe || acc.name) : acc.name}
+                    </div>
                     {!isUnlocked && (
-                      <div style={{ fontSize: 11, color: C.t3, marginTop: 2 }}>{T("unlockAtStreak").replace("{days}", acc.unlockedAt)}</div>
+                      <div className="text-[11px] text-muted mt-0.5">
+                        {T("unlockAtStreak").replace("{days}", acc.unlockedAt)}
+                      </div>
                     )}
                   </div>
                   {isUnlocked && (
-                    <button onClick={() => toggleAccessory(acc.id)} style={{ padding: "6px 16px", fontSize: 12, fontWeight: 600, background: isActive ? "rgba(34,197,94,0.1)" : "transparent", color: isActive ? C.acc : C.t3, border: `1px solid ${isActive ? "rgba(34,197,94,0.2)" : C.b1}`, borderRadius: 20, cursor: "pointer" }}>
+                    <button
+                      onClick={() => toggleAccessory(acc.id)}
+                      className={cn(
+                        "px-4 py-1.5 text-xs font-semibold border rounded-full cursor-pointer",
+                        isActive
+                          ? "bg-training/10 text-training border-training/20"
+                          : "bg-transparent text-muted border-border"
+                      )}
+                    >
                       {isActive ? T("unequip") : T("equip")}
                     </button>
                   )}
-                  {!isUnlocked && <Lock size={16} color={C.t3} />}
+                  {!isUnlocked && <Lock size={16} className="text-muted" />}
                 </div>
               );
             })}
@@ -437,19 +543,25 @@ export default function Profile() {
         </div>
 
         {/* Leaderboard Opt-In */}
-        <div style={{ marginTop: 32 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("leaderboard")}</h3>
-          <div style={{ padding: "16px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontSize: 14, color: C.t1, fontWeight: 600 }}>{T("lbOptIn")}</span>
-            <button onClick={() => {
-              const newVal = !(appSettings.leaderboardOptIn !== false);
-              setAppSettings(prev => ({ ...prev, leaderboardOptIn: newVal }));
-              if (isAuthenticated) {
-                api.updateSettings({ leaderboardOptIn: newVal }).catch(() => {});
-              }
-            }}
-              style={{ width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer", background: (appSettings.leaderboardOptIn !== false) ? C.acc : "rgba(255,255,255,0.1)", position: "relative", transition: "background 0.2s" }}>
-              <div style={{ width: 18, height: 18, borderRadius: 9, background: "#fff", position: "absolute", top: 3, left: (appSettings.leaderboardOptIn !== false) ? 23 : 3, transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.3)" }} />
+        <div className="mt-8">
+          <h3 className="text-base font-bold text-text m-0 mb-4">{T("leaderboard")}</h3>
+          <div className="px-[18px] py-4 bg-surface rounded-2xl border border-border flex items-center justify-between">
+            <span className="text-sm text-text font-semibold">{T("lbOptIn")}</span>
+            <button
+              onClick={() => {
+                const newVal = !(appSettings.leaderboardOptIn !== false);
+                setAppSettings(prev => ({ ...prev, leaderboardOptIn: newVal }));
+                if (isAuthenticated) {
+                  api.updateSettings({ leaderboardOptIn: newVal }).catch(() => {});
+                }
+              }}
+              className="w-11 h-6 rounded-full border-0 cursor-pointer relative transition-[background] duration-200"
+              style={{ background: (appSettings.leaderboardOptIn !== false) ? "#22C55E" : "rgba(255,255,255,0.1)" }}
+            >
+              <div
+                className="w-[18px] h-[18px] rounded-full bg-white absolute top-[3px] transition-[left] duration-200 shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
+                style={{ left: (appSettings.leaderboardOptIn !== false) ? 23 : 3 }}
+              />
             </button>
           </div>
         </div>
@@ -457,26 +569,38 @@ export default function Profile() {
         {/* Smart Notifications */}
         <NotificationPreferences />
 
-        <div style={{ marginTop: 32 }}>
-          <button onClick={() => hasEnoughForRecap && nav("annualRecap")}
-            style={{ width: "100%", padding: "16px", fontSize: 14, fontWeight: 700, background: "linear-gradient(135deg, rgba(34,197,94,0.1), rgba(139,92,246,0.08))", color: hasEnoughForRecap ? C.acc : C.t3, border: `1px solid rgba(34,197,94,0.2)`, borderRadius: C.r, cursor: hasEnoughForRecap ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, opacity: hasEnoughForRecap ? 1 : 0.7 }}>
+        <div className="mt-8">
+          <button
+            onClick={() => hasEnoughForRecap && nav("annualRecap")}
+            className={cn(
+              "w-full py-4 text-sm font-bold bg-[linear-gradient(135deg,rgba(34,197,94,0.1),rgba(139,92,246,0.08))] border border-training/20 rounded-2xl flex items-center justify-center gap-2",
+              hasEnoughForRecap ? "text-training cursor-pointer opacity-100" : "text-muted cursor-default opacity-70"
+            )}
+          >
             <Sparkles size={16} /> {T("viewRecap")}
           </button>
           {!hasEnoughForRecap && (
-            <p style={{ fontSize: 12, color: C.t3, textAlign: "center", margin: "8px 0 0", lineHeight: 1.5 }}>{T("keepTrainingRecap")}</p>
+            <p className="text-xs text-muted text-center mt-2 mb-0 leading-relaxed">{T("keepTrainingRecap")}</p>
           )}
         </div>
 
-        <button onClick={async () => { setSigningOut(true); await signOut(); }}
-          style={{ marginTop: 16, width: "100%", padding: "14px", fontSize: 14, fontWeight: 600, background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: C.r, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+        <button
+          onClick={async () => { setSigningOut(true); await signOut(); }}
+          className="mt-4 w-full py-3.5 text-sm font-semibold bg-surface text-text border border-border rounded-2xl cursor-pointer flex items-center justify-center gap-2"
+        >
           {signingOut ? T("signingOut") : T("signOut")}
         </button>
 
-        <button onClick={resetAllData}
-          style={{ marginTop: 10, width: "100%", padding: "14px", fontSize: 14, fontWeight: 600, background: "rgba(239,68,68,0.08)", color: C.danger, border: `1px solid rgba(239,68,68,0.2)`, borderRadius: C.r, cursor: "pointer" }}>{T("resetAllData")}</button>
+        <button
+          onClick={resetAllData}
+          className="mt-2.5 w-full py-3.5 text-sm font-semibold bg-danger/[0.08] text-danger border border-danger/20 rounded-2xl cursor-pointer"
+        >
+          {T("resetAllData")}
+        </button>
+
         <div
           onClick={handleVersionTap}
-          style={{ textAlign: "center", marginTop: 24, padding: "12px 0", fontSize: 12, color: C.t3, cursor: "default", userSelect: "none" }}
+          className="text-center mt-6 py-3 text-xs text-muted cursor-default select-none"
         >
           v2.0.0
         </div>
@@ -484,17 +608,29 @@ export default function Profile() {
 
       {/* Confirm remove modal */}
       {confirmRemove && (
-        <div onClick={() => setConfirmRemove(null)} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: C.s1, borderRadius: 24, padding: "28px 24px", maxWidth: 320, width: "90%", textAlign: "center" }}>
-            <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><AlertTriangle size={40} color="#F59E0B" /></div>
-            <p style={{ fontSize: 15, color: C.t1, margin: "0 0 20px", lineHeight: 1.6 }}>
+        <div
+          onClick={() => setConfirmRemove(null)}
+          className="fixed inset-0 z-[9999] bg-black/85 flex items-center justify-center"
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="bg-surface rounded-3xl px-6 py-7 max-w-[320px] w-[90%] text-center"
+          >
+            <div className="mb-3 flex justify-center"><AlertTriangle size={40} color="#F59E0B" /></div>
+            <p className="text-[15px] text-text m-0 mb-5 leading-relaxed">
               {T("confirmRemoveDog").replace("{name}", dogs[confirmRemove]?.profile?.name || "")}
             </p>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setConfirmRemove(null)} style={{ flex: 1, padding: "12px", fontSize: 14, fontWeight: 600, background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
+            <div className="flex gap-2.5">
+              <button
+                onClick={() => setConfirmRemove(null)}
+                className="flex-1 py-3 text-sm font-semibold bg-transparent text-muted border border-border rounded-full cursor-pointer"
+              >
                 {T("back")}
               </button>
-              <button onClick={() => { removeDog(confirmRemove); setConfirmRemove(null); }} style={{ flex: 1, padding: "12px", fontSize: 14, fontWeight: 700, background: C.danger, color: "#fff", border: "none", borderRadius: 50, cursor: "pointer" }}>
+              <button
+                onClick={() => { removeDog(confirmRemove); setConfirmRemove(null); }}
+                className="flex-1 py-3 text-sm font-bold bg-danger text-white border-0 rounded-full cursor-pointer"
+              >
                 {T("removeDog")}
               </button>
             </div>

@@ -5,8 +5,7 @@ import DogAvatar from "./DogAvatar.jsx";
 import LostDogMap from "./LostDogMap.jsx";
 import BottomNav from "./BottomNav.jsx";
 import { ArrowLeft, AlertCircle } from "lucide-react";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", dangerBg: "rgba(239,68,68,0.08)", dangerBorder: "rgba(239,68,68,0.2)", r: 16, rL: 24 };
+import { cn } from "../lib/cn";
 
 export default function ReportLostDog() {
   const { nav, T, dogProfile, activeDogId, lang } = useApp();
@@ -91,28 +90,28 @@ export default function ReportLostDog() {
   if (result) {
     const shareUrl = getShareUrl(result.share_token || result.shareToken);
     return (
-      <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
-        <div style={{ padding: "60px 20px 24px", textAlign: "center" }}>
-          <div style={{ marginBottom: 16, animation: "fadeIn 0.5s ease", display: "flex", justifyContent: "center" }}><AlertCircle size={64} color={C.danger} /></div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: C.danger, margin: "0 0 8px" }}>{T("lostAlertSent")}</h1>
-          <p style={{ fontSize: 14, color: C.t2, margin: "0 0 24px", lineHeight: 1.6 }}>{T("lostAlertSentSub")}</p>
+      <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
+        <div className="px-5 pt-16 pb-6 text-center">
+          <div className="mb-4 animate-[fadeIn_0.5s_ease] flex justify-center"><AlertCircle size={64} className="text-danger" /></div>
+          <h1 className="text-2xl font-extrabold text-danger m-0 mb-2">{T("lostAlertSent")}</h1>
+          <p className="text-sm text-text-2 m-0 mb-6 leading-relaxed">{T("lostAlertSentSub")}</p>
 
-          <div style={{ padding: 20, background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}`, marginBottom: 16, textAlign: "start" }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>{T("lostShareLink")}</div>
-            <div style={{ fontSize: 13, color: C.acc, wordBreak: "break-all", fontFamily: "monospace", padding: "10px 14px", background: "rgba(34,197,94,0.06)", borderRadius: 12 }}>
+          <div className="p-5 bg-surface rounded-3xl border border-border mb-4 text-start">
+            <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px] mb-2">{T("lostShareLink")}</div>
+            <div className="text-[13px] text-training break-all font-mono px-[14px] py-[10px] bg-training/[0.06] rounded-xl">
               {shareUrl}
             </div>
           </div>
 
-          <button onClick={handleShare} style={{ width: "100%", padding: 16, fontSize: 15, fontWeight: 700, background: C.danger, color: "#fff", border: "none", borderRadius: 50, cursor: "pointer", marginBottom: 12 }}>
+          <button onClick={handleShare} className="w-full py-4 text-[15px] font-bold bg-danger text-white border-none rounded-full cursor-pointer mb-3">
             {T("lostShareAlert")}
           </button>
 
-          <button onClick={() => nav("lostDogTracker", { reportId: result.id })} style={{ width: "100%", padding: 16, fontSize: 15, fontWeight: 700, background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer", marginBottom: 12 }}>
+          <button onClick={() => nav("lostDogTracker", { reportId: result.id })} className="w-full py-4 text-[15px] font-bold bg-surface text-text border border-border rounded-full cursor-pointer mb-3">
             {T("lostViewTracker")}
           </button>
 
-          <button onClick={() => nav("home")} style={{ width: "100%", padding: 14, fontSize: 14, fontWeight: 600, background: "transparent", color: C.t3, border: "none", cursor: "pointer" }}>
+          <button onClick={() => nav("home")} className="w-full py-[14px] text-sm font-semibold bg-transparent text-muted border-none cursor-pointer">
             {T("back")}
           </button>
         </div>
@@ -122,41 +121,44 @@ export default function ReportLostDog() {
 
   // ── Report Form ──
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
       {/* Header */}
-      <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t1, cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><ArrowLeft size={24} /></button>
-        <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: C.danger, display: "flex", alignItems: "center", gap: 8 }}><AlertCircle size={22} /> {T("lostReportTitle")}</h1>
-          <p style={{ fontSize: 12, color: C.t3, margin: "2px 0 0" }}>{T("lostReportSub")}</p>
+      <div className="px-5 pt-5 flex items-center gap-3">
+        <button onClick={() => nav("home")} className="bg-transparent border-none text-text cursor-pointer p-0 flex items-center"><ArrowLeft size={24} /></button>
+        <div className="flex-1">
+          <h1 className="text-[22px] font-extrabold m-0 text-danger flex items-center gap-2"><AlertCircle size={22} /> {T("lostReportTitle")}</h1>
+          <p className="text-xs text-muted m-0 mt-0.5">{T("lostReportSub")}</p>
         </div>
       </div>
 
       {/* Urgent banner */}
-      <div style={{ margin: "16px 20px 0", padding: "14px 18px", background: C.dangerBg, border: `1px solid ${C.dangerBorder}`, borderRadius: C.r }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: C.danger }}>{T("lostUrgentBanner")}</div>
+      <div className="mx-5 mt-4 px-[18px] py-[14px] bg-danger/10 border border-danger/20 rounded-2xl">
+        <div className="text-[13px] font-bold text-danger">{T("lostUrgentBanner")}</div>
       </div>
 
       {/* Dog info (auto-filled) */}
-      <div style={{ margin: "16px 20px 0", padding: "16px 18px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}`, display: "flex", alignItems: "center", gap: 14 }}>
+      <div className="mx-5 mt-4 px-[18px] py-4 bg-surface rounded-3xl border border-border flex items-center gap-[14px]">
         <DogAvatar size="small" dogId={activeDogId} />
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: C.t1 }}>{dogProfile?.name || "Dog"}</div>
-          <div style={{ fontSize: 13, color: C.t3 }}>{dogProfile?.breed || ""}</div>
+          <div className="text-base font-bold text-text">{dogProfile?.name || "Dog"}</div>
+          <div className="text-[13px] text-muted">{dogProfile?.breed || ""}</div>
         </div>
       </div>
 
-      <div style={{ padding: "16px 20px 0", display: "flex", flexDirection: "column", gap: 14 }}>
+      <div className="px-5 pt-4 flex flex-col gap-[14px]">
         {/* GPS Location */}
         <div>
-          <label style={lbl}>{T("lostLastLocation")}</label>
-          <div style={{ padding: "12px 16px", background: C.s1, borderRadius: 12, border: `1px solid ${C.b1}`, fontSize: 13, color: gpsStatus === "ok" ? C.acc : gpsStatus === "low_accuracy" ? "#F59E0B" : gpsStatus === "error" ? C.danger : C.t3 }}>
+          <label className={lbl}>{T("lostLastLocation")}</label>
+          <div className={cn(
+            "px-4 py-3 bg-surface rounded-xl border border-border text-[13px]",
+            gpsStatus === "ok" ? "text-training" : gpsStatus === "low_accuracy" ? "text-xp" : gpsStatus === "error" ? "text-danger" : "text-muted"
+          )}>
             {gpsStatus === "loading" && T("lostGpsLoading")}
             {gpsStatus === "ok" && `${T("lostGpsLocked")} (${lat?.toFixed(4)}, ${lng?.toFixed(4)})`}
             {gpsStatus === "low_accuracy" && (
               <>
                 {T("lostGpsLowAccuracy") || "Location approximate"} ({gpsAccuracy}m) — {T("lostTapToSetLocation") || "tap map to adjust"}
-                <div style={{ fontSize: 12, marginTop: 4, color: C.t3 }}>({lat?.toFixed(4)}, {lng?.toFixed(4)})</div>
+                <div className="text-xs mt-1 text-muted">({lat?.toFixed(4)}, {lng?.toFixed(4)})</div>
               </>
             )}
             {gpsStatus === "error" && T("lostGpsError")}
@@ -166,7 +168,7 @@ export default function ReportLostDog() {
         {/* Tap-to-set location map — show even on error so user can pick manually */}
         {(lat !== null && lng !== null) ? (
           <div>
-            <label style={lbl}>{T("lostTapToSetLocation") || "Tap map to adjust location"}</label>
+            <label className={lbl}>{T("lostTapToSetLocation") || "Tap map to adjust location"}</label>
             <LostDogMap
               center={{ lat, lng }}
               zoom={gpsStatus === "low_accuracy" ? 12 : 15}
@@ -180,7 +182,7 @@ export default function ReportLostDog() {
           </div>
         ) : gpsStatus === "error" && (
           <div>
-            <label style={lbl}>{T("lostTapToSetLocation") || "Tap map to set location"}</label>
+            <label className={lbl}>{T("lostTapToSetLocation") || "Tap map to set location"}</label>
             <LostDogMap
               center={{ lat: 32.08, lng: 34.78 }}
               zoom={10}
@@ -195,54 +197,60 @@ export default function ReportLostDog() {
 
         {/* Location name (optional) */}
         <div>
-          <label style={lbl}>{T("lostLocationName")}</label>
-          <input value={locationName} onChange={e => setLocationName(e.target.value)} placeholder={T("lostLocationPlaceholder")} style={input} />
+          <label className={lbl}>{T("lostLocationName")}</label>
+          <input value={locationName} onChange={e => setLocationName(e.target.value)} placeholder={T("lostLocationPlaceholder")} className={inputCls} />
         </div>
 
         {/* Contact name */}
         <div>
-          <label style={lbl}>{T("lostContactName")}</label>
-          <input value={contactName} onChange={e => setContactName(e.target.value)} placeholder={dogProfile?.name ? `${dogProfile.name}'s owner` : ""} style={input} />
+          <label className={lbl}>{T("lostContactName")}</label>
+          <input value={contactName} onChange={e => setContactName(e.target.value)} placeholder={dogProfile?.name ? `${dogProfile.name}'s owner` : ""} className={inputCls} />
         </div>
 
         {/* Contact phone (required) */}
         <div>
-          <label style={lbl}>{T("lostContactPhone")} *</label>
-          <input value={contactPhone} onChange={e => setContactPhone(e.target.value)} type="tel" placeholder="050-000-0000" style={input} />
+          <label className={lbl}>{T("lostContactPhone")} *</label>
+          <input value={contactPhone} onChange={e => setContactPhone(e.target.value)} type="tel" placeholder="050-000-0000" className={inputCls} />
         </div>
 
         {/* Description */}
         <div>
-          <label style={lbl}>{T("lostDescription")}</label>
-          <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder={T("lostDescPlaceholder")} rows={3} style={{ ...input, resize: "vertical", minHeight: 72, fontFamily: "inherit" }} />
+          <label className={lbl}>{T("lostDescription")}</label>
+          <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder={T("lostDescPlaceholder")} rows={3} className={cn(inputCls, "resize-y min-h-[72px] font-[inherit]")} />
         </div>
 
         {/* Search radius slider */}
         <div>
-          <label style={lbl}>{T("lostSearchRadius")}: {radius} km</label>
-          <input type="range" min={5} max={20} step={1} value={radius} onChange={e => setRadius(Number(e.target.value))}
-            style={{ width: "100%", accentColor: C.danger }} />
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.t3 }}>
+          <label className={lbl}>{T("lostSearchRadius")}: {radius} km</label>
+          <input
+            type="range" min={5} max={20} step={1} value={radius}
+            onChange={e => setRadius(Number(e.target.value))}
+            className="w-full accent-danger"
+          />
+          <div className="flex justify-between text-[11px] text-muted">
             <span>5 km</span><span>20 km</span>
           </div>
         </div>
 
         {/* Error message */}
         {submitError && (
-          <div style={{ padding: "12px 16px", background: C.dangerBg, border: `1px solid ${C.dangerBorder}`, borderRadius: 12, fontSize: 13, color: C.danger }}>
+          <div className="px-4 py-3 bg-danger/10 border border-danger/20 rounded-xl text-[13px] text-danger">
             {submitError}
           </div>
         )}
 
         {/* Submit */}
-        <button onClick={handleSubmit} disabled={!canSubmit || sending}
-          style={{
-            width: "100%", padding: 18, fontSize: 18, fontWeight: 800,
-            background: canSubmit ? C.danger : "rgba(239,68,68,0.3)",
-            color: "#fff", border: "none", borderRadius: 50, cursor: canSubmit ? "pointer" : "default",
-            marginTop: 8, opacity: sending ? 0.7 : 1,
-            boxShadow: canSubmit ? "0 4px 24px rgba(239,68,68,0.4)" : "none",
-          }}>
+        <button
+          onClick={handleSubmit}
+          disabled={!canSubmit || sending}
+          className={cn(
+            "w-full py-[18px] text-lg font-extrabold text-white border-none rounded-full mt-2 flex items-center justify-center gap-2",
+            canSubmit
+              ? "bg-danger cursor-pointer shadow-[0_4px_24px_rgba(239,68,68,0.4)]"
+              : "bg-danger/30 cursor-default",
+            sending && "opacity-70"
+          )}
+        >
           <AlertCircle size={18} /> {sending ? T("lostSending") : T("lostSendAlert")}
         </button>
       </div>
@@ -252,5 +260,5 @@ export default function ReportLostDog() {
   );
 }
 
-const lbl: React.CSSProperties = { display: "block", fontSize: 12, fontWeight: 700, color: "#A1A1AA", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 };
-const input: React.CSSProperties = { width: "100%", padding: "12px 16px", fontSize: 15, background: "#131316", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, color: "#F5F5F7", outline: "none", boxSizing: "border-box" };
+const lbl = "block text-xs font-bold text-text-2 uppercase tracking-widest mb-1.5";
+const inputCls = "w-full px-4 py-3 text-[15px] bg-surface-2 border border-border-2 rounded-2xl text-text outline-none focus:border-danger/50 transition-colors box-border";

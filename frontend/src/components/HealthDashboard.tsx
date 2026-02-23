@@ -3,8 +3,8 @@ import { useApp } from "../context/AppContext.jsx";
 import { api } from "../lib/api.js";
 import BottomNav from "./BottomNav.jsx";
 import { ArrowLeft, Scale, Syringe, Pill, Hospital, Heart, ChevronRight, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { cn } from "../lib/cn";
 
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
 const LS_WEIGHT = "pawpath_weight_logs";
 const LS_VACC = "pawpath_vaccinations";
 const LS_VISITS = "pawpath_vet_visits";
@@ -83,7 +83,7 @@ export default function HealthDashboard() {
     ? currentWeight > prevWeight + 0.2 ? "up" : currentWeight < prevWeight - 0.2 ? "down" : "stable"
     : null;
   const TrendIcon = trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : trend === "stable" ? Minus : null;
-  const trendColor = trend === "up" ? "#F59E0B" : trend === "down" ? "#3B82F6" : C.acc;
+  const trendColorClass = trend === "up" ? "text-xp" : trend === "down" ? "text-health" : "text-training";
   const trendLabel = trend === "up" ? T("healthTrendUp") : trend === "down" ? T("healthTrendDown") : trend === "stable" ? T("healthTrendStable") : "";
 
   // Vaccination status
@@ -111,102 +111,117 @@ export default function HealthDashboard() {
     {
       key: "weight",
       screen: "weightTracker",
-      icon: <Scale size={24} color="#22C55E" />,
+      icon: <Scale size={24} className="text-training" />,
       title: T("healthWeight"),
-      gradient: "rgba(34,197,94,0.08)",
-      borderColor: "rgba(34,197,94,0.2)",
+      cardClass: "bg-training/[0.08] border-training/20",
+      iconClass: "bg-training/[0.08] border-training/20",
       content: currentWeight
         ? <div>
-            <div style={{ fontSize: 24, fontWeight: 800, color: C.t1 }}>{currentWeight} {T("healthKg")}</div>
-            {trend && <div style={{ fontSize: 12, fontWeight: 600, color: trendColor, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>{TrendIcon && <TrendIcon size={14} color={trendColor} />} {trendLabel}</div>}
+            <div className="text-2xl font-black text-text">{currentWeight} {T("healthKg")}</div>
+            {trend && (
+              <div className={cn("text-xs font-semibold mt-1 flex items-center gap-1", trendColorClass)}>
+                {TrendIcon && <TrendIcon size={14} />} {trendLabel}
+              </div>
+            )}
           </div>
-        : <div style={{ fontSize: 13, color: C.t3 }}>{T("healthNoData")}</div>,
+        : <div className="text-[13px] text-muted">{T("healthNoData")}</div>,
     },
     {
       key: "vacc",
       screen: "vaccinationTracker",
-      icon: <Syringe size={24} color="#3B82F6" />,
+      icon: <Syringe size={24} className="text-health" />,
       title: T("healthVaccinations"),
-      gradient: "rgba(59,130,246,0.08)",
-      borderColor: "rgba(59,130,246,0.2)",
+      cardClass: "bg-health/[0.08] border-health/20",
+      iconClass: "bg-health/[0.08] border-health/20",
       content: vaccinations.length > 0
-        ? <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
-            {vaccStatus.overdue > 0 && <span style={{ padding: "3px 10px", borderRadius: 12, background: "rgba(239,68,68,0.1)", color: "#EF4444", fontSize: 12, fontWeight: 700 }}>{vaccStatus.overdue} {T("healthOverdue")}</span>}
-            {vaccStatus.dueSoon > 0 && <span style={{ padding: "3px 10px", borderRadius: 12, background: "rgba(245,158,11,0.1)", color: "#F59E0B", fontSize: 12, fontWeight: 700 }}>{vaccStatus.dueSoon} {T("healthDueSoon")}</span>}
-            {vaccStatus.upToDate > 0 && <span style={{ padding: "3px 10px", borderRadius: 12, background: "rgba(34,197,94,0.1)", color: C.acc, fontSize: 12, fontWeight: 700 }}>{vaccStatus.upToDate} {T("healthUpToDate")}</span>}
+        ? <div className="flex gap-2 flex-wrap mt-1">
+            {vaccStatus.overdue > 0 && <span className="px-2.5 py-0.5 rounded-xl bg-danger/10 text-danger text-xs font-bold">{vaccStatus.overdue} {T("healthOverdue")}</span>}
+            {vaccStatus.dueSoon > 0 && <span className="px-2.5 py-0.5 rounded-xl bg-xp/10 text-xp text-xs font-bold">{vaccStatus.dueSoon} {T("healthDueSoon")}</span>}
+            {vaccStatus.upToDate > 0 && <span className="px-2.5 py-0.5 rounded-xl bg-training/10 text-training text-xs font-bold">{vaccStatus.upToDate} {T("healthUpToDate")}</span>}
           </div>
-        : <div style={{ fontSize: 13, color: C.t3 }}>{T("healthNoData")}</div>,
+        : <div className="text-[13px] text-muted">{T("healthNoData")}</div>,
     },
     {
       key: "meds",
       screen: "medicationTracker",
-      icon: <Pill size={24} color="#8B5CF6" />,
+      icon: <Pill size={24} className="text-achieve" />,
       title: T("healthMedications"),
-      gradient: "rgba(139,92,246,0.08)",
-      borderColor: "rgba(139,92,246,0.2)",
+      cardClass: "bg-achieve/[0.08] border-achieve/20",
+      iconClass: "bg-achieve/[0.08] border-achieve/20",
       content: medications.length > 0
-        ? <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>{activeMeds} <span style={{ fontSize: 13, fontWeight: 600, color: C.t3 }}>{T("healthActive").toLowerCase()}</span></div>
-        : <div style={{ fontSize: 13, color: C.t3 }}>{T("healthNoData")}</div>,
+        ? <div className="text-xl font-black text-text">
+            {activeMeds} <span className="text-[13px] font-semibold text-muted">{T("healthActive").toLowerCase()}</span>
+          </div>
+        : <div className="text-[13px] text-muted">{T("healthNoData")}</div>,
     },
     {
       key: "visits",
       screen: "vetVisitLog",
-      icon: <Hospital size={24} color="#EC4899" />,
+      icon: <Hospital size={24} style={{ color: "#EC4899" }} />,
       title: T("healthVetVisits"),
-      gradient: "rgba(236,72,153,0.08)",
-      borderColor: "rgba(236,72,153,0.2)",
+      cardClass: "border",
+      iconClass: "border",
+      cardStyle: { background: "rgba(236,72,153,0.08)", borderColor: "rgba(236,72,153,0.2)" },
+      iconStyle: { background: "rgba(236,72,153,0.08)", borderColor: "rgba(236,72,153,0.2)" },
       content: lastVisit
         ? <div>
-            <div style={{ fontSize: 13, color: C.t3 }}>{T("healthLastVisit")}</div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: C.t1, marginTop: 2 }}>{formatDate(lastVisit.date)}</div>
+            <div className="text-[13px] text-muted">{T("healthLastVisit")}</div>
+            <div className="text-[15px] font-bold text-text mt-0.5">{formatDate(lastVisit.date)}</div>
           </div>
-        : <div style={{ fontSize: 13, color: C.t3 }}>{T("healthNoData")}</div>,
+        : <div className="text-[13px] text-muted">{T("healthNoData")}</div>,
     },
   ];
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
       {/* Header */}
-      <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: C.t3, padding: 4 }}>
+      <div className="px-5 pt-5 flex items-center gap-3">
+        <button
+          onClick={() => nav("home")}
+          className="bg-transparent border-none cursor-pointer text-xl text-muted p-1 flex items-center"
+        >
           <ArrowLeft size={20} />
         </button>
         <div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 2px", color: C.t1 }}>{T("healthDashboard")}</h1>
-          <p style={{ fontSize: 13, color: C.t3, margin: 0 }}><Heart size={14} color="#EC4899" style={{ display: "inline", verticalAlign: "middle" }} /> {T("healthDashboardSub").replace(" →", "").replace("← ", "")}</p>
+          <h1 className="font-display text-2xl font-black m-0 mb-0.5 text-text">{T("healthDashboard")}</h1>
+          <p className="text-[13px] text-muted m-0 flex items-center gap-1">
+            <Heart size={14} style={{ color: "#EC4899", display: "inline", verticalAlign: "middle" }} />
+            {T("healthDashboardSub").replace(" →", "").replace("← ", "")}
+          </p>
         </div>
       </div>
 
       {/* Loading */}
       {loading && (
-        <div style={{ textAlign: "center", padding: "60px 0" }}>
-          <div style={{ width: 32, height: 32, border: "3px solid rgba(255,255,255,0.1)", borderTopColor: C.acc, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto" }} />
+        <div className="text-center py-16">
+          <div className="w-8 h-8 border-[3px] border-white/10 border-t-training rounded-full animate-[spin_0.8s_linear_infinite] mx-auto" />
         </div>
       )}
 
       {/* Cards */}
       {!loading && (
-        <div style={{ padding: "16px 20px 0", display: "flex", flexDirection: "column", gap: 10 }}>
+        <div className="px-5 pt-4 flex flex-col gap-2.5">
           {cards.map(card => (
             <button
               key={card.key}
               onClick={() => nav(card.screen)}
-              style={{
-                width: "100%", textAlign: "start", cursor: "pointer",
-                padding: "18px 20px", background: card.gradient,
-                borderRadius: C.rL, border: `1px solid ${card.borderColor}`,
-                color: C.t1, fontFamily: "inherit",
-                display: "flex", alignItems: "center", gap: 16,
-              }}
+              className={cn(
+                "w-full text-start cursor-pointer px-5 py-[18px] rounded-3xl border flex items-center gap-4 text-text font-sans",
+                card.cardClass
+              )}
+              style={card.cardStyle}
             >
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: card.gradient, border: `1px solid ${card.borderColor}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div
+                className={cn("w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0", card.iconClass)}
+                style={card.iconStyle}
+              >
                 {card.icon}
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>{card.title}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px] mb-1.5">{card.title}</div>
                 {card.content}
               </div>
-              <ChevronRight size={16} color={C.t3} />
+              <ChevronRight size={16} className="text-muted" />
             </button>
           ))}
         </div>

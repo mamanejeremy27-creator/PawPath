@@ -3,8 +3,7 @@ import { useApp } from "../context/AppContext.jsx";
 import PhotoImg from "./PhotoImg.jsx";
 import { Calendar } from "lucide-react";
 import Icon from "./ui/Icon.jsx";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", rL: 24 };
+import { cn } from "../lib/cn";
 
 function buildTimelineItems(journal, earnedBadges, completedLevels, badges, programs, lang) {
   const items = [];
@@ -45,24 +44,24 @@ export default function Timeline() {
 
   if (items.length === 0) {
     return (
-      <div style={{ textAlign: "center", padding: "60px 40px", color: C.t3 }}>
-        <div style={{ marginBottom: 16 }}><Calendar size={48} color={C.t3} /></div>
-        <p style={{ fontSize: 15, lineHeight: 1.6 }}>{T("noEntries")}</p>
+      <div className="text-center px-10 py-16 text-muted">
+        <div className="mb-4"><Calendar size={48} className="text-muted mx-auto" /></div>
+        <p className="text-[15px] leading-relaxed">{T("noEntries")}</p>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: "0 20px", position: "relative" }}>
+    <div className="px-5 relative">
       {/* Vertical line */}
-      <div style={{ position: "absolute", insetInlineStart: 30, top: 0, bottom: 0, width: 2, background: C.b1 }} />
+      <div className="absolute start-[30px] top-0 bottom-0 w-0.5 bg-border" />
 
       {months.map((group, gi) => (
-        <div key={gi} style={{ marginBottom: 24 }}>
+        <div key={gi} className="mb-6">
           {/* Month header */}
-          <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-            <div style={{ width: 22, height: 22, borderRadius: "50%", background: C.acc, flexShrink: 0, marginInlineStart: -1 }} />
-            <span style={{ fontSize: 14, fontWeight: 800, color: C.t1, letterSpacing: 0.5 }}>{(group as any).label}</span>
+          <div className="relative z-[1] flex items-center gap-3 mb-4">
+            <div className="w-[22px] h-[22px] rounded-full bg-training flex-shrink-0 -ms-px" />
+            <span className="text-sm font-black text-text tracking-[0.5px]">{(group as any).label}</span>
           </div>
 
           {(group as any).items.map((item) => {
@@ -72,23 +71,30 @@ export default function Timeline() {
             const prog = programs.find(p => p.name === j.programName);
 
             return (
-              <div key={j.id} style={{ position: "relative", paddingInlineStart: 32, marginBottom: 10 }}>
+              <div key={j.id} className="relative ps-8 mb-2.5">
                 {/* Dot on timeline */}
-                <div style={{ position: "absolute", insetInlineStart: 5, top: 8, width: 12, height: 12, borderRadius: "50%", background: C.s1, border: `2px solid ${prog?.color || C.t3}` }} />
+                <div
+                  className="absolute start-[5px] top-2 w-3 h-3 rounded-full bg-surface border-2"
+                  style={{ borderColor: prog?.color || "#71717A" }}
+                />
 
-                <button onClick={() => setExpanded(isExpanded ? null : j.id)}
-                  style={{ width: "100%", textAlign: "start", padding: "14px 16px", background: C.s1, borderRadius: 16, border: `1px solid ${C.b1}`, cursor: "pointer", color: C.t1 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 14 }}>{j.programIcon ? <Icon name={j.programIcon} size={14} /> : j.programEmoji}</span>
-                      <span style={{ fontSize: 13, fontWeight: 700 }}>{j.exerciseName}</span>
+                <button
+                  onClick={() => setExpanded(isExpanded ? null : j.id)}
+                  className="w-full text-start px-4 py-3.5 bg-surface rounded-2xl border border-border cursor-pointer text-text"
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">
+                        {j.programIcon ? <Icon name={j.programIcon} size={14} /> : j.programEmoji}
+                      </span>
+                      <span className="text-[13px] font-bold">{j.exerciseName}</span>
                     </div>
-                    <span style={{ fontSize: 11, color: C.t3 }}>{dayLabel}</span>
+                    <span className="text-[11px] text-muted">{dayLabel}</span>
                   </div>
 
                   {/* Photo thumbnails inline */}
                   {j.photos && j.photos.length > 0 && (
-                    <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
+                    <div className="flex gap-1.5 mt-2.5">
                       {j.photos.map((src, pi) => (
                         <PhotoImg key={pi} src={src} style={{ width: 48, height: 48, borderRadius: 8, objectFit: "cover" }} />
                       ))}
@@ -97,13 +103,13 @@ export default function Timeline() {
 
                   {/* Expanded details */}
                   {isExpanded && (
-                    <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.b1}` }}>
-                      <div style={{ fontSize: 12, color: C.t3, marginBottom: 6 }}>
+                    <div className="mt-3 pt-3 border-t border-border">
+                      <div className="text-xs text-muted mb-1.5">
                         {j.programName} · {["😟","😐","🙂","😊","🤩"][(["struggling","okay","happy","great","amazing"].indexOf(j.mood))] || "🙂"} · {"⭐".repeat(j.rating)}{"☆".repeat(5 - j.rating)}
                       </div>
-                      {j.note && <p style={{ fontSize: 13, color: C.t2, margin: 0, lineHeight: 1.6 }}>{j.note}</p>}
+                      {j.note && <p className="text-[13px] text-text-2 m-0 leading-relaxed">{j.note}</p>}
                       {j.photos && j.photos.length > 0 && (
-                        <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                        <div className="flex gap-2 mt-2.5">
                           {j.photos.map((src, pi) => (
                             <PhotoImg key={pi} src={src} style={{ width: 80, height: 80, borderRadius: 12, objectFit: "cover" }} />
                           ))}

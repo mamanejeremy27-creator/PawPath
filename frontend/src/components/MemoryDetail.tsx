@@ -2,10 +2,9 @@ import { useState, useRef } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { generateMemoryCard, shareMemoryCard } from "../utils/memories.js";
 import BottomNav from "./BottomNav.jsx";
+import { Card } from "./ui/Card";
 
-const C = { bg: "#0A0A0C", s1: "#131316", s2: "#1A1A1F", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
-
-const MOOD_EMOJI = { happy: "\uD83D\uDE0A", struggling: "\uD83D\uDE23", okay: "\uD83D\uDE10", good: "\uD83D\uDE42", great: "\uD83D\uDE04", amazing: "\uD83E\uDD29" };
+const MOOD_EMOJI = { happy: "😊", struggling: "😣", okay: "😐", good: "🙂", great: "😄", amazing: "🤩" };
 
 export default function MemoryDetail() {
   const { selProgram, nav, dogProfile, T } = useApp();
@@ -16,11 +15,11 @@ export default function MemoryDetail() {
 
   if (!memory || !memory.type) {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, padding: 20 }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t3, fontSize: 14, cursor: "pointer", padding: "8px 0" }}>
-          {"\u2190"} {T("back")}
+      <div className="min-h-screen bg-bg p-5">
+        <button onClick={() => nav("home")} className="bg-transparent border-none text-muted text-sm cursor-pointer py-2 px-0">
+          ← {T("back")}
         </button>
-        <div style={{ textAlign: "center", padding: "80px 20px", color: C.t3 }}>{T("noMemories")}</div>
+        <div className="text-center py-20 text-muted">{T("noMemories")}</div>
         <BottomNav active="home" />
       </div>
     );
@@ -37,9 +36,7 @@ export default function MemoryDetail() {
   };
 
   const handleShare = () => {
-    if (canvasRef.current) {
-      shareMemoryCard(canvasRef.current, memory);
-    }
+    if (canvasRef.current) shareMemoryCard(canvasRef.current, memory);
   };
 
   const handleDownload = () => {
@@ -51,69 +48,73 @@ export default function MemoryDetail() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen pb-24 bg-bg [animation:fadeIn_0.3s_ease]">
       {/* Header */}
-      <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("home")} style={{ background: C.b1, border: "none", color: C.t3, width: 36, height: 36, borderRadius: 10, cursor: "pointer", fontSize: 16 }}>
-          {"\u2190"}
+      <div className="flex items-center gap-3 px-5 pt-5">
+        <button
+          onClick={() => nav("home")}
+          className="w-9 h-9 rounded-[10px] bg-border flex items-center justify-center border-none text-muted cursor-pointer text-base"
+        >
+          ←
         </button>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: C.acc, textTransform: "uppercase", letterSpacing: 2 }}>{typeLabel}</div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 800, margin: "4px 0 0", color: C.t1 }}>{T("memoryTitle")}</h2>
+        <div className="flex-1">
+          <div className="text-[10px] font-bold text-training uppercase tracking-[2px]">{typeLabel}</div>
+          <h2 className="font-display text-[22px] font-extrabold mt-1 m-0 text-text">{T("memoryTitle")}</h2>
         </div>
       </div>
 
-      {/* Memory content */}
-      <div style={{ padding: "24px 20px" }}>
-        {/* Big emoji + title */}
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ fontSize: 72, marginBottom: 16 }}>{memory.emoji}</div>
-          <h3 style={{ fontSize: 24, fontWeight: 800, color: C.t1, margin: "0 0 6px" }}>{memory.title}</h3>
-          {memory.subtitle && <p style={{ fontSize: 15, color: C.t3, margin: 0 }}>{memory.subtitle}</p>}
+      <div className="px-5 pt-6">
+        {/* Emoji + title */}
+        <div className="text-center mb-8">
+          <div className="text-[72px] mb-4">{memory.emoji}</div>
+          <h3 className="text-2xl font-extrabold text-text m-0 mb-1.5">{memory.title}</h3>
+          {memory.subtitle && <p className="text-[15px] text-muted m-0">{memory.subtitle}</p>}
         </div>
 
         {/* Date + time ago */}
-        <div style={{ display: "flex", justifyContent: "center", gap: 16, marginBottom: 24 }}>
+        <div className="flex justify-center gap-4 mb-6">
           {memory.date && (
-            <div style={{ textAlign: "center", padding: "12px 20px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-              <div style={{ fontSize: 12, color: C.t3, marginBottom: 4 }}>{T("date")}</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>
+            <Card className="text-center px-5 py-3">
+              <div className="text-xs text-muted mb-1">{T("date")}</div>
+              <div className="text-sm font-bold text-text">
                 {new Date(memory.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </div>
-            </div>
+            </Card>
           )}
           {memory.timeAgo && (
-            <div style={{ textAlign: "center", padding: "12px 20px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-              <div style={{ fontSize: 12, color: C.t3, marginBottom: 4 }}>{T("timeAgo")}</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{memory.timeAgo} {T("daysAgo")}</div>
-            </div>
+            <Card className="text-center px-5 py-3">
+              <div className="text-xs text-muted mb-1">{T("timeAgo")}</div>
+              <div className="text-sm font-bold text-text">{memory.timeAgo} {T("daysAgo")}</div>
+            </Card>
           )}
         </div>
 
         {/* Note */}
         {memory.note && (
-          <div style={{ padding: "20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}`, marginBottom: 20 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>{T("sessionNotes")}</div>
-            <p style={{ fontSize: 15, color: C.t2, margin: 0, lineHeight: 1.7 }}>{"\u201C"}{memory.note}{"\u201D"}</p>
-          </div>
+          <Card className="mb-5">
+            <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px] mb-2">{T("sessionNotes")}</div>
+            <p className="text-[15px] text-text-2 m-0 leading-[1.7]">"{memory.note}"</p>
+          </Card>
         )}
 
         {/* Rating + Mood */}
         {(memory.rating || memory.mood) && (
-          <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
+          <div className="flex gap-3 mb-6">
             {memory.rating && (
-              <div style={{ flex: 1, textAlign: "center", padding: "16px 12px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-                <div style={{ fontSize: 12, color: C.t3, marginBottom: 6 }}>{T("howDidItGo")}</div>
-                <div style={{ fontSize: 22 }}>
-                  {[1, 2, 3, 4, 5].map(n => <span key={n} style={{ opacity: n <= memory.rating ? 1 : 0.2 }}>{"\u2B50"}</span>)}
+              <Card className="flex-1 text-center py-4 px-3">
+                <div className="text-xs text-muted mb-1.5">{T("howDidItGo")}</div>
+                <div className="text-[22px]">
+                  {[1, 2, 3, 4, 5].map(n => (
+                    <span key={n} style={{ opacity: n <= memory.rating ? 1 : 0.2 }}>⭐</span>
+                  ))}
                 </div>
-              </div>
+              </Card>
             )}
             {memory.mood && (
-              <div style={{ flex: 1, textAlign: "center", padding: "16px 12px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-                <div style={{ fontSize: 12, color: C.t3, marginBottom: 6 }}>{T("dogMood")}</div>
-                <div style={{ fontSize: 28 }}>{MOOD_EMOJI[memory.mood] || "\uD83D\uDE42"}</div>
-              </div>
+              <Card className="flex-1 text-center py-4 px-3">
+                <div className="text-xs text-muted mb-1.5">{T("dogMood")}</div>
+                <div className="text-[28px]">{MOOD_EMOJI[memory.mood] || "🙂"}</div>
+              </Card>
             )}
           </div>
         )}
@@ -122,28 +123,26 @@ export default function MemoryDetail() {
         {!cardUrl ? (
           <button
             onClick={handleGenerateCard}
-            style={{
-              width: "100%", padding: "16px", fontSize: 15, fontWeight: 700,
-              background: "rgba(34,197,94,0.1)", color: C.acc,
-              border: `1px solid rgba(34,197,94,0.2)`, borderRadius: 50,
-              cursor: "pointer", marginBottom: 12,
-            }}
+            className="w-full py-4 text-[15px] font-bold bg-training/10 text-training border border-training/20 rounded-full cursor-pointer mb-3"
           >
-            {"\uD83D\uDDBC\uFE0F"} {T("createMemoryCard")}
+            🖼️ {T("createMemoryCard")}
           </button>
         ) : (
-          <div style={{ animation: "fadeIn 0.3s ease" }}>
-            {/* Card preview */}
-            <div style={{ borderRadius: C.rL, overflow: "hidden", marginBottom: 16, border: `1px solid ${C.b1}` }}>
-              <img src={cardUrl} alt="Memory card" style={{ width: "100%", display: "block" }} />
+          <div className="[animation:fadeIn_0.3s_ease]">
+            <div className="rounded-3xl overflow-hidden mb-4 border border-border">
+              <img src={cardUrl} alt="Memory card" className="w-full block" />
             </div>
-
-            {/* Share/Download buttons */}
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={handleShare} style={{ flex: 1, padding: "14px", fontSize: 14, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer" }}>
+            <div className="flex gap-2.5">
+              <button
+                onClick={handleShare}
+                className="flex-1 py-3.5 text-sm font-bold bg-training text-black border-none rounded-full cursor-pointer"
+              >
                 {T("shareCard")}
               </button>
-              <button onClick={handleDownload} style={{ flex: 1, padding: "14px", fontSize: 14, fontWeight: 700, background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
+              <button
+                onClick={handleDownload}
+                className="flex-1 py-3.5 text-sm font-bold bg-surface text-text border border-border rounded-full cursor-pointer"
+              >
                 {T("downloadCard")}
               </button>
             </div>

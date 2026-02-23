@@ -1,19 +1,21 @@
 import { useApp } from "../context/AppContext.jsx";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16 };
+import { cn } from "../lib/cn";
 
 function Toggle({ on, onToggle, disabled }: { on: any; onToggle: () => any; disabled?: boolean }) {
   return (
     <button
       onClick={onToggle}
       disabled={disabled}
-      style={{
-        width: 44, height: 24, borderRadius: 12, border: "none", cursor: disabled ? "default" : "pointer",
-        background: on ? C.acc : "rgba(255,255,255,0.1)", position: "relative", transition: "background 0.2s",
-        opacity: disabled ? 0.4 : 1, flexShrink: 0,
-      }}
+      className={cn(
+        "w-11 h-6 rounded-full border-none relative transition-colors flex-shrink-0",
+        on ? "bg-training" : "bg-white/10",
+        disabled ? "opacity-40 cursor-default" : "cursor-pointer"
+      )}
     >
-      <div style={{ width: 18, height: 18, borderRadius: 9, background: "#fff", position: "absolute", top: 3, left: on ? 23 : 3, transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.3)" }} />
+      <div
+        className="w-[18px] h-[18px] rounded-full bg-white absolute top-[3px] transition-[left] duration-200 shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
+        style={{ left: on ? 23 : 3 }}
+      />
     </button>
   );
 }
@@ -39,22 +41,19 @@ export default function NotificationPreferences() {
   ];
 
   return (
-    <div style={{ marginTop: 32 }}>
-      <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("notifPreferences")}</h3>
+    <div className="mt-8">
+      <h3 className="text-base font-bold text-text mb-4">{T("notifPreferences")}</h3>
 
       {/* Permission warning */}
       {needsPermission && (
-        <div style={{
-          padding: "14px 18px", marginBottom: 12, background: "rgba(234,179,8,0.06)", border: "1px solid rgba(234,179,8,0.15)",
-          borderRadius: C.r, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
-        }}>
-          <span style={{ fontSize: 13, color: "#EAB308", lineHeight: 1.5 }}>{T("notifWarning")}</span>
+        <div className="px-[18px] py-3.5 mb-3 bg-[rgba(234,179,8,0.06)] border border-[rgba(234,179,8,0.15)] rounded-2xl flex items-center justify-between gap-3">
+          <span className="text-[13px] text-[#EAB308] leading-relaxed">{T("notifWarning")}</span>
           <button
             onClick={async () => {
               const perm = await requestNotifPermission();
               setReminders(r => ({ ...r, notifPermission: perm }));
             }}
-            style={{ padding: "6px 14px", fontSize: 12, fontWeight: 700, background: "rgba(234,179,8,0.12)", color: "#EAB308", border: "1px solid rgba(234,179,8,0.25)", borderRadius: 20, cursor: "pointer", whiteSpace: "nowrap" }}
+            className="px-3.5 py-1.5 text-[12px] font-bold bg-[rgba(234,179,8,0.12)] text-[#EAB308] border border-[rgba(234,179,8,0.25)] rounded-full cursor-pointer whitespace-nowrap"
           >
             {T("enableNow")}
           </button>
@@ -62,16 +61,19 @@ export default function NotificationPreferences() {
       )}
 
       {/* Toggle rows */}
-      <div style={{ background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, overflow: "hidden" }}>
+      <div className="bg-surface rounded-2xl border border-border overflow-hidden">
         {toggleRows.map((row, i) => (
-          <div key={row.key} style={{
-            padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14,
-            borderBottom: i < toggleRows.length - 1 ? `1px solid ${C.b1}` : "none",
-            opacity: row.disabled ? 0.45 : 1,
-          }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: C.t1 }}>{row.label}</div>
-              <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{row.sub}</div>
+          <div
+            key={row.key}
+            className={cn(
+              "px-[18px] py-4 flex items-center justify-between gap-3.5",
+              i < toggleRows.length - 1 ? "border-b border-border" : "",
+              row.disabled ? "opacity-45" : ""
+            )}
+          >
+            <div className="flex-1 min-w-0">
+              <div className="text-[14px] font-semibold text-text">{row.label}</div>
+              <div className="text-[12px] text-muted mt-0.5">{row.sub}</div>
             </div>
             <Toggle
               on={!!smart[row.key]}
@@ -83,44 +85,43 @@ export default function NotificationPreferences() {
       </div>
 
       {/* Quiet Hours */}
-      <div style={{ marginTop: 14, background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, overflow: "hidden" }}>
-        <div style={{ padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, borderBottom: quietHours.enabled ? `1px solid ${C.b1}` : "none" }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: C.t1 }}>{T("quietHours")}</div>
-            <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{T("quietHoursSub")}</div>
+      <div className={cn(
+        "mt-3.5 bg-surface rounded-2xl border border-border overflow-hidden"
+      )}>
+        <div className={cn(
+          "px-[18px] py-4 flex items-center justify-between gap-3.5",
+          quietHours.enabled ? "border-b border-border" : ""
+        )}>
+          <div className="flex-1">
+            <div className="text-[14px] font-semibold text-text">{T("quietHours")}</div>
+            <div className="text-[12px] text-muted mt-0.5">{T("quietHoursSub")}</div>
           </div>
           <Toggle on={quietHours.enabled} onToggle={() => setQuietHours({ enabled: !quietHours.enabled })} />
         </div>
         {quietHours.enabled && (
-          <div style={{ padding: "14px 18px", display: "flex", alignItems: "center", gap: 10 }}>
+          <div className="px-[18px] py-3.5 flex items-center gap-2.5">
             <input
               type="time"
               value={quietHours.start}
               onChange={e => setQuietHours({ start: e.target.value })}
-              style={{
-                flex: 1, padding: "8px 10px", fontSize: 14, background: "rgba(255,255,255,0.04)", color: C.t1,
-                border: `1px solid ${C.b1}`, borderRadius: 10, outline: "none",
-              }}
+              className="flex-1 px-2.5 py-2 text-[14px] bg-white/[0.04] text-text border border-border rounded-[10px] outline-none"
             />
-            <span style={{ fontSize: 13, color: C.t3 }}>{T("to")}</span>
+            <span className="text-[13px] text-muted">{T("to")}</span>
             <input
               type="time"
               value={quietHours.end}
               onChange={e => setQuietHours({ end: e.target.value })}
-              style={{
-                flex: 1, padding: "8px 10px", fontSize: 14, background: "rgba(255,255,255,0.04)", color: C.t1,
-                border: `1px solid ${C.b1}`, borderRadius: 10, outline: "none",
-              }}
+              className="flex-1 px-2.5 py-2 text-[14px] bg-white/[0.04] text-text border border-border rounded-[10px] outline-none"
             />
           </div>
         )}
       </div>
 
       {/* Max per day */}
-      <div style={{ marginTop: 14, padding: "16px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: C.t1 }}>{T("maxNotifPerDay")}</span>
-          <span style={{ fontSize: 14, fontWeight: 700, color: C.acc }}>{maxPerDay}</span>
+      <div className="mt-3.5 px-[18px] py-4 bg-surface rounded-2xl border border-border">
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[14px] font-semibold text-text">{T("maxNotifPerDay")}</span>
+          <span className="text-[14px] font-bold text-training">{maxPerDay}</span>
         </div>
         <input
           type="range"
@@ -128,9 +129,9 @@ export default function NotificationPreferences() {
           max={10}
           value={maxPerDay}
           onChange={e => setReminders(r => ({ ...r, maxPerDay: Number(e.target.value) }))}
-          style={{ width: "100%", accentColor: C.acc }}
+          className="w-full accent-training"
         />
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.t3, marginTop: 4 }}>
+        <div className="flex justify-between text-[11px] text-muted mt-1">
           <span>1</span>
           <span>10</span>
         </div>

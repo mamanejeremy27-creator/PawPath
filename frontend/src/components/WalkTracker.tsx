@@ -2,8 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { ArrowLeft, ClipboardList, AlertTriangle } from "lucide-react";
 import { useApp } from "../context/AppContext.jsx";
 import { startTracking, stopTracking, calculateDistance, formatDuration, calculatePace, saveWalk, getRandomWalkPrompt } from "../lib/walkTracker.js";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
+import { cn } from "../lib/cn";
 
 const PROMPT_INTERVAL_MIN = 5;
 const PROMPT_INTERVAL_MAX = 10;
@@ -157,67 +156,75 @@ export default function WalkTracker() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, animation: "fadeIn 0.3s ease", display: "flex", flexDirection: "column" }}>
+    <div className="min-h-screen bg-bg animate-[fadeIn_0.3s_ease] flex flex-col">
       {/* Header */}
-      <div style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => { if (status === "idle" || status === "done") { stopTracking(); nav("home"); } }} style={{ background: "none", border: "none", cursor: "pointer", color: C.t3, padding: 4, opacity: (status === "idle" || status === "done") ? 1 : 0.3, display: "flex", alignItems: "center" }}>
+      <div className="px-5 pt-5 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => { if (status === "idle" || status === "done") { stopTracking(); nav("home"); } }}
+            className={cn(
+              "bg-transparent border-none cursor-pointer text-muted p-1 flex items-center",
+              (status === "idle" || status === "done") ? "opacity-100" : "opacity-30"
+            )}
+          >
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 2px", color: C.t1 }}>{T("walkTracker")}</h1>
-            <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{dogProfile?.name}</p>
+            <h1 className="font-display text-2xl font-black m-0 mb-0.5 text-text">{T("walkTracker")}</h1>
+            <p className="text-[13px] text-muted m-0">{dogProfile?.name}</p>
           </div>
         </div>
         {/* Walk History button — always visible */}
-        <button onClick={() => nav("walkHistory")} style={{
-          padding: "10px 16px", borderRadius: 50,
-          background: C.s1, color: C.t1, border: `1px solid ${C.b1}`,
-          fontWeight: 700, fontSize: 13, cursor: "pointer",
-          display: "flex", alignItems: "center", gap: 6,
-        }}>
+        <button
+          onClick={() => nav("walkHistory")}
+          className="px-4 py-2.5 rounded-full bg-surface text-text border border-border font-bold text-[13px] cursor-pointer flex items-center gap-1.5"
+        >
           <ClipboardList size={14} /> {T("walkViewHistory")}
         </button>
       </div>
 
       {/* Training Prompt Banner */}
       {promptVisible && prompt && status === "tracking" && (
-        <div onClick={() => setPromptVisible(false)} style={{
-          margin: "16px 20px 0", padding: "14px 18px",
-          background: "linear-gradient(135deg, rgba(34,197,94,0.1), rgba(59,130,246,0.08))",
-          border: "1px solid rgba(34,197,94,0.25)", borderRadius: C.rL,
-          cursor: "pointer", animation: "fadeIn 0.4s ease",
-        }}>
-          <div style={{ fontSize: 10, fontWeight: 800, color: C.acc, textTransform: "uppercase", letterSpacing: 2, marginBottom: 4 }}>{T("walkTrainingTip")}</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: C.t1, lineHeight: 1.5 }}>{prompt}</div>
+        <div
+          onClick={() => setPromptVisible(false)}
+          className="mx-5 mt-4 px-[18px] py-3.5 rounded-3xl cursor-pointer animate-[fadeIn_0.4s_ease] border border-training/25"
+          style={{ background: "linear-gradient(135deg, rgba(34,197,94,0.1), rgba(59,130,246,0.08))" }}
+        >
+          <div className="text-[10px] font-black text-training uppercase tracking-[2px] mb-1">{T("walkTrainingTip")}</div>
+          <div className="text-sm font-semibold text-text leading-relaxed">{prompt}</div>
         </div>
       )}
 
       {/* Main Stats Display */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px", gap: 8 }}>
+      <div className="flex-1 flex flex-col items-center justify-center p-5 gap-2">
         {/* Timer */}
-        <div style={{ fontSize: 64, fontWeight: 800, color: C.t1, fontFamily: "'DM Sans', sans-serif", letterSpacing: -2 }}>
+        <div className="text-[64px] font-black text-text font-sans" style={{ letterSpacing: -2 }}>
           {formatDuration(elapsed)}
         </div>
 
         {/* Distance + Pace */}
-        <div style={{ display: "flex", gap: 32, marginTop: 8 }}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 32, fontWeight: 800, color: C.acc }}>{distance.toFixed(2)}</div>
-            <div style={{ fontSize: 11, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>{T("walkKm")}</div>
+        <div className="flex gap-8 mt-2">
+          <div className="text-center">
+            <div className="text-[32px] font-black text-training">{distance.toFixed(2)}</div>
+            <div className="text-[11px] text-muted uppercase tracking-[1.5px] font-bold">{T("walkKm")}</div>
           </div>
-          <div style={{ width: 1, background: C.b1 }} />
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 32, fontWeight: 800, color: C.t1 }}>{pace || "--:--"}</div>
-            <div style={{ fontSize: 11, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>{T("walkPace")}</div>
+          <div className="w-px bg-border" />
+          <div className="text-center">
+            <div className="text-[32px] font-black text-text">{pace || "--:--"}</div>
+            <div className="text-[11px] text-muted uppercase tracking-[1.5px] font-bold">{T("walkPace")}</div>
           </div>
         </div>
 
         {/* GPS status */}
         {status === "tracking" && (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 16 }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: gpsError ? C.danger : C.acc, animation: gpsError ? "none" : "pulse 2s infinite" }} />
-            <span style={{ fontSize: 12, color: gpsError ? C.danger : C.acc, fontWeight: 600 }}>
+          <div className="flex items-center gap-1.5 mt-4">
+            <div
+              className={cn(
+                "w-2 h-2 rounded-full",
+                gpsError ? "bg-danger" : "bg-training animate-[pulse_2s_infinite]"
+              )}
+            />
+            <span className={cn("text-xs font-semibold", gpsError ? "text-danger" : "text-training")}>
               {gpsError ? T("walkGpsError") : `${T("walkGpsActive")} · ${coords.length} ${T("walkPoints")}`}
             </span>
           </div>
@@ -225,26 +232,26 @@ export default function WalkTracker() {
 
         {/* Paused indicator */}
         {status === "paused" && (
-          <div style={{ marginTop: 16, padding: "8px 20px", borderRadius: 20, background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)" }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: "#F59E0B" }}>{T("walkPaused")}</span>
+          <div className="mt-4 px-5 py-2 rounded-[20px] bg-xp/10 border border-xp/20">
+            <span className="text-[13px] font-bold text-xp">{T("walkPaused")}</span>
           </div>
         )}
       </div>
 
       {/* Done Summary */}
       {status === "done" && (
-        <div style={{ padding: "0 20px 16px" }}>
-          <div style={{ padding: "20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: C.t1, margin: "0 0 16px" }}>{T("walkSummary")}</h3>
-            <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+        <div className="px-5 pb-4">
+          <div className="p-5 bg-surface rounded-3xl border border-border">
+            <h3 className="text-base font-bold text-text m-0 mb-4">{T("walkSummary")}</h3>
+            <div className="flex gap-2.5 mb-4">
               {[
                 { v: formatDuration(elapsed), l: T("walkDuration") },
                 { v: `${distance.toFixed(2)} km`, l: T("walkDistance") },
                 { v: pace || "--:--", l: T("walkPace") },
               ].map((s, i) => (
-                <div key={i} style={{ flex: 1, textAlign: "center", padding: "12px 6px", background: C.bg, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: C.acc }}>{s.v}</div>
-                  <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600, marginTop: 4 }}>{s.l}</div>
+                <div key={i} className="flex-1 text-center py-3 px-1.5 bg-bg rounded-2xl border border-border">
+                  <div className="text-base font-black text-training">{s.v}</div>
+                  <div className="text-[10px] text-muted uppercase tracking-[1px] font-semibold mt-1">{s.l}</div>
                 </div>
               ))}
             </div>
@@ -253,81 +260,73 @@ export default function WalkTracker() {
               onChange={e => setNotes(e.target.value)}
               placeholder={T("walkNotesPlaceholder")}
               rows={2}
-              style={{
-                width: "100%", boxSizing: "border-box", padding: "12px 14px",
-                background: C.bg, border: `1px solid ${C.b1}`, borderRadius: C.r,
-                color: C.t1, fontSize: 14, fontFamily: "'DM Sans', sans-serif",
-                outline: "none", resize: "none",
-              }}
+              className="w-full px-3.5 py-3 bg-bg border border-border rounded-2xl text-text text-sm font-sans outline-none resize-none"
             />
           </div>
         </div>
       )}
 
       {/* Controls */}
-      <div style={{ padding: "0 20px 40px" }}>
+      <div className="px-5 pb-10">
         {status === "idle" && (
-          <button onClick={handleStart} style={{
-            width: "100%", padding: "18px", borderRadius: 50, border: "none",
-            background: C.acc, color: "#000", fontSize: 18, fontWeight: 800,
-            cursor: "pointer", boxShadow: "0 4px 24px rgba(34,197,94,0.3)",
-          }}>
+          <button
+            onClick={handleStart}
+            className="w-full py-[18px] rounded-full border-none bg-training text-black text-lg font-black cursor-pointer"
+            style={{ boxShadow: "0 4px 24px rgba(34,197,94,0.3)" }}
+          >
             {T("walkStart")}
           </button>
         )}
 
         {status === "tracking" && (
-          <div style={{ display: "flex", gap: 12 }}>
-            <button onClick={handlePause} style={{
-              flex: 1, padding: "16px", borderRadius: 50, border: `2px solid ${C.acc}`,
-              background: "transparent", color: C.acc, fontSize: 16, fontWeight: 700,
-              cursor: "pointer",
-            }}>
+          <div className="flex gap-3">
+            <button
+              onClick={handlePause}
+              className="flex-1 py-4 rounded-full border-2 border-training bg-transparent text-training text-base font-bold cursor-pointer"
+            >
               {T("walkPause")}
             </button>
-            <button onClick={handleStop} style={{
-              flex: 1, padding: "16px", borderRadius: 50, border: "none",
-              background: C.danger, color: "#fff", fontSize: 16, fontWeight: 700,
-              cursor: "pointer",
-            }}>
+            <button
+              onClick={handleStop}
+              className="flex-1 py-4 rounded-full border-none bg-danger text-white text-base font-bold cursor-pointer"
+            >
               {T("walkStop")}
             </button>
           </div>
         )}
 
         {status === "paused" && (
-          <div style={{ display: "flex", gap: 12 }}>
-            <button onClick={handleResume} style={{
-              flex: 1, padding: "16px", borderRadius: 50, border: "none",
-              background: C.acc, color: "#000", fontSize: 16, fontWeight: 700,
-              cursor: "pointer",
-            }}>
+          <div className="flex gap-3">
+            <button
+              onClick={handleResume}
+              className="flex-1 py-4 rounded-full border-none bg-training text-black text-base font-bold cursor-pointer"
+            >
               {T("walkResume")}
             </button>
-            <button onClick={handleStop} style={{
-              flex: 1, padding: "16px", borderRadius: 50, border: "none",
-              background: C.danger, color: "#fff", fontSize: 16, fontWeight: 700,
-              cursor: "pointer",
-            }}>
+            <button
+              onClick={handleStop}
+              className="flex-1 py-4 rounded-full border-none bg-danger text-white text-base font-bold cursor-pointer"
+            >
               {T("walkStop")}
             </button>
           </div>
         )}
 
         {status === "done" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <button onClick={handleSave} disabled={saving} style={{
-              width: "100%", padding: "16px", borderRadius: 50, border: "none",
-              background: C.acc, color: "#000", fontSize: 16, fontWeight: 700,
-              cursor: "pointer", opacity: saving ? 0.6 : 1,
-            }}>
+          <div className="flex flex-col gap-2.5">
+            <button
+              onClick={handleSave} disabled={saving}
+              className={cn(
+                "w-full py-4 rounded-full border-none bg-training text-black text-base font-bold cursor-pointer transition-opacity",
+                saving ? "opacity-60" : "opacity-100"
+              )}
+            >
               {saving ? T("saving") : T("walkSave")}
             </button>
-            <button onClick={handleDiscard} style={{
-              width: "100%", padding: "14px", borderRadius: 50,
-              border: `1px solid ${C.b1}`, background: "transparent",
-              color: C.t3, fontSize: 14, fontWeight: 600, cursor: "pointer",
-            }}>
+            <button
+              onClick={handleDiscard}
+              className="w-full py-3.5 rounded-full border border-border bg-transparent text-muted text-sm font-semibold cursor-pointer"
+            >
               {T("walkDiscard")}
             </button>
           </div>
@@ -335,12 +334,10 @@ export default function WalkTracker() {
 
         {/* Emergency Lost Dog button — visible during active walk */}
         {(status === "tracking" || status === "paused") && (
-          <button onClick={() => { stopTracking(); nav("reportLostDog"); }} style={{
-            width: "100%", marginTop: 16, padding: "12px", borderRadius: 50,
-            border: "1px solid rgba(239,68,68,0.25)", background: "rgba(239,68,68,0.06)",
-            color: C.danger, fontSize: 13, fontWeight: 700, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-          }}>
+          <button
+            onClick={() => { stopTracking(); nav("reportLostDog"); }}
+            className="w-full mt-4 py-3 rounded-full border border-danger/25 bg-danger/[0.06] text-danger text-[13px] font-bold cursor-pointer flex items-center justify-center gap-1.5"
+          >
             <AlertTriangle size={14} /> {T("lostEmergency")}
           </button>
         )}

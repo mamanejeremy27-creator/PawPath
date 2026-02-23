@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { DOG_BREEDS } from "../data/breeds.js";
-
-const C = { bg: "#0A0A0C", s1: "#131316", s2: "#1A1A1F", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t3: "#71717A", t4: "#52525B", acc: "#22C55E", r: 16 };
+import { cn } from "../lib/cn";
 
 export default function AddDogModal() {
   const { showAddDog, setShowAddDog, addDog, dogCount, T, rtl } = useApp();
@@ -36,29 +35,58 @@ export default function AddDogModal() {
   };
 
   const ready = form.name && form.breed && form.age;
-  const sectionLabel = (text) => <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>{text}</div>;
+  const sectionLabel = (text) => (
+    <div className="text-[11px] font-bold text-muted tracking-[2px] uppercase mb-2">{text}</div>
+  );
 
   return (
-    <div onClick={handleClose} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeIn 0.3s ease" }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: C.s1, borderRadius: 28, padding: "32px 24px", maxWidth: 380, width: "90%", maxHeight: "90vh", overflowY: "auto", border: `1px solid ${C.b1}` }}>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 4px", color: C.t1 }}>{T("addDog")}</h2>
-        <p style={{ fontSize: 13, color: C.t3, margin: "0 0 24px" }}>{T("addSecondDog")}</p>
+    <div
+      onClick={handleClose}
+      className="fixed inset-0 z-[9999] bg-black/85 flex items-center justify-center [animation:fadeIn_0.3s_ease]"
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        className="bg-surface rounded-[28px] p-8 max-w-[380px] w-[90%] max-h-[90vh] overflow-y-auto border border-border"
+      >
+        <h2 className="font-display text-2xl font-extrabold mb-1 text-text">{T("addDog")}</h2>
+        <p className="text-[13px] text-muted mb-6">{T("addSecondDog")}</p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div className="flex flex-col gap-4">
           {/* Name */}
           <div>
             {sectionLabel(T("dogName"))}
-            <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g., Max" style={{ width: "100%", padding: "14px 16px", fontSize: 15, background: C.bg, border: `1px solid ${C.b2}`, borderRadius: C.r, color: C.t1, outline: "none" }} />
+            <input
+              value={form.name}
+              onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+              placeholder="e.g., Max"
+              className="bg-bg border border-border-2 rounded-2xl px-4 py-3.5 w-full text-[15px] text-text outline-none focus:border-training/50 transition-colors"
+            />
           </div>
 
           {/* Breed */}
-          <div style={{ position: "relative" }}>
+          <div className="relative">
             {sectionLabel(T("breed"))}
-            <input value={form.breed} onChange={e => handleBreedInput(e.target.value)} onFocus={() => form.breed && setShowBreeds(true)} placeholder={T("breedPlaceholder")} style={{ width: "100%", padding: "14px 16px", fontSize: 15, background: C.bg, border: `1px solid ${showBreeds ? C.acc : C.b2}`, borderRadius: C.r, color: C.t1, outline: "none", transition: "border 0.2s" }} />
+            <input
+              value={form.breed}
+              onChange={e => handleBreedInput(e.target.value)}
+              onFocus={() => form.breed && setShowBreeds(true)}
+              placeholder={T("breedPlaceholder")}
+              className={cn(
+                "bg-bg border rounded-2xl px-4 py-3.5 w-full text-[15px] text-text outline-none transition-colors",
+                showBreeds ? "border-training" : "border-border-2"
+              )}
+            />
             {showBreeds && breedSug.length > 0 && (
-              <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: C.s2, border: `1px solid ${C.b2}`, borderRadius: C.r, marginTop: 4, zIndex: 50, maxHeight: 180, overflowY: "auto", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+              <div className="absolute top-full start-0 end-0 bg-surface-2 border border-border-2 rounded-2xl mt-1 z-50 max-h-[180px] overflow-y-auto shadow-[0_16px_48px_rgba(0,0,0,0.5)]">
                 {breedSug.map(b => (
-                  <button key={b} onClick={() => { setForm(p => ({ ...p, breed: b })); setShowBreeds(false); }} style={{ display: "block", width: "100%", padding: "12px 16px", fontSize: 14, background: "none", border: "none", borderBottom: `1px solid ${C.b1}`, color: C.t1, textAlign: rtl ? "right" : "left", cursor: "pointer" }}>
+                  <button
+                    key={b}
+                    onClick={() => { setForm(p => ({ ...p, breed: b })); setShowBreeds(false); }}
+                    className={cn(
+                      "block w-full px-4 py-3 text-[14px] bg-transparent border-none border-b border-border text-text cursor-pointer",
+                      rtl ? "text-end" : "text-start"
+                    )}
+                  >
                     {b}
                   </button>
                 ))}
@@ -69,7 +97,14 @@ export default function AddDogModal() {
           {/* Age */}
           <div>
             {sectionLabel(T("age"))}
-            <select value={form.age} onChange={e => setForm(p => ({ ...p, age: e.target.value }))} style={{ width: "100%", padding: "14px 16px", fontSize: 15, background: C.bg, border: `1px solid ${C.b2}`, borderRadius: C.r, color: form.age ? C.t1 : C.t4, outline: "none", appearance: "none" }}>
+            <select
+              value={form.age}
+              onChange={e => setForm(p => ({ ...p, age: e.target.value }))}
+              className={cn(
+                "bg-bg border border-border-2 rounded-2xl px-4 py-3.5 w-full text-[15px] outline-none appearance-none",
+                form.age ? "text-text" : "text-muted"
+              )}
+            >
               <option value="">{T("selectAge")}</option>
               <option value="Puppy (under 6mo)">{T("agePuppy")}</option>
               <option value="Young (6-12mo)">{T("ageYoung")}</option>
@@ -82,15 +117,34 @@ export default function AddDogModal() {
           {/* Birthday (optional) */}
           <div>
             {sectionLabel(`${T("birthday")} (${T("optional")})`)}
-            <input type="date" value={form.birthday} onChange={e => setForm(p => ({ ...p, birthday: e.target.value }))} max={new Date().toISOString().split("T")[0]} style={{ width: "100%", padding: "14px 16px", fontSize: 15, background: C.bg, border: `1px solid ${C.b2}`, borderRadius: C.r, color: form.birthday ? C.t1 : C.t4, outline: "none", colorScheme: "dark" }} />
+            <input
+              type="date"
+              value={form.birthday}
+              onChange={e => setForm(p => ({ ...p, birthday: e.target.value }))}
+              max={new Date().toISOString().split("T")[0]}
+              className={cn(
+                "bg-bg border border-border-2 rounded-2xl px-4 py-3.5 w-full text-[15px] outline-none [color-scheme:dark]",
+                form.birthday ? "text-text" : "text-muted"
+              )}
+            />
           </div>
 
           {/* Buttons */}
-          <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-            <button onClick={handleClose} style={{ flex: 1, padding: "14px", fontSize: 14, fontWeight: 600, background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
+          <div className="flex gap-2.5 mt-2">
+            <button
+              onClick={handleClose}
+              className="flex-1 py-3.5 text-[14px] font-semibold bg-transparent text-muted border border-border rounded-full cursor-pointer"
+            >
               {T("back")}
             </button>
-            <button disabled={!ready} onClick={handleAdd} style={{ flex: 2, padding: "14px", fontSize: 14, fontWeight: 700, background: ready ? C.acc : C.s2, color: ready ? "#000" : C.t3, border: "none", borderRadius: 50, cursor: ready ? "pointer" : "default" }}>
+            <button
+              disabled={!ready}
+              onClick={handleAdd}
+              className={cn(
+                "flex-[2] py-3.5 text-[14px] font-bold rounded-full border-none",
+                ready ? "bg-training text-black cursor-pointer" : "bg-surface-2 text-muted cursor-default"
+              )}
+            >
               {T("addDog")}
             </button>
           </div>

@@ -6,8 +6,7 @@ import PhotoImg from "./PhotoImg.jsx";
 import LostDogMap from "./LostDogMap.jsx";
 import BottomNav from "./BottomNav.jsx";
 import { ArrowLeft, AlertCircle, CheckCircle2, PartyPopper, AlertTriangle } from "lucide-react";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
+import { cn } from "../lib/cn";
 
 export default function LostDogTracker() {
   const { nav, T, lang, screenParams } = useApp();
@@ -67,18 +66,21 @@ export default function LostDogTracker() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 40, height: 40, border: "3px solid rgba(255,255,255,0.1)", borderTopColor: C.danger, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div className="min-h-screen bg-bg flex items-center justify-center">
+        <div className="w-10 h-10 border-[3px] border-white/10 border-t-danger rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!report) {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-        <div style={{ textAlign: "center" }}>
-          <p style={{ color: C.t3 }}>{T("lostReportNotFound")}</p>
-          <button onClick={() => nav("home")} style={{ marginTop: 16, padding: "12px 24px", background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer", fontSize: 14, fontWeight: 600 }}>{T("back")}</button>
+      <div className="min-h-screen bg-bg flex items-center justify-center p-5">
+        <div className="text-center">
+          <p className="text-muted">{T("lostReportNotFound")}</p>
+          <button
+            onClick={() => nav("home")}
+            className="mt-4 px-6 py-3 bg-surface text-text border border-border rounded-full cursor-pointer text-sm font-semibold"
+          >{T("back")}</button>
         </div>
       </div>
     );
@@ -87,12 +89,15 @@ export default function LostDogTracker() {
   // ── Celebration overlay ──
   if (celebrated) {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-        <div style={{ textAlign: "center", animation: "fadeIn 0.5s ease" }}>
-          <div style={{ marginBottom: 16, animation: "fadeIn 0.8s ease", display: "flex", justifyContent: "center" }}><PartyPopper size={80} color={C.acc} /></div>
-          <h1 style={{ fontSize: 28, fontWeight: 800, color: C.acc, margin: "0 0 8px" }}>{report.dog_name} {T("lostFoundTitle")}</h1>
-          <p style={{ fontSize: 15, color: C.t2, margin: "0 0 32px", lineHeight: 1.6 }}>{T("lostFoundSub")}</p>
-          <button onClick={() => nav("home")} style={{ padding: "14px 32px", fontSize: 15, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer" }}>
+      <div className="min-h-screen bg-bg flex items-center justify-center p-5">
+        <div className="text-center animate-[fadeIn_0.5s_ease]">
+          <div className="mb-4 animate-[fadeIn_0.8s_ease] flex justify-center"><PartyPopper size={80} className="text-training" /></div>
+          <h1 className="text-[28px] font-extrabold text-training m-0 mb-2">{report.dog_name} {T("lostFoundTitle")}</h1>
+          <p className="text-[15px] text-text-2 m-0 mb-8 leading-relaxed">{T("lostFoundSub")}</p>
+          <button
+            onClick={() => nav("home")}
+            className="px-8 py-[14px] text-[15px] font-bold bg-training text-black border-none rounded-full cursor-pointer"
+          >
             {T("back")}
           </button>
         </div>
@@ -115,35 +120,38 @@ export default function LostDogTracker() {
   }));
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
       {/* Header */}
-      <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t1, cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><ArrowLeft size={24} /></button>
-        <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: isActive ? C.danger : C.acc, display: "flex", alignItems: "center", gap: 8 }}>
-            {isActive ? <><AlertCircle size={20} /> {T("lostTracking")} {report.dog_name}</> : <><CheckCircle2 size={20} /> {report.dog_name} {T("lostFoundTitle")}</>}
+      <div className="px-5 pt-5 flex items-center gap-3">
+        <button onClick={() => nav("home")} className="bg-transparent border-none text-text cursor-pointer p-0 flex items-center"><ArrowLeft size={24} /></button>
+        <div className="flex-1">
+          <h1 className={cn("text-[20px] font-extrabold m-0 flex items-center gap-2", isActive ? "text-danger" : "text-training")}>
+            {isActive
+              ? <><AlertCircle size={20} /> {T("lostTracking")} {report.dog_name}</>
+              : <><CheckCircle2 size={20} /> {report.dog_name} {T("lostFoundTitle")}</>
+            }
           </h1>
-          <p style={{ fontSize: 12, color: C.t3, margin: "2px 0 0" }}>{T("lostReported")} {timeSince(report.created_at)} {T("lostAgo")}</p>
+          <p className="text-xs text-muted m-0 mt-0.5">{T("lostReported")} {timeSince(report.created_at)} {T("lostAgo")}</p>
         </div>
       </div>
 
       {/* Status badge */}
-      <div style={{ padding: "12px 20px 0" }}>
-        <div style={{
-          display: "inline-block", padding: "6px 16px", borderRadius: 50, fontSize: 12, fontWeight: 700,
-          background: isActive ? "rgba(239,68,68,0.1)" : "rgba(34,197,94,0.1)",
-          color: isActive ? C.danger : C.acc,
-          border: `1px solid ${isActive ? "rgba(239,68,68,0.2)" : "rgba(34,197,94,0.2)"}`,
-        }}>
+      <div className="px-5 pt-3">
+        <div className={cn(
+          "inline-block px-4 py-1.5 rounded-full text-xs font-bold",
+          isActive
+            ? "bg-danger/10 text-danger border border-danger/20"
+            : "bg-training/10 text-training border border-training/20"
+        )}>
           {isActive ? T("lostStatusActive") : report.status === "found" ? T("lostStatusFound") : T("lostStatusCancelled")}
         </div>
-        <span style={{ marginInlineStart: 8, fontSize: 13, color: C.t3 }}>{sightings.length} {T("lostSightingsCount")}</span>
+        <span className="ms-2 text-[13px] text-muted">{sightings.length} {T("lostSightingsCount")}</span>
       </div>
 
       {/* Interactive Map */}
       {report.last_lat && report.last_lng && (
-        <div style={{ margin: "16px 20px 0", padding: 16, background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 10 }}>{T("lostSightingMap")}</div>
+        <div className="mx-5 mt-4 p-4 bg-surface rounded-3xl border border-border">
+          <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px] mb-[10px]">{T("lostSightingMap")}</div>
           <LostDogMap
             center={{ lat: report.last_lat, lng: report.last_lng }}
             radiusKm={report.search_radius_km || 10}
@@ -152,40 +160,46 @@ export default function LostDogTracker() {
             fitAll={sightings.length > 0}
             height={260}
           />
-          <div style={{ display: "flex", gap: 16, marginTop: 8, fontSize: 10, color: C.t3 }}>
-            <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: C.danger, marginInlineEnd: 4, verticalAlign: "middle" }} />{T("lostLastKnown")}</span>
-            <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "#F59E0B", marginInlineEnd: 4, verticalAlign: "middle" }} />{T("lostSightings")}</span>
+          <div className="flex gap-4 mt-2 text-[10px] text-muted">
+            <span>
+              <span className="inline-block w-2 h-2 rounded-full bg-danger me-1 align-middle" />
+              {T("lostLastKnown")}
+            </span>
+            <span>
+              <span className="inline-block w-2 h-2 rounded-full bg-xp me-1 align-middle" />
+              {T("lostSightings")}
+            </span>
           </div>
         </div>
       )}
 
       {/* Sightings list */}
-      <div style={{ padding: "16px 20px 0" }}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: C.t1, margin: "0 0 10px" }}>{T("lostSightings")} ({sightings.length})</h3>
+      <div className="px-5 pt-4">
+        <h3 className="text-sm font-bold text-text m-0 mb-[10px]">{T("lostSightings")} ({sightings.length})</h3>
         {sightings.length === 0 ? (
-          <div style={{ padding: 20, textAlign: "center", color: C.t3, fontSize: 13 }}>{T("lostNoSightings")}</div>
+          <div className="p-5 text-center text-muted text-[13px]">{T("lostNoSightings")}</div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div className="flex flex-col gap-2">
             {sightings.map((s, i) => {
               const dist = haversine(report.last_lat, report.last_lng, s.lat, s.lng);
               return (
-                <div key={s.id} style={{ padding: "14px 16px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: "#F59E0B", flexShrink: 0 }}>
+                <div key={s.id} className="px-4 py-[14px] bg-surface rounded-2xl border border-border">
+                  <div className="flex items-center gap-[10px]">
+                    <div className="w-7 h-7 rounded-full bg-xp/10 border border-xp/20 flex items-center justify-center text-[11px] font-extrabold text-xp shrink-0">
                       {i + 1}
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: C.t1 }}>
-                        {s.reporter_name || "Anonymous"} · <span style={{ color: C.t3 }}>{timeSince(s.created_at)} {T("lostAgo")}</span>
+                    <div className="flex-1">
+                      <div className="text-[13px] font-semibold text-text">
+                        {s.reporter_name || "Anonymous"} · <span className="text-muted">{timeSince(s.created_at)} {T("lostAgo")}</span>
                       </div>
-                      <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>
+                      <div className="text-xs text-muted mt-0.5">
                         {dist.toFixed(1)} km {T("lostFromLastKnown")}
                       </div>
                     </div>
                   </div>
-                  {s.notes && <div style={{ fontSize: 13, color: C.t2, marginTop: 8, lineHeight: 1.5 }}>{s.notes}</div>}
+                  {s.notes && <div className="text-[13px] text-text-2 mt-2 leading-[1.5]">{s.notes}</div>}
                   {s.photo && (
-                    <div style={{ marginTop: 8, borderRadius: 10, overflow: "hidden" }}>
+                    <div className="mt-2 rounded-[10px] overflow-hidden">
                       <PhotoImg src={s.photo} style={{ width: "100%", maxHeight: 160, objectFit: "cover", display: "block" }} />
                     </div>
                   )}
@@ -198,14 +212,14 @@ export default function LostDogTracker() {
 
       {/* Actions */}
       {isActive && (
-        <div style={{ padding: "20px 20px 0", display: "flex", flexDirection: "column", gap: 10 }}>
-          <button onClick={handleShare} style={{ width: "100%", padding: 14, fontSize: 14, fontWeight: 700, background: C.danger, color: "#fff", border: "none", borderRadius: 50, cursor: "pointer" }}>
+        <div className="px-5 pt-5 flex flex-col gap-[10px]">
+          <button onClick={handleShare} className="w-full py-[14px] text-sm font-bold bg-danger text-white border-none rounded-full cursor-pointer">
             {T("lostShareAlert")}
           </button>
-          <button onClick={() => setShowFound(true)} style={{ width: "100%", padding: 14, fontSize: 14, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer" }}>
+          <button onClick={() => setShowFound(true)} className="w-full py-[14px] text-sm font-bold bg-training text-black border-none rounded-full cursor-pointer flex items-center justify-center gap-1">
             <PartyPopper size={16} /> {T("lostMarkFound")}
           </button>
-          <button onClick={() => setConfirmCancel(true)} style={{ width: "100%", padding: 12, fontSize: 13, fontWeight: 600, background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
+          <button onClick={() => setConfirmCancel(true)} className="w-full py-3 text-[13px] font-semibold bg-transparent text-muted border border-border rounded-full cursor-pointer">
             {T("lostCancelReport")}
           </button>
         </div>
@@ -213,13 +227,13 @@ export default function LostDogTracker() {
 
       {/* Mark as Found confirm */}
       {showFound && (
-        <div onClick={() => setShowFound(false)} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: C.s1, borderRadius: 24, padding: "28px 24px", maxWidth: 320, width: "90%", textAlign: "center" }}>
-            <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><PartyPopper size={40} color={C.acc} /></div>
-            <p style={{ fontSize: 15, color: C.t1, margin: "0 0 20px" }}>{T("lostFoundConfirm").replace("{name}", report.dog_name)}</p>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setShowFound(false)} style={{ flex: 1, padding: 12, fontSize: 14, fontWeight: 600, background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>{T("back")}</button>
-              <button onClick={handleMarkFound} style={{ flex: 1, padding: 12, fontSize: 14, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer" }}>{T("lostMarkFound")}</button>
+        <div onClick={() => setShowFound(false)} className="fixed inset-0 z-[9999] bg-black/85 flex items-center justify-center">
+          <div onClick={e => e.stopPropagation()} className="bg-surface rounded-3xl p-7 max-w-xs w-[90%] text-center">
+            <div className="mb-3 flex justify-center"><PartyPopper size={40} className="text-training" /></div>
+            <p className="text-[15px] text-text m-0 mb-5">{T("lostFoundConfirm").replace("{name}", report.dog_name)}</p>
+            <div className="flex gap-[10px]">
+              <button onClick={() => setShowFound(false)} className="flex-1 py-3 text-sm font-semibold bg-transparent text-muted border border-border rounded-full cursor-pointer">{T("back")}</button>
+              <button onClick={handleMarkFound} className="flex-1 py-3 text-sm font-bold bg-training text-black border-none rounded-full cursor-pointer">{T("lostMarkFound")}</button>
             </div>
           </div>
         </div>
@@ -227,13 +241,13 @@ export default function LostDogTracker() {
 
       {/* Cancel confirm */}
       {confirmCancel && (
-        <div onClick={() => setConfirmCancel(false)} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: C.s1, borderRadius: 24, padding: "28px 24px", maxWidth: 320, width: "90%", textAlign: "center" }}>
-            <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><AlertTriangle size={40} color={C.danger} /></div>
-            <p style={{ fontSize: 15, color: C.t1, margin: "0 0 20px" }}>{T("lostCancelConfirm")}</p>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setConfirmCancel(false)} style={{ flex: 1, padding: 12, fontSize: 14, fontWeight: 600, background: "transparent", color: C.t3, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>{T("back")}</button>
-              <button onClick={handleCancel} style={{ flex: 1, padding: 12, fontSize: 14, fontWeight: 700, background: C.danger, color: "#fff", border: "none", borderRadius: 50, cursor: "pointer" }}>{T("lostCancelReport")}</button>
+        <div onClick={() => setConfirmCancel(false)} className="fixed inset-0 z-[9999] bg-black/85 flex items-center justify-center">
+          <div onClick={e => e.stopPropagation()} className="bg-surface rounded-3xl p-7 max-w-xs w-[90%] text-center">
+            <div className="mb-3 flex justify-center"><AlertTriangle size={40} className="text-danger" /></div>
+            <p className="text-[15px] text-text m-0 mb-5">{T("lostCancelConfirm")}</p>
+            <div className="flex gap-[10px]">
+              <button onClick={() => setConfirmCancel(false)} className="flex-1 py-3 text-sm font-semibold bg-transparent text-muted border border-border rounded-full cursor-pointer">{T("back")}</button>
+              <button onClick={handleCancel} className="flex-1 py-3 text-sm font-bold bg-danger text-white border-none rounded-full cursor-pointer">{T("lostCancelReport")}</button>
             </div>
           </div>
         </div>

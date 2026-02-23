@@ -1,8 +1,7 @@
 import { useApp } from "../context/AppContext.jsx";
 import { Lightbulb, CheckCircle2, CircleDot } from "lucide-react";
 import Icon from "./ui/Icon.jsx";
-
-const C = { bg: "#0A0A0C", s1: "#131316", s2: "#1F1F23", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", amber: "#F59E0B", amberBg: "rgba(245,158,11,0.08)", amberBorder: "rgba(245,158,11,0.15)", rL: 24, r: 16 };
+import { cn } from "../lib/cn";
 
 export default function DifficultyCard({ exerciseId, program }) {
   const {
@@ -33,48 +32,41 @@ export default function DifficultyCard({ exerciseId, program }) {
   const tip = prereqData.tips ? prereqData.tips[lang] || prereqData.tips.en : null;
 
   return (
-    <div style={{
-      marginTop: 14,
-      padding: "18px 20px",
-      background: C.amberBg,
-      borderRadius: C.rL,
-      border: `1px solid ${C.amberBorder}`,
-      animation: "slideDown 0.3s ease",
-    }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 12 }}>
-        <Lightbulb size={20} color={C.amber} style={{ flexShrink: 0 }} />
+    <div className="mt-3.5 px-5 py-[18px] bg-xp/[0.08] rounded-3xl border border-xp/15 animate-[slideDown_0.3s_ease]">
+      {/* Header */}
+      <div className="flex items-start gap-2.5 mb-3">
+        <Lightbulb size={20} className="text-xp shrink-0" />
         <div>
-          <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: C.amber }}>
-            {T("needAHand")}
-          </h4>
-          <p style={{ fontSize: 13, color: C.t2, marginTop: 4, lineHeight: 1.5 }}>
+          <h4 className="text-sm font-extrabold m-0 text-xp">{T("needAHand")}</h4>
+          <p className="text-[13px] text-text-2 mt-1 leading-snug">
             {allPrereqsDone ? T("youveMasteredPrereqs") : T("thisOneCanBeTricky") + " " + T("tryTheseFirst")}
           </p>
         </div>
       </div>
 
+      {/* Prerequisite exercise rows */}
       {!allPrereqsDone && prereqs.map(({ exercise: ex, program: prog, level: lvl, done }) => (
-        <div key={ex.id} style={{
-          display: "flex", alignItems: "center", gap: 10,
-          padding: "10px 12px", marginBottom: 8,
-          background: "rgba(255,255,255,0.03)", borderRadius: 12,
-          border: `1px solid ${C.b1}`,
-        }}>
-          {done ? <CheckCircle2 size={16} color={C.acc} style={{ flexShrink: 0 }} /> : <CircleDot size={16} color={C.t3} style={{ flexShrink: 0 }} />}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{ex.name}</div>
-            <div style={{ fontSize: 11, color: C.t3, display: "flex", alignItems: "center", gap: 4 }}><Icon name={prog.icon} size={11} color={C.t3} /> {prog.name}</div>
+        <div
+          key={ex.id}
+          className="flex items-center gap-2.5 px-3 py-2.5 mb-2 bg-white/[0.03] rounded-xl border border-border"
+        >
+          {done
+            ? <CheckCircle2 size={16} className="text-training shrink-0" />
+            : <CircleDot size={16} className="text-muted shrink-0" />
+          }
+          <div className="flex-1 min-w-0">
+            <div className="text-[13px] font-bold text-text">{ex.name}</div>
+            <div className="flex items-center gap-1 text-[11px] text-muted">
+              <Icon name={prog.icon} size={11} color="#71717A" /> {prog.name}
+            </div>
           </div>
           {done ? (
-            <span style={{ fontSize: 11, color: C.acc, fontWeight: 600 }}>{T("alreadyDone")}</span>
+            <span className="text-[11px] text-training font-semibold">{T("alreadyDone")}</span>
           ) : (
             <button
               onClick={() => nav("exercise", { exercise: ex, level: lvl, program: prog })}
-              style={{
-                padding: "6px 14px", fontSize: 12, fontWeight: 800,
-                background: prog.gradient || C.acc, color: "#fff",
-                border: "none", borderRadius: 8, cursor: "pointer",
-              }}
+              className="px-3.5 py-1.5 text-xs font-extrabold text-white border-0 rounded-lg cursor-pointer"
+              style={{ background: prog.gradient || "#22C55E" }}
             >
               {T("challengeGo")}
             </button>
@@ -82,35 +74,21 @@ export default function DifficultyCard({ exerciseId, program }) {
         </div>
       ))}
 
+      {/* Inline tip */}
       {tip && (
-        <div style={{
-          marginTop: 8, padding: "10px 12px",
-          background: "rgba(255,255,255,0.02)", borderRadius: 10,
-          borderLeft: `3px solid ${C.amber}`,
-        }}>
-          <span style={{ fontSize: 11, fontWeight: 700, color: C.amber, textTransform: "uppercase", letterSpacing: 1 }}>{T("tipLabel")}</span>
-          <p style={{ fontSize: 12, color: C.t2, marginTop: 4, lineHeight: 1.6 }}>{tip}</p>
+        <div className="mt-2 px-3 py-2.5 bg-white/[0.02] rounded-[10px] border-s-[3px] border-xp">
+          <span className="text-[11px] font-bold text-xp uppercase tracking-[1px]">{T("tipLabel")}</span>
+          <p className="text-xs text-text-2 mt-1 leading-relaxed">{tip}</p>
         </div>
       )}
 
+      {/* Dismiss */}
       <button
         onClick={() => dismissDifficultySuggestion(exerciseId)}
-        style={{
-          marginTop: 12, padding: "10px 20px", fontSize: 13, fontWeight: 700,
-          background: "rgba(255,255,255,0.05)", color: C.t2,
-          border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer",
-          width: "100%",
-        }}
+        className="mt-3 px-5 py-2.5 w-full text-[13px] font-bold bg-white/[0.05] text-text-2 border border-border rounded-full cursor-pointer"
       >
         {T("gotItThanks")}
       </button>
-
-      <style>{`
-        @keyframes slideDown {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 }

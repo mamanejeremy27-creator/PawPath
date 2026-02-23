@@ -5,8 +5,7 @@ import { compressPhoto } from "../utils/photoCompressor.js";
 import PhotoImg from "./PhotoImg.jsx";
 import BottomNav from "./BottomNav.jsx";
 import { ArrowLeft, Heart, Dog, Camera } from "lucide-react";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
+import { cn } from "../lib/cn";
 
 export default function ReportSighting() {
   const { nav, T, screenParams } = useApp();
@@ -69,12 +68,15 @@ export default function ReportSighting() {
 
   if (done) {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-        <div style={{ textAlign: "center", animation: "fadeIn 0.3s ease" }}>
-          <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}><Heart size={64} color={C.acc} /></div>
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: C.acc, margin: "0 0 8px" }}>{T("lostSightingThanks")}</h2>
-          <p style={{ fontSize: 14, color: C.t2, margin: "0 0 24px", lineHeight: 1.6 }}>{T("lostSightingThanksSub")}</p>
-          <button onClick={() => nav("home")} style={{ padding: "14px 32px", fontSize: 14, fontWeight: 700, background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
+      <div className="min-h-screen bg-bg flex items-center justify-center p-5">
+        <div className="text-center animate-[fadeIn_0.3s_ease]">
+          <div className="mb-4 flex justify-center"><Heart size={64} className="text-training" /></div>
+          <h2 className="text-[22px] font-extrabold text-training m-0 mb-2">{T("lostSightingThanks")}</h2>
+          <p className="text-sm text-text-2 m-0 mb-6 leading-relaxed">{T("lostSightingThanksSub")}</p>
+          <button
+            onClick={() => nav("home")}
+            className="px-8 py-[14px] text-sm font-bold bg-surface text-text border border-border rounded-full cursor-pointer"
+          >
             {T("back")}
           </button>
         </div>
@@ -83,35 +85,38 @@ export default function ReportSighting() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen pb-24 bg-bg animate-[fadeIn_0.3s_ease]">
       {/* Header */}
-      <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t1, cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><ArrowLeft size={24} /></button>
-        <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: C.t1 }}>{T("lostReportSighting")}</h1>
+      <div className="px-5 pt-5 flex items-center gap-3">
+        <button onClick={() => nav("home")} className="bg-transparent border-none text-text cursor-pointer p-0 flex items-center"><ArrowLeft size={24} /></button>
+        <h1 className="text-[20px] font-extrabold m-0 text-text">{T("lostReportSighting")}</h1>
       </div>
 
       {/* Dog info */}
       {report && (
-        <div style={{ margin: "16px 20px 0", padding: "14px 18px", background: "rgba(239,68,68,0.06)", borderRadius: C.r, border: "1px solid rgba(239,68,68,0.15)", display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, overflow: "hidden", flexShrink: 0, background: C.s1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div className="mx-5 mt-4 px-[18px] py-[14px] bg-danger/[0.06] rounded-2xl border border-danger/15 flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-surface flex items-center justify-center">
             {report.dog_photo ? (
               <PhotoImg src={report.dog_photo} style={{ width: 48, height: 48, objectFit: "cover" }} />
             ) : (
-              <Dog size={24} color={C.t3} />
+              <Dog size={24} className="text-muted" />
             )}
           </div>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{report.dog_name}</div>
-            <div style={{ fontSize: 12, color: C.t3 }}>{report.dog_breed}</div>
+            <div className="text-[15px] font-bold text-text">{report.dog_name}</div>
+            <div className="text-xs text-muted">{report.dog_breed}</div>
           </div>
         </div>
       )}
 
-      <div style={{ padding: "16px 20px 0", display: "flex", flexDirection: "column", gap: 14 }}>
+      <div className="px-5 pt-4 flex flex-col gap-[14px]">
         {/* GPS */}
         <div>
-          <label style={lbl}>{T("lostYourLocation")}</label>
-          <div style={{ padding: "12px 16px", background: C.s1, borderRadius: 12, border: `1px solid ${C.b1}`, fontSize: 13, color: gpsStatus === "ok" ? C.acc : C.danger }}>
+          <label className={lbl}>{T("lostYourLocation")}</label>
+          <div className={cn(
+            "px-4 py-3 bg-surface rounded-xl border border-border text-[13px]",
+            gpsStatus === "ok" ? "text-training" : "text-danger"
+          )}>
             {gpsStatus === "loading" && T("lostGpsLoading")}
             {gpsStatus === "ok" && `${T("lostGpsLocked")} (${lat?.toFixed(4)}, ${lng?.toFixed(4)})`}
             {gpsStatus === "error" && T("lostGpsError")}
@@ -120,40 +125,48 @@ export default function ReportSighting() {
 
         {/* Name */}
         <div>
-          <label style={lbl}>{T("lostYourName")}</label>
-          <input value={reporterName} onChange={e => setReporterName(e.target.value)} placeholder={T("lostNamePlaceholder")} style={input} />
+          <label className={lbl}>{T("lostYourName")}</label>
+          <input value={reporterName} onChange={e => setReporterName(e.target.value)} placeholder={T("lostNamePlaceholder")} className={inputCls} />
         </div>
 
         {/* Notes */}
         <div>
-          <label style={lbl}>{T("lostSightingNotes")}</label>
-          <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder={T("lostSightingNotesPlaceholder")} rows={3} style={{ ...input, resize: "vertical", minHeight: 72, fontFamily: "inherit" }} />
+          <label className={lbl}>{T("lostSightingNotes")}</label>
+          <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder={T("lostSightingNotesPlaceholder")} rows={3} className={cn(inputCls, "resize-y min-h-[72px] font-[inherit]")} />
         </div>
 
         {/* Photo upload */}
         <div>
-          <label style={lbl}>{T("lostSightingPhoto")}</label>
-          <input ref={photoRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handlePhoto} />
+          <label className={lbl}>{T("lostSightingPhoto")}</label>
+          <input ref={photoRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
           {photo ? (
-            <div style={{ position: "relative", width: 80, height: 80, borderRadius: 12, overflow: "hidden" }}>
+            <div className="relative w-20 h-20 rounded-xl overflow-hidden">
               <PhotoImg src={photo} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              <button onClick={() => setPhoto(null)} style={{ position: "absolute", top: 2, right: 2, width: 22, height: 22, borderRadius: "50%", background: "rgba(0,0,0,0.7)", border: "none", color: "#fff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>{"×"}</button>
+              <button
+                onClick={() => setPhoto(null)}
+                className="absolute top-0.5 end-0.5 w-[22px] h-[22px] rounded-full bg-black/70 border-none text-white text-xs cursor-pointer flex items-center justify-center"
+              >{"×"}</button>
             </div>
           ) : (
-            <button onClick={() => photoRef.current?.click()} style={{ padding: "12px 20px", background: C.s1, border: `1px dashed ${C.t3}`, borderRadius: 12, color: C.t3, fontSize: 13, cursor: "pointer" }}>
+            <button
+              onClick={() => photoRef.current?.click()}
+              className="px-5 py-3 bg-surface border border-dashed border-muted rounded-xl text-muted text-[13px] cursor-pointer flex items-center gap-1"
+            >
               <Camera size={14} /> {T("lostAddPhoto")}
             </button>
           )}
         </div>
 
         {/* Submit */}
-        <button onClick={handleSubmit} disabled={sending || gpsStatus !== "ok"}
-          style={{
-            width: "100%", padding: 16, fontSize: 16, fontWeight: 800,
-            background: gpsStatus === "ok" ? C.danger : "rgba(239,68,68,0.3)",
-            color: "#fff", border: "none", borderRadius: 50, cursor: gpsStatus === "ok" ? "pointer" : "default",
-            marginTop: 8, opacity: sending ? 0.7 : 1,
-          }}>
+        <button
+          onClick={handleSubmit}
+          disabled={sending || gpsStatus !== "ok"}
+          className={cn(
+            "w-full py-4 text-base font-extrabold text-white border-none rounded-full mt-2",
+            gpsStatus === "ok" ? "bg-danger cursor-pointer" : "bg-danger/30 cursor-default",
+            sending && "opacity-70"
+          )}
+        >
           {sending ? T("lostSending") : T("lostSubmitSighting")}
         </button>
       </div>
@@ -163,5 +176,5 @@ export default function ReportSighting() {
   );
 }
 
-const lbl: React.CSSProperties = { display: "block", fontSize: 12, fontWeight: 700, color: "#A1A1AA", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 };
-const input: React.CSSProperties = { width: "100%", padding: "12px 16px", fontSize: 15, background: "#131316", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, color: "#F5F5F7", outline: "none", boxSizing: "border-box" };
+const lbl = "block text-xs font-bold text-text-2 uppercase tracking-widest mb-1.5";
+const inputCls = "w-full px-4 py-3 text-[15px] bg-surface-2 border border-border-2 rounded-2xl text-text outline-none focus:border-danger/50 transition-colors box-border";

@@ -4,8 +4,8 @@ import { api } from "../lib/api.js";
 import PhotoImg from "./PhotoImg.jsx";
 import LostDogMap from "./LostDogMap.jsx";
 import { AlertCircle, Dog, Eye } from "lucide-react";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", danger: "#EF4444", r: 16, rL: 24 };
+import { GlowBadge } from "./ui/GlowBadge";
+import { cn } from "../lib/cn";
 
 export default function LostDogPublicPage({ shareTokenFromUrl }: { shareTokenFromUrl?: string }) {
   const { nav, T, screenParams } = useApp();
@@ -26,19 +26,22 @@ export default function LostDogPublicPage({ shareTokenFromUrl }: { shareTokenFro
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 40, height: 40, border: "3px solid rgba(255,255,255,0.1)", borderTopColor: C.danger, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div className="min-h-screen bg-bg flex items-center justify-center">
+        <div className="w-10 h-10 border-[3px] border-white/10 border-t-danger rounded-full animate-spin" />
       </div>
     );
   }
 
   if (error || !report) {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}><Dog size={48} color={C.t3} /></div>
-          <p style={{ color: C.t3, fontSize: 15 }}>{T("lostReportNotFound")}</p>
-          <button onClick={() => nav("home")} style={{ marginTop: 16, padding: "12px 24px", background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer", fontSize: 14, fontWeight: 600 }}>{T("home")}</button>
+      <div className="min-h-screen bg-bg flex items-center justify-center p-5">
+        <div className="text-center">
+          <div className="mb-4 flex justify-center"><Dog size={48} className="text-muted" /></div>
+          <p className="text-muted text-[15px]">{T("lostReportNotFound")}</p>
+          <button
+            onClick={() => nav("home")}
+            className="mt-4 px-6 py-3 bg-surface text-text border border-border rounded-full cursor-pointer text-sm font-semibold"
+          >{T("home")}</button>
         </div>
       </div>
     );
@@ -54,57 +57,56 @@ export default function LostDogPublicPage({ shareTokenFromUrl }: { shareTokenFro
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen bg-bg animate-[fadeIn_0.3s_ease]">
       {/* Urgent banner */}
-      <div style={{
-        padding: "16px 20px", textAlign: "center",
-        background: isActive ? "rgba(239,68,68,0.1)" : "rgba(34,197,94,0.1)",
-        borderBottom: `1px solid ${isActive ? "rgba(239,68,68,0.2)" : "rgba(34,197,94,0.2)"}`,
-      }}>
-        <div style={{ fontSize: 14, fontWeight: 800, color: isActive ? C.danger : C.acc }}>
-          <AlertCircle size={16} style={{ display: "inline", verticalAlign: "middle", marginInlineEnd: 4 }} /> {isActive ? T("lostDogAlert") : `${report.dog_name} ${T("lostFoundTitle")}`}
+      <div className={cn(
+        "px-5 py-4 text-center border-b",
+        isActive ? "bg-danger/10 border-danger/20" : "bg-training/10 border-training/20"
+      )}>
+        <div className={cn("text-sm font-extrabold flex items-center justify-center gap-1", isActive ? "text-danger" : "text-training")}>
+          <AlertCircle size={16} className="inline align-middle me-1" />
+          {isActive ? T("lostDogAlert") : `${report.dog_name} ${T("lostFoundTitle")}`}
         </div>
       </div>
 
-      <div style={{ padding: "24px 20px", maxWidth: 480, margin: "0 auto" }}>
+      <div className="px-5 py-6 max-w-[480px] mx-auto">
         {/* Dog photo */}
-        <div style={{ textAlign: "center", marginBottom: 20 }}>
-          <div style={{
-            width: 120, height: 120, borderRadius: 24, overflow: "hidden", margin: "0 auto",
-            background: C.s1, display: "flex", alignItems: "center", justifyContent: "center",
-            border: `3px solid ${isActive ? C.danger : C.acc}`,
-          }}>
+        <div className="text-center mb-5">
+          <div className={cn(
+            "w-[120px] h-[120px] rounded-3xl overflow-hidden mx-auto bg-surface flex items-center justify-center border-[3px]",
+            isActive ? "border-danger" : "border-training"
+          )}>
             {report.dog_photo ? (
               <PhotoImg src={report.dog_photo} style={{ width: 120, height: 120, objectFit: "cover" }} />
             ) : (
-              <Dog size={56} color={C.t3} />
+              <Dog size={56} className="text-muted" />
             )}
           </div>
         </div>
 
         {/* Dog info */}
-        <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 800, color: C.t1, margin: "0 0 4px" }}>{report.dog_name}</h1>
-          {report.dog_breed && <div style={{ fontSize: 15, color: C.t3 }}>{report.dog_breed}</div>}
+        <div className="text-center mb-6">
+          <h1 className="text-[28px] font-extrabold text-text m-0 mb-1">{report.dog_name}</h1>
+          {report.dog_breed && <div className="text-[15px] text-muted">{report.dog_breed}</div>}
         </div>
 
         {/* Details */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="flex flex-col gap-3">
           {report.description && (
-            <div style={{ padding: "14px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>{T("lostDescription")}</div>
-              <div style={{ fontSize: 14, color: C.t1, lineHeight: 1.6 }}>{report.description}</div>
+            <div className="px-[18px] py-[14px] bg-surface rounded-2xl border border-border">
+              <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px] mb-1.5">{T("lostDescription")}</div>
+              <div className="text-sm text-text leading-relaxed">{report.description}</div>
             </div>
           )}
 
-          <div style={{ padding: "14px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>{T("lostLastSeenArea")}</div>
-            <div style={{ fontSize: 14, color: C.t1 }}>
+          <div className="px-[18px] py-[14px] bg-surface rounded-2xl border border-border">
+            <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px] mb-1.5">{T("lostLastSeenArea")}</div>
+            <div className="text-sm text-text">
               {report.last_location_name || `${report.last_lat?.toFixed(4)}, ${report.last_lng?.toFixed(4)}`}
             </div>
-            <div style={{ fontSize: 12, color: C.t3, marginTop: 4 }}>{timeSince()} {T("lostAgo")}</div>
+            <div className="text-xs text-muted mt-1">{timeSince()} {T("lostAgo")}</div>
             {report.last_lat && report.last_lng && (
-              <div style={{ marginTop: 10 }}>
+              <div className="mt-[10px]">
                 <LostDogMap
                   center={{ lat: report.last_lat, lng: report.last_lng }}
                   zoom={14}
@@ -117,11 +119,11 @@ export default function LostDogPublicPage({ shareTokenFromUrl }: { shareTokenFro
           </div>
 
           {report.contact_phone && isActive && (
-            <div style={{ padding: "14px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>{T("lostContact")}</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>
+            <div className="px-[18px] py-[14px] bg-surface rounded-2xl border border-border">
+              <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px] mb-1.5">{T("lostContact")}</div>
+              <div className="text-[15px] font-bold text-text">
                 {report.contact_name && <span>{report.contact_name} · </span>}
-                <a href={`tel:${report.contact_phone}`} style={{ color: C.acc, textDecoration: "none" }}>{report.contact_phone}</a>
+                <a href={`tel:${report.contact_phone}`} className="text-training no-underline">{report.contact_phone}</a>
               </div>
             </div>
           )}
@@ -129,21 +131,21 @@ export default function LostDogPublicPage({ shareTokenFromUrl }: { shareTokenFro
 
         {/* CTA button */}
         {isActive && (
-          <div style={{ marginTop: 24 }}>
-            <button onClick={() => nav("reportSighting", { reportId: report.id })}
-              style={{
-                width: "100%", padding: 18, fontSize: 18, fontWeight: 800,
-                background: C.danger, color: "#fff", border: "none", borderRadius: 50, cursor: "pointer",
-                boxShadow: "0 4px 24px rgba(239,68,68,0.4)",
-              }}>
+          <div className="mt-6">
+            <button
+              onClick={() => nav("reportSighting", { reportId: report.id })}
+              className="w-full py-[18px] text-lg font-extrabold bg-danger text-white border-none rounded-full cursor-pointer shadow-[0_4px_24px_rgba(239,68,68,0.4)] flex items-center justify-center gap-2"
+            >
               <Eye size={18} /> {T("lostISawThisDog")}
             </button>
 
-            <button onClick={() => {
-              const text = `🚨 ${T("lostDogAlert")}: ${report.dog_name}`;
-              if (navigator.share) navigator.share({ title: T("lostDogAlert"), text, url: window.location.href }).catch(() => {});
-            }}
-              style={{ width: "100%", marginTop: 10, padding: 14, fontSize: 14, fontWeight: 600, background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
+            <button
+              onClick={() => {
+                const text = `🚨 ${T("lostDogAlert")}: ${report.dog_name}`;
+                if (navigator.share) navigator.share({ title: T("lostDogAlert"), text, url: window.location.href }).catch(() => {});
+              }}
+              className="w-full mt-[10px] py-[14px] text-sm font-semibold bg-surface text-text border border-border rounded-full cursor-pointer"
+            >
               {T("lostShare")}
             </button>
           </div>

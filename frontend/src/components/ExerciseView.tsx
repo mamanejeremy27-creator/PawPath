@@ -4,10 +4,12 @@ import Timer from "./Timer.jsx";
 import DifficultyCard from "./DifficultyCard.jsx";
 import MoodCheck from "./MoodCheck.jsx";
 import VoiceMode from "./VoiceMode.jsx";
+import { Card } from "./ui/Card";
 import { calculateFreshness, getFreshnessColor } from "../utils/freshness.js";
 import { matchBreed, getBreedExerciseTip } from "../data/breedTraits.js";
 import { ArrowLeft, ArrowRight, Clock, Lightbulb, Dog, Mic, PartyPopper } from "lucide-react";
 import Icon from "./ui/Icon.jsx";
+import { cn } from "../lib/cn";
 
 const GEAR_ICONS = {
   clicker: "Bell",
@@ -22,14 +24,18 @@ const GEAR_ICONS = {
   whistle: "Megaphone",
 };
 
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", warn: "#F59E0B", rL: 24, r: 16 };
-const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
-const sectionLabel = (text) => <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{text}</div>;
-
 const HAS_SPEECH = typeof window !== "undefined" && "speechSynthesis" in window;
 
+const SectionLabel = ({ text }: { text: string }) => (
+  <div className="text-[11px] font-bold text-muted tracking-[2px] uppercase mb-3">{text}</div>
+);
+
 export default function ExerciseView() {
-  const { selExercise, selLevel, selProgram, completedExercises, journal, triggerComplete, nav, T, rtl, lang, gear: gearData, skillFreshness, incrementDifficultyField, moodCheck, dogProfile } = useApp();
+  const {
+    selExercise, selLevel, selProgram, completedExercises, journal,
+    triggerComplete, nav, T, rtl, lang, gear: gearData,
+    skillFreshness, incrementDifficultyField, moodCheck, dogProfile,
+  } = useApp();
   const enteredRef = useRef(null);
   const [showVoice, setShowVoice] = useState(false);
 
@@ -67,59 +73,95 @@ export default function ExerciseView() {
   }
 
   const freshData = skillFreshness[ex.id];
-  const daysSince = freshData ? Math.floor((Date.now() - new Date(freshData.lastCompleted).getTime()) / 86400000) : null;
+  const daysSince = freshData
+    ? Math.floor((Date.now() - new Date(freshData.lastCompleted).getTime()) / 86400000)
+    : null;
   const gear = (ex.gear || []).map(id => gearData.find(g => g.id === id)).filter(Boolean);
   const journalEntries = journal.filter(j => j.exerciseId === ex.id);
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, paddingBottom: 40, animation: "fadeIn 0.3s ease" }}>
-      <div style={{ padding: "24px 20px 16px" }}>
-        <button onClick={() => nav("level", { exercise: null })} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+    <div className="min-h-screen bg-bg pb-10 animate-[fadeIn_0.3s_ease]">
+      {/* Back nav */}
+      <div className="px-5 pt-6 pb-4">
+        <button
+          onClick={() => nav("level", { exercise: null })}
+          className="flex items-center gap-1.5 bg-transparent border-0 text-training text-sm font-semibold cursor-pointer p-0 mb-4"
+        >
           {rtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />} {selLevel.name}
         </button>
       </div>
-      <div style={{ padding: "0 20px" }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8, background: selProgram.gradient, fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 14 }}><Icon name={selProgram.icon} size={14} color="#fff" /> {selProgram.name}</div>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 900, margin: 0, color: C.t1 }}>{ex.name}</h2>
-        <div style={{ display: "flex", gap: 14, marginTop: 8, fontSize: 13, color: C.t3 }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Clock size={14} /> {Math.floor(ex.duration / 60)} {T("min")}</span>
-          <span style={{ color: selProgram.color }}>{"●".repeat(ex.difficulty)}{"○".repeat(4 - ex.difficulty)}</span>
+
+      <div className="px-5">
+        {/* Program badge — gradient is dynamic */}
+        <div
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold text-white mb-3.5"
+          style={{ background: selProgram.gradient }}
+        >
+          <Icon name={selProgram.icon} size={14} color="#fff" /> {selProgram.name}
         </div>
+
+        <h2 className="font-display text-[26px] font-black m-0 text-text">{ex.name}</h2>
+
+        <div className="flex gap-3.5 mt-2 text-[13px] text-muted">
+          <span className="inline-flex items-center gap-1">
+            <Clock size={14} /> {Math.floor(ex.duration / 60)} {T("min")}
+          </span>
+          <span style={{ color: selProgram.color }}>
+            {"●".repeat(ex.difficulty)}{"○".repeat(4 - ex.difficulty)}
+          </span>
+        </div>
+
+        {/* Freshness indicator */}
         {done && freshData && (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8 }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: getFreshnessColor(calculateFreshness(freshData.lastCompleted, freshData.interval)) }} />
-            <span style={{ fontSize: 12, color: C.t3 }}>{T("lastPracticed")} {daysSince} {T("daysAgo")}</span>
+          <div className="flex items-center gap-1.5 mt-2">
+            <div
+              className="w-2 h-2 rounded-full"
+              style={{ background: getFreshnessColor(calculateFreshness(freshData.lastCompleted, freshData.interval)) }}
+            />
+            <span className="text-xs text-muted">{T("lastPracticed")} {daysSince} {T("daysAgo")}</span>
           </div>
         )}
-        <p style={{ fontSize: 15, color: C.t2, marginTop: 14, lineHeight: 1.7 }}>{ex.description}</p>
+
+        <p className="text-[15px] text-text-2 mt-3.5 leading-[1.7]">{ex.description}</p>
 
         <Timer duration={ex.duration} />
 
-        {/* Voice Mode Button */}
+        {/* Voice mode button */}
         {HAS_SPEECH && (
-          <button onClick={() => setShowVoice(true)}
-            style={{ width: "100%", marginTop: 14, padding: "16px", fontSize: 15, fontWeight: 700, background: "rgba(34,197,94,0.08)", color: C.acc, border: "1px solid rgba(34,197,94,0.2)", borderRadius: 50, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, transition: "all 0.2s" }}>
+          <button
+            onClick={() => setShowVoice(true)}
+            className="w-full mt-3.5 px-4 py-4 text-[15px] font-bold bg-training/[0.08] text-training border border-training/20 rounded-full cursor-pointer flex items-center justify-center gap-2.5 transition-all duration-200"
+          >
             <Mic size={20} /> {T("voiceStart")}
           </button>
         )}
 
         {/* Steps */}
-        <div style={{ marginTop: 20, ...cardStyle }}>
-          {sectionLabel(T("howToDoIt"))}
+        <Card className="mt-5">
+          <SectionLabel text={T("howToDoIt")} />
           {ex.steps.map((step, i) => (
-            <div key={i} style={{ display: "flex", gap: 12, marginBottom: i < ex.steps.length - 1 ? 16 : 0, alignItems: "flex-start" }}>
-              <div style={{ width: 26, height: 26, borderRadius: 7, background: selProgram.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: "#fff", flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
-              <p style={{ fontSize: 14, color: C.t2, lineHeight: 1.65, margin: 0 }}>{step}</p>
+            <div
+              key={i}
+              className={cn("flex gap-3 items-start", i < ex.steps.length - 1 && "mb-4")}
+            >
+              {/* Step number — gradient is dynamic */}
+              <div
+                className="w-[26px] h-[26px] rounded-[7px] flex items-center justify-center text-[11px] font-extrabold text-white shrink-0 mt-[1px]"
+                style={{ background: selProgram.gradient }}
+              >
+                {i + 1}
+              </div>
+              <p className="text-sm text-text-2 leading-[1.65] m-0">{step}</p>
             </div>
           ))}
-        </div>
+        </Card>
 
         {/* Pro Tip */}
-        <div style={{ marginTop: 14, padding: "18px", background: "rgba(34,197,94,0.05)", borderRadius: C.rL, border: "1px solid rgba(34,197,94,0.1)", display: "flex", gap: 12, alignItems: "flex-start" }}>
-          <Lightbulb size={20} color={C.acc} style={{ flexShrink: 0 }} />
+        <div className="mt-3.5 p-[18px] bg-training/[0.05] rounded-3xl border border-training/10 flex gap-3 items-start">
+          <Lightbulb size={20} className="text-training shrink-0" />
           <div>
-            <h4 style={{ fontSize: 12, fontWeight: 800, margin: 0, color: C.acc, textTransform: "uppercase", letterSpacing: 1 }}>{T("proTip")}</h4>
-            <p style={{ fontSize: 13, color: C.t2, marginTop: 6, lineHeight: 1.6 }}>{ex.tips}</p>
+            <h4 className="text-xs font-extrabold m-0 text-training uppercase tracking-[1px]">{T("proTip")}</h4>
+            <p className="text-[13px] text-text-2 mt-1.5 leading-relaxed">{ex.tips}</p>
           </div>
         </div>
 
@@ -129,11 +171,13 @@ export default function ExerciseView() {
           const breedTip = breedData ? getBreedExerciseTip(breedData.id, ex.id, lang) : null;
           if (!breedTip) return null;
           return (
-            <div style={{ marginTop: 14, padding: "18px", background: "rgba(245,158,11,0.05)", borderRadius: C.rL, border: "1px solid rgba(245,158,11,0.12)", display: "flex", gap: 12, alignItems: "flex-start" }}>
-              <Dog size={20} color={C.warn} style={{ flexShrink: 0 }} />
+            <div className="mt-3.5 p-[18px] bg-xp/[0.05] rounded-3xl border border-xp/[0.12] flex gap-3 items-start">
+              <Dog size={20} className="text-xp shrink-0" />
               <div>
-                <h4 style={{ fontSize: 12, fontWeight: 800, margin: 0, color: C.warn, textTransform: "uppercase", letterSpacing: 1 }}>{T("breedTip")} — {breedData.name[lang] || breedData.name.en}</h4>
-                <p style={{ fontSize: 13, color: C.t2, marginTop: 6, lineHeight: 1.6 }}>{breedTip}</p>
+                <h4 className="text-xs font-extrabold m-0 text-xp uppercase tracking-[1px]">
+                  {T("breedTip")} — {breedData.name[lang] || breedData.name.en}
+                </h4>
+                <p className="text-[13px] text-text-2 mt-1.5 leading-relaxed">{breedTip}</p>
               </div>
             </div>
           );
@@ -141,66 +185,91 @@ export default function ExerciseView() {
 
         {/* Gear */}
         {gear.length > 0 && (
-          <div style={{ marginTop: 14, ...cardStyle }}>
-            <h4 style={{ fontSize: 12, fontWeight: 800, margin: "0 0 12px", color: C.warn, textTransform: "uppercase", letterSpacing: 1 }}>{T("recommendedGear")}</h4>
+          <Card className="mt-3.5">
+            <h4 className="text-xs font-extrabold m-0 mb-3 text-xp uppercase tracking-[1px]">{T("recommendedGear")}</h4>
             {gear.map(g => (
-              <div key={g.id} style={{ display: "flex", gap: 10, marginBottom: 10, padding: "10px", background: "rgba(255,255,255,0.02)", borderRadius: 10 }}>
-                <Icon name={GEAR_ICONS[g.id] || "ShoppingBag"} size={20} color={C.warn} />
-                <div><div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{g.name} <span style={{ color: C.t3, fontWeight: 500 }}>· <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "embed" }}>{g.price}</span></span></div><div style={{ fontSize: 12, color: C.t3, marginTop: 3, lineHeight: 1.5 }}>{g.tip}</div></div>
+              <div key={g.id} className="flex gap-2.5 mb-2.5 p-2.5 bg-white/[0.02] rounded-[10px]">
+                <Icon name={GEAR_ICONS[g.id] || "ShoppingBag"} size={20} color="#F59E0B" />
+                <div>
+                  <div className="text-[13px] font-bold text-text">
+                    {g.name}{" "}
+                    <span className="text-muted font-medium">
+                      · <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "embed" }}>{g.price}</span>
+                    </span>
+                  </div>
+                  <div className="text-xs text-muted mt-[3px] leading-snug">{g.tip}</div>
+                </div>
               </div>
             ))}
-          </div>
+          </Card>
         )}
 
         {/* Past journal entries */}
         {journalEntries.length > 0 && (
-          <div style={{ marginTop: 14, ...cardStyle }}>
-            <h4 style={{ fontSize: 12, fontWeight: 800, margin: "0 0 12px", color: "#8B5CF6", textTransform: "uppercase", letterSpacing: 1 }}>{T("yourPastNotes")}</h4>
+          <Card className="mt-3.5">
+            <h4 className="text-xs font-extrabold m-0 mb-3 text-achieve uppercase tracking-[1px]">{T("yourPastNotes")}</h4>
             {journalEntries.slice(-3).map(j => (
-              <div key={j.id} style={{ padding: "10px 12px", background: "rgba(255,255,255,0.02)", borderRadius: 10, marginBottom: 8, borderLeft: `3px solid ${selProgram.color}` }}>
-                <div style={{ fontSize: 11, color: C.t3, marginBottom: 4 }}>{new Date(j.date).toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { month: "short", day: "numeric" })} · {["😟","😐","🙂","😊","🤩"][j.rating - 1]} {j.rating}/5</div>
-                <p style={{ fontSize: 13, color: C.t2, margin: 0, lineHeight: 1.5 }}>{j.note}</p>
+              <div
+                key={j.id}
+                className="px-3 py-2.5 bg-white/[0.02] rounded-[10px] mb-2 border-s-[3px]"
+                style={{ borderColor: selProgram.color }}
+              >
+                <div className="text-[11px] text-muted mb-1">
+                  {new Date(j.date).toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { month: "short", day: "numeric" })}
+                  {" · "}{["😟","😐","🙂","😊","🤩"][j.rating - 1]} {j.rating}/5
+                </div>
+                <p className="text-[13px] text-text-2 m-0 leading-snug">{j.note}</p>
               </div>
             ))}
-          </div>
+          </Card>
         )}
 
         {/* Difficulty Suggestion Card */}
         <DifficultyCard exerciseId={ex.id} program={selProgram} />
 
-        {/* Complete */}
+        {/* Complete / done actions */}
         {!done ? (
-          <button onClick={() => { if (enteredRef.current) enteredRef.current.completed = true; triggerComplete(ex.id, selLevel.id, selProgram.id); }}
-            style={{ width: "100%", padding: "20px", marginTop: 24, fontSize: 16, fontWeight: 800, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer", boxShadow: "0 8px 32px rgba(34,197,94,0.25)" }}>
+          <button
+            onClick={() => { if (enteredRef.current) enteredRef.current.completed = true; triggerComplete(ex.id, selLevel.id, selProgram.id); }}
+            className="w-full py-5 mt-6 text-base font-extrabold bg-training text-black border-0 rounded-full cursor-pointer shadow-[0_8px_32px_rgba(34,197,94,0.25)]"
+          >
             {T("markComplete")}
           </button>
         ) : (
           <>
-            <button onClick={() => { if (enteredRef.current) enteredRef.current.completed = true; triggerComplete(ex.id, selLevel.id, selProgram.id); }}
-              style={{ width: "100%", padding: "20px", marginTop: 24, fontSize: 16, fontWeight: 800, background: "transparent", color: C.acc, border: `2px solid ${C.acc}`, borderRadius: 50, cursor: "pointer" }}>
+            <button
+              onClick={() => { if (enteredRef.current) enteredRef.current.completed = true; triggerComplete(ex.id, selLevel.id, selProgram.id); }}
+              className="w-full py-5 mt-6 text-base font-extrabold bg-transparent text-training border-2 border-training rounded-full cursor-pointer"
+            >
               {T("reviewRefresh")}
             </button>
 
-            <div style={{ marginTop: 16 }}>
+            <div className="mt-4">
               {allProgramDone ? (
                 <>
-                  <div style={{ textAlign: "center", padding: "16px 0" }}>
-                    <div><PartyPopper size={48} color={C.acc} /></div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: C.acc, marginTop: 8 }}>{T("programComplete")}</div>
+                  <div className="text-center py-4">
+                    <div><PartyPopper size={48} className="text-training" /></div>
+                    <div className="text-base font-bold text-training mt-2">{T("programComplete")}</div>
                   </div>
-                  <button onClick={() => nav("home", { program: null, level: null, exercise: null })}
-                    style={{ width: "100%", padding: "18px", fontSize: 15, fontWeight: 700, background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
+                  <button
+                    onClick={() => nav("home", { program: null, level: null, exercise: null })}
+                    className="w-full py-[18px] text-[15px] font-bold bg-surface text-text border border-border rounded-full cursor-pointer"
+                  >
                     {T("backToPrograms")}
                   </button>
                 </>
               ) : nextExInfo && (
                 <>
-                  <button onClick={() => nav("exercise", { exercise: nextExInfo.exercise, level: nextExInfo.level })}
-                    style={{ width: "100%", padding: "18px", fontSize: 15, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer", boxShadow: "0 8px 32px rgba(34,197,94,0.25)" }}>
+                  <button
+                    onClick={() => nav("exercise", { exercise: nextExInfo.exercise, level: nextExInfo.level })}
+                    className="w-full py-[18px] text-[15px] font-bold bg-training text-black border-0 rounded-full cursor-pointer shadow-[0_8px_32px_rgba(34,197,94,0.25)]"
+                  >
                     {T("nextExercise")}
                   </button>
-                  <button onClick={() => nav("program", { level: null, exercise: null })}
-                    style={{ width: "100%", padding: "18px", marginTop: 10, fontSize: 15, fontWeight: 700, background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
+                  <button
+                    onClick={() => nav("program", { level: null, exercise: null })}
+                    className="w-full py-[18px] mt-2.5 text-[15px] font-bold bg-surface text-text border border-border rounded-full cursor-pointer"
+                  >
                     {T("backToProgram")}
                   </button>
                 </>
@@ -209,6 +278,7 @@ export default function ExerciseView() {
           </>
         )}
       </div>
+
       <MoodCheck />
       {showVoice && (
         <VoiceMode

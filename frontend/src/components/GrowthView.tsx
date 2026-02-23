@@ -4,8 +4,6 @@ import PhotoImg from "./PhotoImg.jsx";
 import { Camera, ArrowRight } from "lucide-react";
 import Icon from "./ui/Icon.jsx";
 
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", rL: 24 };
-
 export default function GrowthView() {
   const { journal, lang, T } = useApp();
 
@@ -31,9 +29,9 @@ export default function GrowthView() {
 
   if (monthlyPhotos.length === 0) {
     return (
-      <div style={{ textAlign: "center", padding: "60px 40px", color: C.t3 }}>
-        <div style={{ marginBottom: 16 }}><Camera size={48} color={C.t3} /></div>
-        <p style={{ fontSize: 15, lineHeight: 1.6 }}>{T("noEntries")}</p>
+      <div className="text-center px-10 py-16 text-muted">
+        <div className="mb-4"><Camera size={48} className="text-muted mx-auto" /></div>
+        <p className="text-[15px] leading-relaxed">{T("noEntries")}</p>
       </div>
     );
   }
@@ -44,33 +42,40 @@ export default function GrowthView() {
   const showComparison = monthlyPhotos.length >= 2;
 
   return (
-    <div style={{ padding: "0 20px" }}>
+    <div className="px-5">
       {/* Then vs Now */}
       {showComparison && (
-        <div style={{ marginBottom: 24, padding: "18px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: C.acc, letterSpacing: 2, textTransform: "uppercase", marginBottom: 14, textAlign: "center" }}>{T("thenVsNow")}</div>
-          <div style={{ display: "flex", gap: 12 }}>
-            <div style={{ flex: 1, textAlign: "center" }}>
+        <div className="mb-6 p-[18px] bg-surface rounded-3xl border border-border">
+          <div className="text-[11px] font-bold text-training tracking-[2px] uppercase mb-3.5 text-center">
+            {T("thenVsNow")}
+          </div>
+          <div className="flex gap-3">
+            <div className="flex-1 text-center">
               <PhotoImg src={first.photo} style={{ width: "100%", aspectRatio: "1", borderRadius: 14, objectFit: "cover" }} />
-              <div style={{ fontSize: 11, color: C.t3, marginTop: 6, fontWeight: 600 }}>{first.label}</div>
+              <div className="text-[11px] text-muted mt-1.5 font-semibold">{first.label}</div>
             </div>
-            <div style={{ display: "flex", alignItems: "center" }}><ArrowRight size={20} color={C.t3} /></div>
-            <div style={{ flex: 1, textAlign: "center" }}>
+            <div className="flex items-center">
+              <ArrowRight size={20} className="text-muted" />
+            </div>
+            <div className="flex-1 text-center">
               <PhotoImg src={last.photo} style={{ width: "100%", aspectRatio: "1", borderRadius: 14, objectFit: "cover" }} />
-              <div style={{ fontSize: 11, color: C.t3, marginTop: 6, fontWeight: 600 }}>{last.label}</div>
+              <div className="text-[11px] text-muted mt-1.5 font-semibold">{last.label}</div>
             </div>
           </div>
         </div>
       )}
 
       {/* Monthly grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+      <div className="grid grid-cols-3 gap-2.5">
         {monthlyPhotos.map(m => (
-          <div key={m.key} style={{ background: C.s1, borderRadius: 14, border: `1px solid ${C.b1}`, overflow: "hidden" }}>
+          <div key={m.key} className="bg-surface rounded-2xl border border-border overflow-hidden">
             <PhotoImg src={m.photo} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} />
-            <div style={{ padding: "8px 10px" }}>
-              <div style={{ fontSize: 10, color: C.t3, fontWeight: 600 }}>{m.label}</div>
-              <div style={{ fontSize: 11, color: C.t2, marginTop: 2, display: "flex", alignItems: "center", gap: 3 }}>{m.programIcon ? <Icon name={m.programIcon} size={11} /> : <span>{m.programEmoji}</span>} {m.exerciseName}</div>
+            <div className="px-2.5 py-2">
+              <div className="text-[10px] text-muted font-semibold">{m.label}</div>
+              <div className="text-[11px] text-text-2 mt-0.5 flex items-center gap-[3px]">
+                {m.programIcon ? <Icon name={m.programIcon} size={11} /> : <span>{m.programEmoji}</span>}
+                {m.exerciseName}
+              </div>
             </div>
           </div>
         ))}

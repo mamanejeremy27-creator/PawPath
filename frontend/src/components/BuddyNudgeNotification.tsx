@@ -2,8 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { api } from "../lib/api.js";
 
-const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E" };
-
 export default function BuddyNudgeNotification() {
   const { isAuthenticated, T } = useApp();
   const [nudge, setNudge] = useState(null);
@@ -42,29 +40,21 @@ export default function BuddyNudgeNotification() {
   return (
     <div
       onClick={dismiss}
-      style={{
-        position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)",
-        zIndex: 500, display: "flex", alignItems: "center", gap: 12,
-        background: "rgba(20,20,24,0.95)", border: "1px solid rgba(34,197,94,0.25)",
-        padding: "14px 20px", borderRadius: 20,
-        boxShadow: "0 16px 48px rgba(0,0,0,0.6)", backdropFilter: "blur(24px)",
-        animation: "badgeDrop 0.5s ease", cursor: "pointer",
-        width: "calc(100% - 40px)", maxWidth: 360,
-      }}
+      className="fixed top-4 inset-x-4 z-[500] flex items-center gap-3 bg-surface border border-social/30 px-5 py-[14px] rounded-[20px] shadow-[0_16px_48px_rgba(0,0,0,0.6)] backdrop-blur-[24px] animate-[badgeDrop_0.5s_ease] cursor-pointer max-w-[360px] mx-auto"
     >
-      <span style={{ fontSize: 28, flexShrink: 0 }}>{"\uD83D\uDC4B"}</span>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 10, color: C.acc, textTransform: "uppercase", letterSpacing: 2, fontWeight: 800 }}>
+      <span className="text-[28px] shrink-0">{"\uD83D\uDC4B"}</span>
+      <div className="flex-1 min-w-0">
+        <div className="text-[10px] text-training uppercase tracking-[2px] font-extrabold">
           {T("buddyNudge")}
         </div>
-        <div style={{ fontSize: 14, fontWeight: 700, color: C.t1, marginTop: 2 }}>
+        <div className="text-sm font-bold text-text mt-0.5">
           {nudge.from_name || T("buddyTrainer")}
         </div>
-        <div style={{ fontSize: 13, color: C.t3, marginTop: 2 }}>
+        <div className="text-[13px] text-muted mt-0.5">
           {nudge.message}
         </div>
       </div>
-      <span style={{ fontSize: 11, color: C.t3, flexShrink: 0 }}>{T("tapDismiss")}</span>
+      <span className="text-[11px] text-muted shrink-0">{T("tapDismiss")}</span>
     </div>
   );
 }

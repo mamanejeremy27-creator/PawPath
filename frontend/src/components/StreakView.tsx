@@ -1,8 +1,7 @@
 import { ArrowLeft, CheckCircle2, Unlock, Lock, Snowflake } from "lucide-react";
 import Icon from "./ui/Icon.jsx";
 import { useApp } from "../context/AppContext.jsx";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
+import { cn } from "../lib/cn";
 
 export default function StreakView() {
   const { streakData, nav, T, lang, STREAK_MILESTONES } = useApp();
@@ -11,53 +10,71 @@ export default function StreakView() {
   const nextFreezeMs = STREAK_MILESTONES.find(m => m.freezeReward && m.days > current);
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 40, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen pb-10 bg-bg animate-[fadeIn_0.3s_ease]">
       {/* Header */}
-      <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.t3, cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><ArrowLeft size={24} /></button>
-        <h2 style={{ fontSize: 18, fontWeight: 800, color: C.t1, margin: 0 }}>{T("streakDetails")}</h2>
+      <div className="px-5 py-4 flex items-center gap-3">
+        <button
+          onClick={() => nav("home")}
+          className="bg-transparent border-0 text-muted cursor-pointer p-0 flex items-center"
+        >
+          <ArrowLeft size={24} />
+        </button>
+        <h2 className="text-lg font-black text-text m-0">{T("streakDetails")}</h2>
       </div>
 
       {/* Streak hero */}
-      <div style={{ textAlign: "center", padding: "24px 20px 32px" }}>
-        <div style={{ fontSize: 48, animation: "pulse 2s infinite" }}>{fire}</div>
-        <div style={{ fontSize: 42, fontWeight: 800, color: C.t1, marginTop: 8 }}>{current}</div>
-        <div style={{ fontSize: 16, color: C.t3, fontWeight: 600 }}>{T("dayStreak")}</div>
-        <div style={{ fontSize: 13, color: C.t3, marginTop: 8 }}>{T("bestStreakLabel")}: {best} {T("daysOfStreak")}</div>
+      <div className="text-center px-5 pt-6 pb-8">
+        <div className="text-5xl animate-[pulse_2s_infinite]">{fire}</div>
+        <div className="text-[42px] font-black text-text mt-2">{current}</div>
+        <div className="text-base text-muted font-semibold">{T("dayStreak")}</div>
+        <div className="text-[13px] text-muted mt-2">
+          {T("bestStreakLabel")}: {best} {T("daysOfStreak")}
+        </div>
         {recovery.active && (
-          <div style={{ marginTop: 12, padding: "8px 18px", background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: 20, display: "inline-block", fontSize: 13, color: "#F59E0B", fontWeight: 600 }}>
+          <div className="mt-3 px-[18px] py-2 bg-xp/10 border border-xp/20 rounded-full inline-block text-[13px] text-xp font-semibold">
             {T("recoveryChallenge")}: {recovery.daysCompleted}/3
           </div>
         )}
       </div>
 
       {/* Milestones */}
-      <div style={{ padding: "0 20px", marginBottom: 24 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{T("milestones")}</div>
-        <div style={{ background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}`, overflow: "hidden" }}>
+      <div className="px-5 mb-6">
+        <div className="text-[11px] font-bold text-muted tracking-[2px] uppercase mb-3">{T("milestones")}</div>
+        <div className="bg-surface rounded-3xl border border-border overflow-hidden">
           {STREAK_MILESTONES.map((m, i) => {
             const unlocked = unlockedMilestones.includes(m.rewardId);
             const isNext = nextMilestone && m.rewardId === nextMilestone.rewardId;
             return (
-              <div key={m.rewardId} style={{
-                padding: "14px 18px", display: "flex", alignItems: "center", gap: 12,
-                borderBottom: i < STREAK_MILESTONES.length - 1 ? `1px solid ${C.b1}` : "none",
-                opacity: unlocked ? 1 : isNext ? 0.85 : 0.4,
-              }}>
-                <span style={{ width: 24, display: "flex", justifyContent: "center", alignItems: "center" }}>
-                  {unlocked ? <CheckCircle2 size={16} color={C.acc} /> : isNext ? <Unlock size={16} color={C.t3} /> : <Lock size={16} color={C.t3} />}
+              <div
+                key={m.rewardId}
+                className={cn(
+                  "px-[18px] py-3.5 flex items-center gap-3",
+                  i < STREAK_MILESTONES.length - 1 && "border-b border-border",
+                  unlocked ? "opacity-100" : isNext ? "opacity-85" : "opacity-40"
+                )}
+              >
+                <span className="w-6 flex justify-center items-center">
+                  {unlocked
+                    ? <CheckCircle2 size={16} className="text-training" />
+                    : isNext
+                      ? <Unlock size={16} className="text-muted" />
+                      : <Lock size={16} className="text-muted" />
+                  }
                 </span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: unlocked ? C.t1 : C.t3 }}>
+                <div className="flex-1 min-w-0">
+                  <div className={cn("text-[13px] font-bold", unlocked ? "text-text" : "text-muted")}>
                     {m.days} {T("daysOfStreak")} — {lang === "he" ? (m.nameHe || m.name) : m.name}
                   </div>
                   {isNext && (
-                    <div style={{ height: 3, background: C.b1, borderRadius: 10, overflow: "hidden", marginTop: 6, maxWidth: 120 }}>
-                      <div style={{ height: "100%", width: `${progress * 100}%`, background: C.acc, borderRadius: 10 }} />
+                    <div className="h-[3px] bg-border rounded-[10px] overflow-hidden mt-1.5 max-w-[120px]">
+                      <div
+                        className="h-full bg-training rounded-[10px]"
+                        style={{ width: `${progress * 100}%` }}
+                      />
                     </div>
                   )}
                 </div>
-                <Icon name={m.icon || "Trophy"} size={18} color={unlocked ? C.acc : C.t3} />
+                <Icon name={m.icon || "Trophy"} size={18} color={unlocked ? "#22C55E" : "#71717A"} />
               </div>
             );
           })}
@@ -65,17 +82,24 @@ export default function StreakView() {
       </div>
 
       {/* Streak Freezes */}
-      <div style={{ padding: "0 20px", marginBottom: 24 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{T("streakFreeze")}</div>
-        <div style={{ background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}`, padding: "16px 18px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+      <div className="px-5 mb-6">
+        <div className="text-[11px] font-bold text-muted tracking-[2px] uppercase mb-3">{T("streakFreeze")}</div>
+        <div className="bg-surface rounded-3xl border border-border px-[18px] py-4">
+          <div className="flex items-center gap-2 mb-2">
             {[0, 1, 2].map(i => (
-              <Snowflake key={i} size={20} color="#93C5FD" style={{ opacity: i < freezesAvailable ? 1 : 0.2 }} />
+              <Snowflake
+                key={i}
+                size={20}
+                color="#93C5FD"
+                style={{ opacity: i < freezesAvailable ? 1 : 0.2 }}
+              />
             ))}
-            <span style={{ fontSize: 14, color: C.t1, fontWeight: 700, marginInlineStart: 8 }}>{freezesAvailable}/3 {T("freezesAvailable")}</span>
+            <span className="text-sm text-text font-bold ms-2">
+              {freezesAvailable}/3 {T("freezesAvailable")}
+            </span>
           </div>
           {nextFreezeMs && (
-            <div style={{ fontSize: 12, color: C.t3 }}>
+            <div className="text-xs text-muted">
               {T("nextReward")}: {nextFreezeMs.days} {T("daysOfStreak")}
             </div>
           )}
@@ -83,18 +107,24 @@ export default function StreakView() {
       </div>
 
       {/* Stats */}
-      <div style={{ padding: "0 20px", marginBottom: 24 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Stats</div>
-        <div style={{ background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` }}>
+      <div className="px-5 mb-6">
+        <div className="text-[11px] font-bold text-muted tracking-[2px] uppercase mb-3">Stats</div>
+        <div className="bg-surface rounded-3xl border border-border">
           {[
             [T("currentStreak"), `${current} ${T("daysOfStreak")}`],
             [T("bestStreakLabel"), `${best} ${T("daysOfStreak")}`],
             [T("totalTrainingDays"), totalTrainingDays],
             [T("freezesUsed"), freezesUsed],
           ].map(([label, val], i) => (
-            <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "14px 18px", borderBottom: i < 3 ? `1px solid ${C.b1}` : "none" }}>
-              <span style={{ fontSize: 14, color: C.t3 }}>{label}</span>
-              <span style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{val}</span>
+            <div
+              key={i}
+              className={cn(
+                "flex justify-between px-[18px] py-3.5",
+                i < 3 && "border-b border-border"
+              )}
+            >
+              <span className="text-sm text-muted">{label}</span>
+              <span className="text-sm font-bold text-text">{val}</span>
             </div>
           ))}
         </div>

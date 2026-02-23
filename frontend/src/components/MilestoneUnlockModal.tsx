@@ -2,8 +2,6 @@ import { useApp } from "../context/AppContext.jsx";
 import BadgeIcon from "./ui/BadgeIcon.jsx";
 import { Palette, Crown, Medal, Snowflake } from "lucide-react";
 
-const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E" };
-
 export default function MilestoneUnlockModal() {
   const { milestoneUnlock, setMilestoneUnlock, T, lang } = useApp();
   if (!milestoneUnlock) return null;
@@ -15,62 +13,52 @@ export default function MilestoneUnlockModal() {
   return (
     <div
       onClick={() => setMilestoneUnlock(null)}
-      style={{
-        position: "fixed", inset: 0, zIndex: 600,
-        background: "rgba(0,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center",
-        animation: "fadeIn 0.3s ease",
-      }}
+      className="fixed inset-0 z-[600] bg-black/90 flex items-center justify-center animate-[fadeIn_0.3s_ease]"
     >
       <div
         onClick={e => e.stopPropagation()}
-        style={{
-          background: C.s1, borderRadius: 28, padding: "40px 28px", maxWidth: 320, width: "90%",
-          textAlign: "center", border: `1px solid rgba(34,197,94,0.2)`,
-          boxShadow: "0 0 60px rgba(34,197,94,0.15)", animation: "badgeDrop 0.5s ease",
-        }}
+        className="bg-surface rounded-[28px] px-7 py-10 max-w-[320px] w-[90%] text-center border border-training/20 shadow-[0_0_60px_rgba(34,197,94,0.15)] animate-[badgeDrop_0.5s_ease]"
       >
         {/* Celebration glow */}
-        <div style={{ marginBottom: 16, display: "flex", justifyContent: "center", animation: "pulse 1.5s infinite", filter: "drop-shadow(0 0 12px rgba(34,197,94,0.4))" }}>
+        <div className="mb-4 flex justify-center animate-[pulse_1.5s_infinite] drop-shadow-[0_0_12px_rgba(34,197,94,0.4)]">
           <BadgeIcon icon={m.icon || "Award"} category={m.category || "streak"} size={80} earned={true} />
         </div>
 
-        <div style={{ fontSize: 10, color: C.acc, textTransform: "uppercase", letterSpacing: 2, fontWeight: 800, marginBottom: 6 }}>
+        <div className="text-[10px] text-training uppercase tracking-[2px] font-black mb-1.5">
           {T("milestoneUnlocked")}
         </div>
 
-        <h2 style={{ fontSize: 22, fontWeight: 800, color: C.t1, margin: "0 0 8px" }}>{name}</h2>
-        <p style={{ fontSize: 14, color: C.t3, margin: "0 0 16px", lineHeight: 1.5 }}>{desc}</p>
+        <h2 className="text-[22px] font-black text-text m-0 mb-2">{name}</h2>
+        <p className="text-sm text-muted m-0 mb-4 leading-relaxed">{desc}</p>
 
         {m.xpBonus > 0 && (
-          <div style={{
-            display: "inline-block", padding: "8px 20px", background: "rgba(34,197,94,0.1)",
-            border: "1px solid rgba(34,197,94,0.2)", borderRadius: 20,
-            fontSize: 14, fontWeight: 700, color: C.acc, marginBottom: 8,
-          }}>
+          <div className="inline-block px-5 py-2 bg-training/10 border border-training/20 rounded-full text-sm font-bold text-training mb-2">
             +{m.xpBonus} XP
           </div>
         )}
 
         {m.freezeReward && (
-          <div style={{ fontSize: 13, color: "#60A5FA", marginBottom: 8 }}>
-            <Snowflake size={14} color="#60A5FA" style={{ display: "inline", verticalAlign: "middle" }} /> {T("streakFreeze")} +1
+          <div className="text-[13px] text-health mb-2">
+            <Snowflake size={14} color="#60A5FA" className="inline align-middle" /> {T("streakFreeze")} +1
           </div>
         )}
 
         {/* Reward type indicator */}
-        <div style={{ fontSize: 12, color: C.t3, marginBottom: 20 }}>
-          {m.reward === "theme" && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Palette size={14} /> {T("themes")}</span>}
-          {m.reward === "avatar" && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Crown size={14} /> {T("accessories")}</span>}
-          {m.reward === "badge" && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Medal size={14} /> {T("badges")}</span>}
+        <div className="text-xs text-muted mb-5">
+          {m.reward === "theme" && (
+            <span className="inline-flex items-center gap-1"><Palette size={14} /> {T("themes")}</span>
+          )}
+          {m.reward === "avatar" && (
+            <span className="inline-flex items-center gap-1"><Crown size={14} /> {T("accessories")}</span>
+          )}
+          {m.reward === "badge" && (
+            <span className="inline-flex items-center gap-1"><Medal size={14} /> {T("badges")}</span>
+          )}
         </div>
 
         <button
           onClick={() => setMilestoneUnlock(null)}
-          style={{
-            padding: "14px 36px", fontSize: 15, fontWeight: 700,
-            background: C.acc, color: "#000", border: "none", borderRadius: 50,
-            cursor: "pointer",
-          }}
+          className="px-9 py-3.5 text-[15px] font-bold bg-training text-black border-0 rounded-full cursor-pointer"
         >
           {T("back")}
         </button>

@@ -2,8 +2,7 @@ import { useState, useMemo } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { DOG_FOODS, FOOD_CATEGORIES, CATEGORY_CONFIG } from "../data/dogNutrition.js";
 import { Search } from "lucide-react";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", rL: 24, r: 16 };
+import { cn } from "../lib/cn";
 
 const CAT_KEYS = { safe: "nutritionSafe", caution: "nutritionCaution", dangerous: "nutritionDangerous" };
 
@@ -30,51 +29,55 @@ export default function NutritionGuide() {
   }, [filtered]);
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 40, background: C.bg, animation: "fadeIn 0.3s ease", overflowX: "hidden" }}>
+    <div className="min-h-screen pb-10 bg-bg animate-[fadeIn_0.3s_ease] overflow-x-hidden">
       {/* Header */}
-      <div style={{ padding: "24px 20px 16px" }}>
-        <button onClick={() => nav("home")} style={{ background: "none", border: "none", color: C.acc, fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 16 }}>{rtl ? "\u2192" : "\u2190"}</span> {T("home")}
+      <div className="px-5 pt-6 pb-4">
+        <button
+          onClick={() => nav("home")}
+          className="bg-transparent border-none text-training text-sm font-semibold cursor-pointer p-0 mb-4 flex items-center gap-1.5"
+        >
+          <span className="text-base">{rtl ? "\u2192" : "\u2190"}</span> {T("home")}
         </button>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: 0, color: C.t1 }}>{T("nutritionTitle")}</h2>
-        <p style={{ fontSize: 14, color: C.t3, marginTop: 4 }}>{T("nutritionSubtitle")}</p>
+        <h2 className="font-display text-[28px] font-black m-0 text-text">{T("nutritionTitle")}</h2>
+        <p className="text-sm text-muted mt-1">{T("nutritionSubtitle")}</p>
       </div>
 
       {/* Search Bar */}
-      <div style={{ padding: "0 20px 16px" }}>
-        <div style={{ position: "relative" }}>
+      <div className="px-5 pb-4">
+        <div className="relative">
           <input
             type="text"
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder={T("nutritionSearch")}
+            className="w-full bg-surface border border-border rounded-3xl text-text text-[15px] outline-none"
             style={{
-              width: "100%",
               padding: query ? "14px 18px" : (rtl ? "14px 44px 14px 18px" : "14px 18px 14px 44px"),
-              boxSizing: "border-box",
-              background: C.s1, border: `1px solid ${C.b1}`, borderRadius: C.rL,
-              color: C.t1, fontSize: 15, outline: "none",
               fontFamily: "'DM Sans', sans-serif",
               textAlign: rtl ? "right" : "left",
               direction: rtl ? "rtl" : "ltr",
             }}
           />
           {!query && (
-            <span style={{ position: "absolute", insetInlineStart: 16, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", display: "flex", alignItems: "center" }}>
-              <Search size={18} color={C.t3} />
+            <span className="absolute inset-inline-start-4 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
+              <Search size={18} className="text-muted" />
             </span>
           )}
         </div>
       </div>
 
       {/* Legend */}
-      <div style={{ display: "flex", gap: 8, padding: "0 20px 16px", flexWrap: "wrap" }}>
+      <div className="flex gap-2 px-5 pb-4 flex-wrap">
         {FOOD_CATEGORIES.map(cat => {
           const cfg = CATEGORY_CONFIG[cat];
           return (
-            <div key={cat} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 20, background: cfg.bg, border: `1px solid ${cfg.border}` }}>
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: cfg.color }} />
-              <span style={{ fontSize: 12, fontWeight: 700, color: cfg.color }}>{T(CAT_KEYS[cat])}</span>
+            <div
+              key={cat}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-[20px]"
+              style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}
+            >
+              <div className="w-2 h-2 rounded-full" style={{ background: cfg.color }} />
+              <span className="text-xs font-bold" style={{ color: cfg.color }}>{T(CAT_KEYS[cat])}</span>
             </div>
           );
         })}
@@ -82,10 +85,10 @@ export default function NutritionGuide() {
 
       {/* No Results */}
       {filtered.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px 20px" }}>
-          <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}><Search size={40} color={C.t3} /></div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: C.t1 }}>{T("nutritionNoResults")}</div>
-          <div style={{ fontSize: 13, color: C.t3, marginTop: 4 }}>{T("nutritionTryAnother")}</div>
+        <div className="text-center py-10 px-5">
+          <div className="mb-3 flex justify-center"><Search size={40} className="text-muted" /></div>
+          <div className="text-[15px] font-bold text-text">{T("nutritionNoResults")}</div>
+          <div className="text-[13px] text-muted mt-1">{T("nutritionTryAnother")}</div>
         </div>
       )}
 
@@ -95,48 +98,55 @@ export default function NutritionGuide() {
         if (!items || items.length === 0) return null;
         const cfg = CATEGORY_CONFIG[cat];
         return (
-          <div key={cat} style={{ padding: "0 20px 16px" }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: cfg.color, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10, display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: cfg.color }} />
+          <div key={cat} className="px-5 pb-4">
+            <div className="text-[11px] font-bold tracking-[2px] uppercase mb-2.5 flex items-center gap-2" style={{ color: cfg.color }}>
+              <div className="w-2 h-2 rounded-full" style={{ background: cfg.color }} />
               {T(CAT_KEYS[cat])} ({items.length})
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div className="flex flex-col gap-1.5">
               {items.map(food => {
                 const isOpen = expanded === food.id;
                 return (
                   <button
                     key={food.id}
                     onClick={() => setExpanded(isOpen ? null : food.id)}
+                    className="w-full text-start cursor-pointer px-[18px] py-3.5 bg-surface rounded-3xl text-text font-sans text-base transition-[border-color] duration-200 ease-out"
                     style={{
-                      width: "100%", textAlign: "start", cursor: "pointer",
-                      padding: "14px 18px", boxSizing: "border-box",
-                      background: C.s1, borderRadius: C.rL,
-                      border: isOpen ? `1px solid ${cfg.border}` : `1px solid ${C.b1}`,
-                      color: C.t1, fontFamily: "inherit", fontSize: "inherit",
-                      transition: "border-color 0.2s ease",
+                      border: isOpen ? `1px solid ${cfg.border}` : `1px solid rgba(255,255,255,0.06)`,
                     }}
                   >
                     {/* Food Header */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <span style={{ fontSize: 24, flexShrink: 0 }}>{food.emoji}</span>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 15, fontWeight: 700 }}>{food.name[lang]}</div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl shrink-0">{food.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[15px] font-bold">{food.name[lang]}</div>
                         {!isOpen && (
-                          <div style={{ fontSize: 12, color: C.t3, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <div className="text-xs text-muted mt-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
                             {food.reason[lang]}
                           </div>
                         )}
                       </div>
-                      <span style={{ color: C.t3, fontSize: 14, flexShrink: 0, transition: "transform 0.2s", transform: isOpen ? "rotate(90deg)" : "none" }}>{"\u203A"}</span>
+                      <span
+                        className="text-muted text-sm shrink-0 transition-transform duration-200"
+                        style={{ transform: isOpen ? "rotate(90deg)" : "none" }}
+                      >{"\u203A"}</span>
                     </div>
 
                     {/* Expanded Detail */}
                     {isOpen && (
-                      <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.b1}` }}>
-                        <p style={{ fontSize: 13, color: C.t2, lineHeight: 1.6, margin: "0 0 10px" }}>{food.reason[lang]}</p>
-                        <div style={{ padding: "10px 14px", borderRadius: 12, background: cfg.bg, border: `1px solid ${cfg.border}` }}>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: cfg.color, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 }}>{T("nutritionServingTip")}</div>
-                          <div style={{ fontSize: 13, color: C.t2, lineHeight: 1.5 }}>{food.tip[lang]}</div>
+                      <div className="mt-3 pt-3 border-t border-border">
+                        <p className="text-[13px] text-text-2 leading-relaxed m-0 mb-2.5">{food.reason[lang]}</p>
+                        <div
+                          className="px-3.5 py-2.5 rounded-xl"
+                          style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}
+                        >
+                          <div
+                            className="text-[11px] font-bold tracking-[1.5px] uppercase mb-1"
+                            style={{ color: cfg.color }}
+                          >
+                            {T("nutritionServingTip")}
+                          </div>
+                          <div className="text-[13px] text-text-2 leading-normal">{food.tip[lang]}</div>
                         </div>
                       </div>
                     )}

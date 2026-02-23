@@ -1,121 +1,108 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import type { CSSProperties } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { computeRecap, generateRecapCard } from "../utils/recapData.js";
 import { Calendar } from "lucide-react";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E" };
+import { cn } from "../lib/cn";
 
 const SLIDE_DURATION = 5000;
-const MOOD_EMOJI = { happy: "\uD83D\uDE0A", struggling: "\uD83D\uDE23", okay: "\uD83D\uDE10", good: "\uD83D\uDE42", great: "\uD83D\uDE04", amazing: "\uD83E\uDD29" };
+const MOOD_EMOJI = { happy: "😊", struggling: "😣", okay: "😐", good: "🙂", great: "😄", amazing: "🤩" };
 
 function SlideContent({ slide, recap, T }) {
   const { id, value, emoji, color } = slide;
 
-  const containerStyle: CSSProperties = {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "60vh",
-    padding: "0 32px",
-    textAlign: "center",
-    animation: "fadeIn 0.5s ease",
-  };
-
-  const emojiStyle = { fontSize: 80, marginBottom: 24, filter: "drop-shadow(0 4px 20px rgba(0,0,0,0.3))" };
-  const valueStyle = { fontSize: 72, fontWeight: 800, color, marginBottom: 8, fontFamily: "'DM Sans', sans-serif" };
-  const labelStyle = { fontSize: 20, fontWeight: 700, color: C.t1, marginBottom: 8 };
-  const subStyle = { fontSize: 15, color: C.t3, lineHeight: 1.6 };
+  const containerCls = "flex flex-col items-center justify-center min-h-[60vh] px-8 text-center animate-[fadeIn_0.5s_ease]";
+  const emojiCls = "text-[80px] mb-6 drop-shadow-[0_4px_20px_rgba(0,0,0,0.3)]";
+  const labelCls = "text-xl font-bold text-text mb-2";
+  const subCls = "text-[15px] text-muted leading-relaxed";
 
   switch (id) {
     case "sessions":
       return (
-        <div style={containerStyle}>
-          <div style={emojiStyle}>{emoji}</div>
-          <div style={valueStyle}>{value}</div>
-          <div style={labelStyle}>{T("recapSessions")}</div>
-          <div style={subStyle}>{T("recapSessionsSub")}</div>
+        <div className={containerCls}>
+          <div className={emojiCls}>{emoji}</div>
+          <div className="text-[72px] font-black mb-2" style={{ color }}>{value}</div>
+          <div className={labelCls}>{T("recapSessions")}</div>
+          <div className={subCls}>{T("recapSessionsSub")}</div>
         </div>
       );
     case "xp":
       return (
-        <div style={containerStyle}>
-          <div style={emojiStyle}>{emoji}</div>
-          <div style={valueStyle}>{value.toLocaleString()}</div>
-          <div style={labelStyle}>{T("recapXP")}</div>
-          <div style={subStyle}>{T("recapXPSub")}</div>
+        <div className={containerCls}>
+          <div className={emojiCls}>{emoji}</div>
+          <div className="text-[72px] font-black mb-2" style={{ color }}>{value.toLocaleString()}</div>
+          <div className={labelCls}>{T("recapXP")}</div>
+          <div className={subCls}>{T("recapXPSub")}</div>
         </div>
       );
     case "badges":
       return (
-        <div style={containerStyle}>
-          <div style={emojiStyle}>{emoji}</div>
-          <div style={valueStyle}>{value}</div>
-          <div style={labelStyle}>{T("recapBadges")}</div>
-          <div style={subStyle}>{T("recapBadgesSub")}</div>
+        <div className={containerCls}>
+          <div className={emojiCls}>{emoji}</div>
+          <div className="text-[72px] font-black mb-2" style={{ color }}>{value}</div>
+          <div className={labelCls}>{T("recapBadges")}</div>
+          <div className={subCls}>{T("recapBadgesSub")}</div>
         </div>
       );
     case "streak":
       return (
-        <div style={containerStyle}>
-          <div style={emojiStyle}>{emoji}</div>
-          <div style={valueStyle}>{value}</div>
-          <div style={labelStyle}>{T("recapStreak")}</div>
-          <div style={subStyle}>{T("recapStreakSub")}</div>
+        <div className={containerCls}>
+          <div className={emojiCls}>{emoji}</div>
+          <div className="text-[72px] font-black mb-2" style={{ color }}>{value}</div>
+          <div className={labelCls}>{T("recapStreak")}</div>
+          <div className={subCls}>{T("recapStreakSub")}</div>
         </div>
       );
     case "topProgram":
       return (
-        <div style={containerStyle}>
-          <div style={emojiStyle}>{value?.emoji || emoji}</div>
-          <div style={{ fontSize: 36, fontWeight: 800, color, marginBottom: 8 }}>{value?.name || "—"}</div>
-          <div style={labelStyle}>{T("recapTopProgram")}</div>
-          <div style={subStyle}>{value ? `${value.sessions} ${T("sessions")}` : ""}</div>
+        <div className={containerCls}>
+          <div className={emojiCls}>{value?.emoji || emoji}</div>
+          <div className="text-[36px] font-black mb-2" style={{ color }}>{value?.name || "—"}</div>
+          <div className={labelCls}>{T("recapTopProgram")}</div>
+          <div className={subCls}>{value ? `${value.sessions} ${T("sessions")}` : ""}</div>
         </div>
       );
     case "exercises":
       return (
-        <div style={containerStyle}>
-          <div style={emojiStyle}>{emoji}</div>
-          <div style={valueStyle}>{value}</div>
-          <div style={labelStyle}>{T("recapExercises")}</div>
-          <div style={subStyle}>{T("recapExercisesSub")}</div>
+        <div className={containerCls}>
+          <div className={emojiCls}>{emoji}</div>
+          <div className="text-[72px] font-black mb-2" style={{ color }}>{value}</div>
+          <div className={labelCls}>{T("recapExercises")}</div>
+          <div className={subCls}>{T("recapExercisesSub")}</div>
         </div>
       );
     case "reviews":
       return (
-        <div style={containerStyle}>
-          <div style={emojiStyle}>{emoji}</div>
-          <div style={valueStyle}>{value}</div>
-          <div style={labelStyle}>{T("recapReviews")}</div>
-          <div style={subStyle}>{T("recapReviewsSub")}</div>
+        <div className={containerCls}>
+          <div className={emojiCls}>{emoji}</div>
+          <div className="text-[72px] font-black mb-2" style={{ color }}>{value}</div>
+          <div className={labelCls}>{T("recapReviews")}</div>
+          <div className={subCls}>{T("recapReviewsSub")}</div>
         </div>
       );
     case "summary":
       return (
-        <div style={containerStyle}>
-          <div style={emojiStyle}>{emoji}</div>
-          <div style={{ fontSize: 36, fontWeight: 800, color: C.acc, marginBottom: 20, fontFamily: "'Playfair Display', serif" }}>
+        <div className={containerCls}>
+          <div className={emojiCls}>{emoji}</div>
+          <div className="text-[36px] font-black text-training mb-5 font-display">
             {T("recapSummaryTitle")}
           </div>
-          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center", marginBottom: 16 }}>
-            <div style={{ padding: "12px 20px", background: C.s1, borderRadius: 16, border: `1px solid ${C.b1}` }}>
-              <div style={{ fontSize: 11, color: C.t3, textTransform: "uppercase", letterSpacing: 1 }}>{T("recapActiveMonths")}</div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: C.t1, marginTop: 4 }}>{value.activeMonths}</div>
+          <div className="flex gap-4 flex-wrap justify-center mb-4">
+            <div className="px-5 py-3 bg-surface rounded-2xl border border-border">
+              <div className="text-[11px] text-muted uppercase tracking-[1px]">{T("recapActiveMonths")}</div>
+              <div className="text-[28px] font-black text-text mt-1">{value.activeMonths}</div>
             </div>
-            <div style={{ padding: "12px 20px", background: C.s1, borderRadius: 16, border: `1px solid ${C.b1}` }}>
-              <div style={{ fontSize: 11, color: C.t3, textTransform: "uppercase", letterSpacing: 1 }}>{T("recapAvgRating")}</div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: C.t1, marginTop: 4 }}>{value.avgRating} {"\u2B50"}</div>
+            <div className="px-5 py-3 bg-surface rounded-2xl border border-border">
+              <div className="text-[11px] text-muted uppercase tracking-[1px]">{T("recapAvgRating")}</div>
+              <div className="text-[28px] font-black text-text mt-1">{value.avgRating} ⭐</div>
             </div>
             {value.topMood && (
-              <div style={{ padding: "12px 20px", background: C.s1, borderRadius: 16, border: `1px solid ${C.b1}` }}>
-                <div style={{ fontSize: 11, color: C.t3, textTransform: "uppercase", letterSpacing: 1 }}>{T("recapTopMood")}</div>
-                <div style={{ fontSize: 28, marginTop: 4 }}>{MOOD_EMOJI[value.topMood] || "\uD83D\uDE42"}</div>
+              <div className="px-5 py-3 bg-surface rounded-2xl border border-border">
+                <div className="text-[11px] text-muted uppercase tracking-[1px]">{T("recapTopMood")}</div>
+                <div className="text-[28px] mt-1">{MOOD_EMOJI[value.topMood] || "🙂"}</div>
               </div>
             )}
           </div>
-          <div style={subStyle}>{T("recapSummarySub")}</div>
+          <div className={subCls}>{T("recapSummarySub")}</div>
         </div>
       );
     default:
@@ -148,10 +135,13 @@ export default function AnnualRecap() {
 
   if (!recap) {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 40 }}>
-        <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}><Calendar size={56} color={C.t3} /></div>
-        <p style={{ fontSize: 16, color: C.t3, textAlign: "center" }}>{T("noRecapData")}</p>
-        <button onClick={() => nav("profile")} style={{ marginTop: 24, padding: "12px 32px", background: C.b1, border: "none", borderRadius: 50, color: C.t1, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+      <div className="min-h-screen bg-bg flex flex-col items-center justify-center p-10">
+        <div className="mb-4 flex justify-center"><Calendar size={56} className="text-muted" /></div>
+        <p className="text-base text-muted text-center">{T("noRecapData")}</p>
+        <button
+          onClick={() => nav("profile")}
+          className="mt-6 px-8 py-3 bg-border border-0 rounded-full text-text text-sm font-semibold cursor-pointer"
+        >
           {T("back")}
         </button>
       </div>
@@ -204,29 +194,31 @@ export default function AnnualRecap() {
 
   return (
     <div
-      style={{ minHeight: "100vh", background: C.bg, position: "relative", overflow: "hidden", userSelect: "none" }}
+      className="min-h-screen bg-bg relative overflow-hidden select-none"
       onClick={handleTap}
       onTouchStart={e => handleSwipeStart(e.touches[0].clientX)}
       onTouchEnd={e => handleSwipeEnd(e.changedTouches[0].clientX)}
     >
       {/* Colored glow behind slide */}
-      <div style={{
-        position: "absolute", top: "20%", left: "50%", width: 300, height: 300,
-        transform: "translateX(-50%)", borderRadius: "50%",
-        background: `radial-gradient(circle, ${currentSlide.color}15 0%, transparent 70%)`,
-        transition: "background 0.5s ease",
-      }} />
+      <div
+        className="absolute top-[20%] left-1/2 w-[300px] h-[300px] -translate-x-1/2 rounded-full pointer-events-none transition-[background] duration-500"
+        style={{ background: `radial-gradient(circle, ${currentSlide.color}15 0%, transparent 70%)` }}
+      />
 
       {/* Progress bars */}
-      <div style={{ display: "flex", gap: 3, padding: "12px 16px 0", position: "relative", zIndex: 10 }}>
+      <div className="flex gap-[3px] px-4 pt-3 relative z-10">
         {recap.slides.map((_, i) => (
-          <div key={i} style={{ flex: 1, height: 3, borderRadius: 3, background: "rgba(255,255,255,0.15)", overflow: "hidden" }}>
-            <div style={{
-              height: "100%", borderRadius: 3,
-              background: i < slide ? C.t1 : i === slide ? C.acc : "transparent",
-              width: i < slide ? "100%" : i === slide ? (paused ? "50%" : "100%") : "0%",
-              transition: i === slide ? `width ${SLIDE_DURATION}ms linear` : "none",
-            }} />
+          <div key={i} className="flex-1 h-[3px] rounded-[3px] bg-white/15 overflow-hidden">
+            <div
+              className={cn(
+                "h-full rounded-[3px]",
+                i < slide ? "bg-text" : i === slide ? "bg-training" : "bg-transparent"
+              )}
+              style={{
+                width: i < slide ? "100%" : i === slide ? (paused ? "50%" : "100%") : "0%",
+                transition: i === slide ? `width ${SLIDE_DURATION}ms linear` : "none",
+              }}
+            />
           </div>
         ))}
       </div>
@@ -234,40 +226,54 @@ export default function AnnualRecap() {
       {/* Close button */}
       <button
         onClick={e => { e.stopPropagation(); nav("profile"); }}
-        style={{ position: "absolute", top: 24, insetInlineEnd: 16, zIndex: 20, background: "rgba(255,255,255,0.1)", border: "none", color: C.t1, width: 36, height: 36, borderRadius: 50, cursor: "pointer", fontSize: 16 }}
+        className="absolute top-6 end-4 z-20 bg-white/10 border-0 text-text w-9 h-9 rounded-full cursor-pointer text-base"
       >
-        {"\u2715"}
+        ✕
       </button>
 
       {/* Year label */}
-      <div style={{ textAlign: "center", padding: "20px 0 0", position: "relative", zIndex: 5 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: C.acc, textTransform: "uppercase", letterSpacing: 3 }}>{recap.year} {T("yearInReview")}</div>
-        <div style={{ fontSize: 15, color: C.t3, marginTop: 4 }}>{recap.dogName}</div>
+      <div className="text-center pt-5 relative z-[5]">
+        <div className="text-[13px] font-bold text-training uppercase tracking-[3px]">
+          {recap.year} {T("yearInReview")}
+        </div>
+        <div className="text-[15px] text-muted mt-1">{recap.dogName}</div>
       </div>
 
       {/* Slide content */}
-      <div style={{ position: "relative", zIndex: 5 }}>
+      <div className="relative z-[5]">
         <SlideContent slide={currentSlide} recap={recap} T={T} />
       </div>
 
       {/* Bottom actions (only on last slide) */}
       {slide === totalSlides - 1 && (
-        <div style={{ position: "relative", zIndex: 10, padding: "0 20px 40px", animation: "fadeIn 0.5s ease" }} onClick={e => e.stopPropagation()}>
+        <div
+          className="relative z-10 px-5 pb-10 animate-[fadeIn_0.5s_ease]"
+          onClick={e => e.stopPropagation()}
+        >
           {!cardUrl ? (
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={handleShare} style={{ flex: 1, padding: "16px", fontSize: 15, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer" }}>
+            <div className="flex gap-2.5">
+              <button
+                onClick={handleShare}
+                className="flex-1 py-4 text-[15px] font-bold bg-training text-black border-0 rounded-full cursor-pointer"
+              >
                 {T("shareCard")}
               </button>
-              <button onClick={handleGenerateCard} style={{ flex: 1, padding: "16px", fontSize: 15, fontWeight: 700, background: C.s1, color: C.t1, border: `1px solid ${C.b1}`, borderRadius: 50, cursor: "pointer" }}>
+              <button
+                onClick={handleGenerateCard}
+                className="flex-1 py-4 text-[15px] font-bold bg-surface text-text border border-border rounded-full cursor-pointer"
+              >
                 {T("downloadCard")}
               </button>
             </div>
           ) : (
             <div>
-              <div style={{ borderRadius: 20, overflow: "hidden", marginBottom: 12, border: `1px solid ${C.b1}` }}>
-                <img src={cardUrl} alt="Recap card" style={{ width: "100%", display: "block" }} />
+              <div className="rounded-[20px] overflow-hidden mb-3 border border-border">
+                <img src={cardUrl} alt="Recap card" className="w-full block" />
               </div>
-              <button onClick={handleShare} style={{ width: "100%", padding: "16px", fontSize: 15, fontWeight: 700, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer" }}>
+              <button
+                onClick={handleShare}
+                className="w-full py-4 text-[15px] font-bold bg-training text-black border-0 rounded-full cursor-pointer"
+              >
                 {T("shareCard")}
               </button>
             </div>
@@ -276,12 +282,16 @@ export default function AnnualRecap() {
       )}
 
       {/* Nav dots */}
-      <div style={{ display: "flex", justifyContent: "center", gap: 6, padding: "16px 0", position: "relative", zIndex: 5 }}>
+      <div className="flex justify-center gap-1.5 py-4 relative z-[5]">
         {recap.slides.map((_, i) => (
           <button
             key={i}
             onClick={e => { e.stopPropagation(); setSlide(i); setPaused(true); }}
-            style={{ width: i === slide ? 20 : 6, height: 6, borderRadius: 3, background: i === slide ? C.acc : "rgba(255,255,255,0.2)", border: "none", cursor: "pointer", transition: "all 0.2s ease", padding: 0 }}
+            className="h-1.5 rounded-[3px] border-0 cursor-pointer transition-all duration-200 p-0"
+            style={{
+              width: i === slide ? 20 : 6,
+              background: i === slide ? "#22C55E" : "rgba(255,255,255,0.2)",
+            }}
           />
         ))}
       </div>

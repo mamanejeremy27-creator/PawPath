@@ -5,8 +5,7 @@ import { useAuth } from "../hooks/useAuth.js";
 import { api } from "../lib/api.js";
 import PhotoImg from "./PhotoImg.jsx";
 import CommentThread from "./CommentThread.jsx";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", b2: "rgba(255,255,255,0.1)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
+import { cn } from "../lib/cn";
 
 const TYPE_META = {
   progress: { icon: TrendingUp, key: "postTypeProgress", color: "#22C55E" },
@@ -67,59 +66,93 @@ export default function PostCard({ post, liked, onLikeChange, onDelete }) {
 
   return (
     <>
-      <div style={{ background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}`, padding: "16px 18px", animation: "fadeIn 0.3s ease" }}>
+      <div className="bg-surface rounded-3xl border border-border px-[18px] py-4 animate-[fadeIn_0.3s_ease] hover:border-social/30 transition-colors">
         {/* Header: avatar, name, type badge, time */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-          <div style={{ width: 38, height: 38, borderRadius: "50%", background: `linear-gradient(135deg, ${meta.color}33, ${meta.color}11)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: meta.color, flexShrink: 0 }}>
+        <div className="flex items-center gap-2.5 mb-3">
+          {/* Avatar with dynamic gradient derived from meta.color — kept as style for runtime value */}
+          <div
+            className="w-[38px] h-[38px] rounded-full flex items-center justify-center text-base font-extrabold shrink-0"
+            style={{ background: `linear-gradient(135deg, ${meta.color}33, ${meta.color}11)`, color: meta.color }}
+          >
             {(post.owner_name || "?")[0].toUpperCase()}
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{post.owner_name || T("feedAnon")}</span>
-              <span style={{ padding: "1px 8px", borderRadius: 8, background: `${meta.color}18`, border: `1px solid ${meta.color}30`, fontSize: 10, fontWeight: 700, color: meta.color, display: "inline-flex", alignItems: "center", gap: 3 }}>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-bold text-text">{post.owner_name || T("feedAnon")}</span>
+              {/* Type badge: dynamic color retained as style */}
+              <span
+                className="px-2 py-px rounded-lg text-[10px] font-bold inline-flex items-center gap-0.5"
+                style={{
+                  background: `${meta.color}18`,
+                  border: `1px solid ${meta.color}30`,
+                  color: meta.color,
+                }}
+              >
                 <meta.icon size={10} /> {T(meta.key)}
               </span>
             </div>
-            <div style={{ fontSize: 11, color: C.t3, marginTop: 1 }}>
+            <div className="text-[11px] text-muted mt-px">
               {post.dog_name}{post.breed ? ` \u00B7 ${post.breed}` : ""} \u00B7 {timeAgo(post.created_at, T)}
             </div>
           </div>
           {isOwn && (
-            <button onClick={() => setShowDeleteConfirm(true)} style={{ background: "none", border: "none", color: C.t3, cursor: "pointer", padding: "4px 8px", display: "flex", alignItems: "center" }}><MoreHorizontal size={16} /></button>
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="bg-transparent border-none text-muted cursor-pointer px-2 py-1 flex items-center"
+            >
+              <MoreHorizontal size={16} />
+            </button>
           )}
         </div>
 
         {/* Content */}
-        <div style={{ fontSize: 14, color: C.t1, lineHeight: 1.6, marginBottom: post.photo_url ? 12 : 0, wordBreak: "break-word" }}>{post.content}</div>
+        <div className={cn("text-sm text-text leading-relaxed break-words", post.photo_url ? "mb-3" : "mb-0")}>
+          {post.content}
+        </div>
 
         {/* Photo */}
         {post.photo_url && (
-          <div style={{ borderRadius: C.r, overflow: "hidden", marginBottom: 12 }}>
-            <PhotoImg src={post.photo_url} style={{ width: "100%", maxHeight: 300, objectFit: "cover", display: "block" }} />
+          <div className="rounded-2xl overflow-hidden mb-3">
+            <PhotoImg src={post.photo_url} className="w-full max-h-[300px] object-cover block" />
           </div>
         )}
 
         {/* Actions: like, comment */}
-        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 8, borderTop: `1px solid ${C.b1}`, paddingTop: 10 }}>
-          <button onClick={handleLike} style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: "none", cursor: "pointer", padding: "6px 12px", borderRadius: 20, color: isLiked ? "#EF4444" : C.t3, transition: "all 0.15s" }}>
-            <Heart size={16} fill={isLiked ? "#EF4444" : "none"} />
-            <span style={{ fontSize: 13, fontWeight: 700 }}>{likeCount > 0 ? likeCount : ""}</span>
+        <div className="flex items-center gap-1 mt-2 border-t border-border pt-2.5">
+          <button
+            onClick={handleLike}
+            className={cn(
+              "flex items-center gap-1.5 bg-transparent border-none cursor-pointer px-3 py-1.5 rounded-full transition-all duration-150",
+              isLiked ? "text-danger" : "text-muted"
+            )}
+          >
+            <Heart size={16} fill={isLiked ? "currentColor" : "none"} />
+            <span className="text-[13px] font-bold">{likeCount > 0 ? likeCount : ""}</span>
           </button>
-          <button onClick={() => setShowComments(true)} style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: "none", cursor: "pointer", padding: "6px 12px", borderRadius: 20, color: C.t3 }}>
+          <button
+            onClick={() => setShowComments(true)}
+            className="flex items-center gap-1.5 bg-transparent border-none cursor-pointer px-3 py-1.5 rounded-full text-muted"
+          >
             <MessageCircle size={16} />
-            <span style={{ fontSize: 13, fontWeight: 700 }}>{commentCount > 0 ? commentCount : ""}</span>
+            <span className="text-[13px] font-bold">{commentCount > 0 ? commentCount : ""}</span>
           </button>
         </div>
       </div>
 
       {/* Delete confirmation */}
       {showDeleteConfirm && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 600, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(8px)" }}>
-          <div style={{ background: C.s1, borderRadius: 20, padding: "24px 28px", maxWidth: 320, textAlign: "center" }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: C.t1, marginBottom: 16 }}>{T("deletePostConfirm")}</div>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setShowDeleteConfirm(false)} style={{ flex: 1, padding: "12px", borderRadius: 12, background: C.b1, border: "none", color: C.t1, fontWeight: 700, cursor: "pointer", fontSize: 14 }}>{T("back")}</button>
-              <button onClick={handleDelete} style={{ flex: 1, padding: "12px", borderRadius: 12, background: "#EF4444", border: "none", color: "#fff", fontWeight: 700, cursor: "pointer", fontSize: 14 }}>{T("deletePost")}</button>
+        <div className="fixed inset-0 z-[600] bg-black/60 flex items-center justify-center backdrop-blur-[8px]">
+          <div className="bg-surface rounded-[20px] px-7 py-6 max-w-[320px] text-center">
+            <div className="text-[15px] font-bold text-text mb-4">{T("deletePostConfirm")}</div>
+            <div className="flex gap-2.5">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 py-3 rounded-xl bg-border border-none text-text font-bold cursor-pointer text-sm"
+              >{T("back")}</button>
+              <button
+                onClick={handleDelete}
+                className="flex-1 py-3 rounded-xl bg-danger border-none text-white font-bold cursor-pointer text-sm"
+              >{T("deletePost")}</button>
             </div>
           </div>
         </div>

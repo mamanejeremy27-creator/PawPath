@@ -2,8 +2,6 @@ import { CheckCircle2, ArrowRight } from "lucide-react";
 import Icon from "./ui/Icon.jsx";
 import { useApp } from "../context/AppContext.jsx";
 
-const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", rL: 24 };
-
 export default function ChallengeBanner() {
   const { challengeData, nav, T, lang } = useApp();
   if (!challengeData?.challenge) return null;
@@ -13,49 +11,69 @@ export default function ChallengeBanner() {
   const task = lang === "he" ? todayTask?.taskHe : todayTask?.task;
 
   return (
-    <div style={{ padding: "12px 20px 0" }}>
+    <div className="px-5 pt-3">
       <button
         onClick={() => nav("challenge")}
+        className="w-full px-5 py-[18px] rounded-3xl cursor-pointer text-text text-start"
         style={{
-          width: "100%", padding: "18px 20px",
           background: `linear-gradient(135deg, ${accent}08, ${accent}14)`,
           border: `1px solid ${accent}30`,
-          borderRadius: C.rL, cursor: "pointer",
-          color: C.t1, textAlign: "start",
           animation: "fadeIn 0.3s ease",
         }}
       >
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div className="flex justify-between items-center mb-2.5">
+          <div className="flex items-center gap-2">
             <Icon name={challenge.icon || "Trophy"} size={20} color={accent} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: accent, textTransform: "uppercase", letterSpacing: 1.5 }}>{T("thisWeeksChallenge")}</span>
+            <span
+              className="text-[11px] font-bold uppercase tracking-[1.5px]"
+              style={{ color: accent }}
+            >
+              {T("thisWeeksChallenge")}
+            </span>
           </div>
-          <span style={{ fontSize: 13, fontWeight: 800, color: accent }}>{progress}/7</span>
+          <span className="text-[13px] font-extrabold" style={{ color: accent }}>
+            {progress}/7
+          </span>
         </div>
 
         {/* Challenge name */}
-        <div style={{ fontSize: 16, fontWeight: 800, color: C.t1, marginBottom: 8 }}>
+        <div className="text-base font-extrabold text-text mb-2">
           {lang === "he" ? challenge.nameHe : challenge.name}
         </div>
 
         {/* Progress bar */}
-        <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 10, overflow: "hidden", marginBottom: 10 }}>
-          <div style={{ height: "100%", width: `${(progress / 7) * 100}%`, background: accent, borderRadius: 10, transition: "width 0.6s ease" }} />
+        <div className="h-1 bg-border rounded-full overflow-hidden mb-2.5">
+          <div
+            className="h-full rounded-full transition-[width] duration-[600ms] ease-in-out"
+            style={{ width: `${(progress / 7) * 100}%`, background: accent }}
+          />
         </div>
 
         {/* Today's task */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ fontSize: 13, color: C.t2, flex: 1 }}>
-            <span style={{ fontWeight: 700, color: todayCompleted ? accent : C.t1 }}>
+        <div className="flex justify-between items-center">
+          <div className="text-[13px] text-text-2 flex-1">
+            <span
+              className="font-bold"
+              style={{ color: todayCompleted ? accent : "#F5F5F7" }}
+            >
               {T("challengeDay")} {todayDay}:
             </span>{" "}
             {task}
-            {todayCompleted && <span style={{ marginInlineStart: 6, display: "inline-flex", verticalAlign: "middle" }}><CheckCircle2 size={14} color={accent} /></span>}
+            {todayCompleted && (
+              <span className="ms-1.5 inline-flex align-middle">
+                <CheckCircle2 size={14} color={accent} />
+              </span>
+            )}
           </div>
           {!todayCompleted && (
-            <span style={{ fontSize: 11, padding: "5px 12px", borderRadius: 20, background: accent, color: "#000", fontWeight: 700, marginInlineStart: 10, flexShrink: 0 }}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>{T("challengeGo")} <ArrowRight size={11} /></span>
+            <span
+              className="text-[11px] py-[5px] px-3 rounded-full font-bold ms-2.5 shrink-0 text-black"
+              style={{ background: accent }}
+            >
+              <span className="inline-flex items-center gap-1">
+                {T("challengeGo")} <ArrowRight size={11} />
+              </span>
             </span>
           )}
         </div>

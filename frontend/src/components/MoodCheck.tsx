@@ -1,11 +1,10 @@
 import { useApp } from "../context/AppContext.jsx";
-
-const C = { s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", acc: "#22C55E", rL: 24 };
+import { cn } from "../lib/cn";
 
 const MOODS = [
-  { key: "nailed", emoji: "😊", color: "#22C55E" },
-  { key: "getting", emoji: "😐", color: "#F59E0B" },
-  { key: "tricky", emoji: "😕", color: "#EF4444" },
+  { key: "nailed", emoji: "😊", colorClass: "text-training" },
+  { key: "getting", emoji: "😐", colorClass: "text-xp" },
+  { key: "tricky", emoji: "😕", colorClass: "text-danger" },
 ];
 
 export default function MoodCheck() {
@@ -13,38 +12,22 @@ export default function MoodCheck() {
   if (!moodCheck) return null;
 
   return (
-    <div style={{
-      position: "fixed", bottom: 0, left: 0, right: 0,
-      background: "rgba(0,0,0,0.85)", backdropFilter: "blur(12px)",
-      padding: "20px 20px 36px", zIndex: 999,
-      animation: "slideUp 0.3s ease",
-    }}>
-      <div style={{ textAlign: "center", fontSize: 14, fontWeight: 700, color: C.t1, marginBottom: 14 }}>
+    <div className="fixed bottom-0 start-0 end-0 bg-black/85 backdrop-blur-xl px-5 pt-5 pb-9 z-[999] [animation:slideUp_0.3s_ease]">
+      <div className="text-center text-[14px] font-bold text-text mb-3.5">
         {T("howDidThatGo")}
       </div>
-      <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
+      <div className="flex justify-center gap-4">
         {MOODS.map(m => (
           <button
             key={m.key}
             onClick={() => recordMoodCheck(moodCheck.exId, m.key)}
-            style={{
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
-              padding: "12px 18px", background: C.s1, borderRadius: C.rL,
-              border: `1px solid ${C.b1}`, cursor: "pointer", minWidth: 80,
-            }}
+            className="flex flex-col items-center gap-1.5 px-[18px] py-3 bg-surface rounded-3xl border border-border cursor-pointer min-w-[80px]"
           >
-            <span style={{ fontSize: 28 }}>{m.emoji}</span>
-            <span style={{ fontSize: 11, fontWeight: 600, color: m.color }}>{T(m.key + "It")}</span>
+            <span className="text-[28px]">{m.emoji}</span>
+            <span className={cn("text-[11px] font-semibold", m.colorClass)}>{T(m.key + "It")}</span>
           </button>
         ))}
       </div>
-
-      <style>{`
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 }

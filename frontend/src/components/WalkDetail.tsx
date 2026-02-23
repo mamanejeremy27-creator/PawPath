@@ -2,8 +2,6 @@ import { useApp } from "../context/AppContext.jsx";
 import { formatDuration } from "../lib/walkTracker.js";
 import { Ruler, Timer, Footprints, MapPin } from "lucide-react";
 
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
-
 /** Project coords to SVG viewport with padding */
 function projectRoute(coords, width, height, padding = 20) {
   if (!coords || coords.length < 2) return [];
@@ -58,23 +56,26 @@ export default function WalkDetail() {
     : "";
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 40, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen pb-10 bg-bg animate-[fadeIn_0.3s_ease]">
       {/* Header */}
-      <div style={{ padding: "20px 20px 0", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => nav("walkHistory")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: C.t3, padding: 4 }}>
+      <div className="px-5 pt-5 flex items-center gap-3">
+        <button
+          onClick={() => nav("walkHistory")}
+          className="bg-transparent border-none cursor-pointer text-xl text-muted p-1"
+        >
           {"\u2190"}
         </button>
         <div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 800, margin: "0 0 2px", color: C.t1 }}>{T("walkDetail")}</h1>
-          <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{formatDate(startTime)}</p>
+          <h1 className="font-display text-2xl font-black m-0 mb-0.5 text-text">{T("walkDetail")}</h1>
+          <p className="text-[13px] text-muted m-0">{formatDate(startTime)}</p>
         </div>
       </div>
 
       {/* Route Visualization */}
       {projected.length >= 2 && (
-        <div style={{ padding: "20px 20px 0" }}>
-          <div style={{ background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}`, padding: "16px", overflow: "hidden" }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 12 }}>{T("walkRoute")}</div>
+        <div className="px-5 pt-5">
+          <div className="bg-surface rounded-3xl border border-border p-4 overflow-hidden">
+            <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px] mb-3">{T("walkRoute")}</div>
             <svg width="100%" viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: "block" }}>
               {/* Route path */}
               <path d={pathD} fill="none" stroke="url(#routeGrad)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
@@ -90,14 +91,14 @@ export default function WalkDetail() {
                 </linearGradient>
               </defs>
             </svg>
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.acc }} />
-                <span style={{ fontSize: 11, color: C.t3 }}>{T("walkStart")}</span>
+            <div className="flex justify-between mt-2.5">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-training" />
+                <span className="text-[11px] text-muted">{T("walkStart")}</span>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: (C as any).danger }} />
-                <span style={{ fontSize: 11, color: C.t3 }}>{T("walkFinish")}</span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-danger" />
+                <span className="text-[11px] text-muted">{T("walkFinish")}</span>
               </div>
             </div>
           </div>
@@ -105,43 +106,43 @@ export default function WalkDetail() {
       )}
 
       {/* Stats Grid */}
-      <div style={{ padding: "16px 20px 0" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+      <div className="px-5 pt-4">
+        <div className="grid grid-cols-2 gap-2.5">
           {[
-            { label: T("walkDistance"), value: `${distance.toFixed(2)} km`, icon: <Ruler size={20} color={C.acc} /> },
-            { label: T("walkDuration"), value: formatDuration(duration), icon: <Timer size={20} color={C.acc} /> },
-            { label: T("walkPace"), value: `${pace} ${T("walkPaceUnit")}`, icon: <Footprints size={20} color={C.acc} /> },
-            { label: T("walkPoints"), value: `${routeCoords.length}`, icon: <MapPin size={20} color={C.acc} /> },
+            { label: T("walkDistance"), value: `${distance.toFixed(2)} km`, icon: <Ruler size={20} className="text-training" /> },
+            { label: T("walkDuration"), value: formatDuration(duration), icon: <Timer size={20} className="text-training" /> },
+            { label: T("walkPace"), value: `${pace} ${T("walkPaceUnit")}`, icon: <Footprints size={20} className="text-training" /> },
+            { label: T("walkPoints"), value: `${routeCoords.length}`, icon: <MapPin size={20} className="text-training" /> },
           ].map((s, i) => (
-            <div key={i} style={{ padding: "16px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}`, textAlign: "center" }}>
-              <div style={{ marginBottom: 6, display: "flex", justifyContent: "center" }}>{s.icon}</div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: C.t1 }}>{s.value}</div>
-              <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600, marginTop: 4 }}>{s.label}</div>
+            <div key={i} className="p-4 bg-surface rounded-2xl border border-border text-center">
+              <div className="mb-1.5 flex justify-center">{s.icon}</div>
+              <div className="text-lg font-black text-text">{s.value}</div>
+              <div className="text-[10px] text-muted uppercase tracking-[1px] font-semibold mt-1">{s.label}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* Time Details */}
-      <div style={{ padding: "16px 20px 0" }}>
-        <div style={{ padding: "16px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-            <span style={{ fontSize: 13, color: C.t3 }}>{T("walkStartTime")}</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{formatTime(startTime)}</span>
+      <div className="px-5 pt-4">
+        <div className="px-[18px] py-4 bg-surface rounded-2xl border border-border">
+          <div className="flex justify-between mb-2">
+            <span className="text-[13px] text-muted">{T("walkStartTime")}</span>
+            <span className="text-[13px] font-bold text-text">{formatTime(startTime)}</span>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span style={{ fontSize: 13, color: C.t3 }}>{T("walkEndTime")}</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{formatTime(endTime)}</span>
+          <div className="flex justify-between">
+            <span className="text-[13px] text-muted">{T("walkEndTime")}</span>
+            <span className="text-[13px] font-bold text-text">{formatTime(endTime)}</span>
           </div>
         </div>
       </div>
 
       {/* Notes */}
       {notes && (
-        <div style={{ padding: "16px 20px 0" }}>
-          <div style={{ padding: "16px 18px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>{T("walkNotes")}</div>
-            <p style={{ fontSize: 14, color: C.t2, margin: 0, lineHeight: 1.6 }}>{notes}</p>
+        <div className="px-5 pt-4">
+          <div className="px-[18px] py-4 bg-surface rounded-2xl border border-border">
+            <div className="text-[11px] font-bold text-muted uppercase tracking-[1.5px] mb-2">{T("walkNotes")}</div>
+            <p className="text-sm text-text-2 m-0 leading-relaxed">{notes}</p>
           </div>
         </div>
       )}
