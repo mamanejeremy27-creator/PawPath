@@ -24,6 +24,7 @@ import { BuddiesModule } from './modules/buddies/buddies.module';
 import { LostDogsModule } from './modules/lost-dogs/lost-dogs.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { SeedModule } from './modules/seed/seed.module';
+import { TtsModule } from './modules/tts/tts.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { SeedModule } from './modules/seed/seed.module';
     LostDogsModule,
     FeedbackModule,
     SeedModule,
+    TtsModule,
   ],
   controllers: [],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

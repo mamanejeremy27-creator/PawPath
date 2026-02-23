@@ -1,7 +1,13 @@
 export const VOICE_SCRIPTS = {
   en: {
-    startExercise: (name, totalSteps) =>
-      `Let's practice ${name}. There are ${totalSteps} steps. Let's begin.`,
+    startExercise: (name, totalSteps) => {
+      const intros = [
+        `Let's practice ${name}. There are ${totalSteps} steps. Let's begin.`,
+        `Time to work on ${name}. We've got ${totalSteps} steps ahead. Ready? Let's go.`,
+        `Alright, let's do ${name} together. ${totalSteps} steps total. Here we go.`,
+      ];
+      return intros[Math.floor(Math.random() * intros.length)];
+    },
     nextStep: (num, total) =>
       `Step ${num} of ${total}.`,
     holdFor: (seconds) =>
@@ -22,30 +28,38 @@ export const VOICE_SCRIPTS = {
     paused: "Paused. Take your time. Press play when you're ready.",
     tipIntro: "Here's a pro tip.",
     repeatStep: "Let's try that step again.",
+    almostThere: "Almost there...",
   },
   he: {
-    startExercise: (name, totalSteps) =>
-      `\u05D1\u05D5\u05D0\u05D5 \u05E0\u05EA\u05E8\u05D2\u05DC ${name}. \u05D9\u05E9 ${totalSteps} \u05E9\u05DC\u05D1\u05D9\u05DD. \u05D1\u05D5\u05D0\u05D5 \u05E0\u05EA\u05D7\u05D9\u05DC.`,
+    startExercise: (name, totalSteps) => {
+      const intros = [
+        `בואו נתרגל ${name}. יש ${totalSteps} שלבים. מתחילים.`,
+        `הגיע הזמן לעבוד על ${name}. ${totalSteps} שלבים לפנינו. קדימה.`,
+        `יאללה, בואו נעשה ${name} ביחד. ${totalSteps} שלבים בסך הכל. נתחיל.`,
+      ];
+      return intros[Math.floor(Math.random() * intros.length)];
+    },
     nextStep: (num, total) =>
-      `\u05E9\u05DC\u05D1 ${num} \u05DE\u05EA\u05D5\u05DA ${total}.`,
+      `שלב ${num} מתוך ${total}.`,
     holdFor: (seconds) =>
-      `\u05D4\u05D7\u05D6\u05D9\u05E7\u05D5 \u05DC\u05DE\u05E9\u05DA ${seconds} \u05E9\u05E0\u05D9\u05D5\u05EA.`,
+      `החזיקו למשך ${seconds} שניות.`,
     countdown: (n) => `${n}`,
-    release: "\u05E9\u05D7\u05E8\u05E8\u05D5. \u05DB\u05DC \u05D4\u05DB\u05D1\u05D5\u05D3.",
+    release: "שחררו. כל הכבוד.",
     encouragement: [
-      "\u05E2\u05D1\u05D5\u05D3\u05D4 \u05DE\u05E6\u05D5\u05D9\u05E0\u05EA. \u05D4\u05DE\u05E9\u05D9\u05DB\u05D5 \u05DB\u05DA.",
-      "\u05D0\u05EA\u05DD \u05DE\u05D3\u05D4\u05D9\u05DE\u05D9\u05DD.",
-      "\u05D4\u05DB\u05DC\u05D1 \u05E9\u05DC\u05DB\u05DD \u05DC\u05D5\u05DE\u05D3 \u05DB\u05DC \u05DB\u05DA \u05D4\u05E8\u05D1\u05D4.",
-      "\u05DE\u05E2\u05D5\u05DC\u05D4. \u05D4\u05D9\u05D5 \u05E1\u05D1\u05DC\u05E0\u05D9\u05D9\u05DD \u05D5\u05E2\u05E7\u05D1\u05D9\u05D9\u05DD.",
-      "\u05D8\u05DB\u05E0\u05D9\u05E7\u05D4 \u05DE\u05D5\u05E9\u05DC\u05DE\u05EA.",
-      "\u05D9\u05E4\u05D4 \u05DE\u05D0\u05D5\u05D3. \u05D4\u05E7\u05E9\u05E8 \u05D1\u05D9\u05E0\u05D9\u05DB\u05DD \u05DE\u05EA\u05D7\u05D6\u05E7.",
-      "\u05E2\u05D1\u05D5\u05D3\u05D4 \u05D9\u05E4\u05D4. \u05D4\u05DE\u05E9\u05D9\u05DB\u05D5.",
-      "\u05DB\u05DA \u05D1\u05D3\u05D9\u05D5\u05E7 \u05E6\u05E8\u05D9\u05DA.",
+      "עבודה מצוינת. המשיכו ככה.",
+      "אתם מדהימים.",
+      "הכלב שלכם לומד המון.",
+      "מעולה. תהיו סבלניים ועקביים.",
+      "טכניקה מושלמת.",
+      "יפה מאוד. הקשר ביניכם מתחזק.",
+      "עבודה יפה. ממשיכים.",
+      "בדיוק ככה צריך.",
     ],
-    exerciseComplete: "\u05D4\u05EA\u05E8\u05D2\u05D9\u05DC \u05D4\u05D5\u05E9\u05DC\u05DD! \u05D0\u05D9\u05DE\u05D5\u05DF \u05E0\u05D4\u05D3\u05E8. \u05D0\u05EA\u05DD \u05D5\u05D4\u05DB\u05DC\u05D1 \u05E9\u05DC\u05DB\u05DD \u05E2\u05E9\u05D9\u05EA\u05DD \u05E2\u05D1\u05D5\u05D3\u05D4 \u05E0\u05E4\u05DC\u05D0\u05D4.",
-    paused: "\u05DE\u05D5\u05E9\u05D4\u05D4. \u05E7\u05D7\u05D5 \u05D0\u05EA \u05D4\u05D6\u05DE\u05DF. \u05DC\u05D7\u05E6\u05D5 \u05E2\u05DC \u05D4\u05DE\u05E9\u05DA \u05DB\u05E9\u05EA\u05D4\u05D9\u05D5 \u05DE\u05D5\u05DB\u05E0\u05D9\u05DD.",
-    tipIntro: "\u05D4\u05E0\u05D4 \u05D8\u05D9\u05E4 \u05DE\u05E7\u05E6\u05D5\u05E2\u05D9.",
-    repeatStep: "\u05D1\u05D5\u05D0\u05D5 \u05E0\u05E0\u05E1\u05D4 \u05D0\u05EA \u05D4\u05E9\u05DC\u05D1 \u05D4\u05D6\u05D4 \u05E9\u05D5\u05D1.",
+    exerciseComplete: "התרגיל הושלם! אימון נהדר. אתם והכלב שלכם עשיתם עבודה מעולה.",
+    paused: "מושהה. קחו את הזמן. לחצו המשך כשמוכנים.",
+    tipIntro: "הנה טיפ מקצועי.",
+    repeatStep: "בואו ננסה את השלב הזה שוב.",
+    almostThere: "כמעט שם...",
   },
 };
 
@@ -57,9 +71,9 @@ export function detectTimer(text) {
   const countMatch = text.match(/count\s+to\s+(\d+)/i);
   if (countMatch) return parseInt(countMatch[1], 10);
   // Hebrew: "5 שניות", "ספרו עד 5"
-  const heSecMatch = text.match(/(\d+)\s*(?:\u05E9\u05E0\u05D9\u05D5\u05EA|\u05E9\u05E0\u05D9\u05D9\u05D4)/);
+  const heSecMatch = text.match(/(\d+)\s*(?:שניות|שנייה)/);
   if (heSecMatch) return parseInt(heSecMatch[1], 10);
-  const heCountMatch = text.match(/\u05E1\u05E4\u05E8\u05D5\s+\u05E2\u05D3\s+(\d+)/);
+  const heCountMatch = text.match(/ספרו\s+עד\s+(\d+)/);
   if (heCountMatch) return parseInt(heCountMatch[1], 10);
   return null;
 }

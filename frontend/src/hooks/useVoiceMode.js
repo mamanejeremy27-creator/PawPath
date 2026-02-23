@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
 // ── Voice selection preferences ──────────────────────────────
-const EN_PREFERRED = /samantha|karen|daniel|google uk english female/i;
+const EN_PREFERRED = /Google US English|Samantha|Microsoft.*Natural/i;
 const EN_QUALITY = /natural|enhanced/i;
 const EN_AVOID = /compact/i;
 const HE_PREFERRED = /carmit|google.*hebrew/i;
@@ -47,6 +47,9 @@ export function useVoiceMode() {
   const volumeRef = useRef(1);
   const cancelRef = useRef(false);
 
+  // Cache selected voice per language so it stays consistent
+  const cachedVoiceRef = useRef({ en: null, he: null });
+
   // Load voices (may arrive async on some browsers)
   useEffect(() => {
     if (!supported) return;
@@ -54,7 +57,12 @@ export function useVoiceMode() {
 
     const load = () => {
       const v = synth.getVoices();
-      if (v.length > 0) setVoices(v);
+      if (v.length > 0) {
+        setVoices(v);
+        // Re-select and cache voices when list changes
+        cachedVoiceRef.current.en = selectVoice(v, "en");
+        cachedVoiceRef.current.he = selectVoice(v, "he");
+      }
     };
 
     load();
@@ -63,7 +71,7 @@ export function useVoiceMode() {
   }, [supported]);
 
   const getVoice = useCallback(
-    (lang) => selectVoice(voices, lang),
+    (lang) => cachedVoiceRef.current[lang] || selectVoice(voices, lang),
     [voices]
   );
 
@@ -76,7 +84,7 @@ export function useVoiceMode() {
         const voice = getVoice(lang);
         if (voice) utter.voice = voice;
         utter.lang = lang === "he" ? "he-IL" : "en-US";
-        utter.rate = 0.85;
+        utter.rate = lang === "he" ? 0.75 : 0.85;
         utter.pitch = 1.05;
         utter.volume = volumeRef.current;
         utter.onend = () => resolve();

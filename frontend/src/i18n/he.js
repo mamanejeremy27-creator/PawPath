@@ -422,6 +422,10 @@ export default {
   voiceDone: "סיום",
   voiceRepeat: "חזרה על שלב",
   voiceTapNext: "לחצו כשמוכנים להמשיך",
+  voiceNextStep: "שלב הבא",
+  voiceAlmostThere: "כמעט שם...",
+  voiceHqVoice: "HD",
+  voiceFallbackVoice: "רגיל",
 
   // Emergency First Aid
   emergencyGuide: "עזרה ראשונה לכלבים",

@@ -422,6 +422,10 @@ export default {
   voiceDone: "Done",
   voiceRepeat: "Repeat Step",
   voiceTapNext: "Tap next when ready",
+  voiceNextStep: "Next Step",
+  voiceAlmostThere: "Almost there...",
+  voiceHqVoice: "HD",
+  voiceFallbackVoice: "Basic",
 
   // Emergency First Aid
   emergencyGuide: "Emergency First Aid",
