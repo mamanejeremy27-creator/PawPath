@@ -8,11 +8,23 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // CORS must be first — before static assets, health route, and routing
-  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5176')
+  const explicitOrigins = (process.env.FRONTEND_URL || 'http://localhost:5176')
     .split(',')
     .map((o) => o.trim());
+  const isProduction = process.env.NODE_ENV === 'production';
   app.enableCors({
-    origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
+    origin: isProduction
+      ? explicitOrigins.length === 1
+        ? explicitOrigins[0]
+        : explicitOrigins
+      : (origin, callback) => {
+          const allowed =
+            !origin ||
+            explicitOrigins.includes(origin) ||
+            /^https:\/\/.*\.vercel\.app$/.test(origin) ||
+            /^http:\/\/localhost(:\d+)?$/.test(origin);
+          callback(allowed ? null : new Error(`CORS: ${origin} not allowed`), allowed);
+        },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
