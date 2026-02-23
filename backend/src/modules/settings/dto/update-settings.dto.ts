@@ -7,7 +7,15 @@ export class UpdateSettingsDto {
 
   @IsOptional()
   @IsString()
+  lang?: string;
+
+  @IsOptional()
+  @IsString()
   theme?: string;
+
+  @IsOptional()
+  @IsString()
+  activeTheme?: string;
 
   @IsOptional()
   @IsObject()
@@ -28,4 +36,8 @@ export class UpdateSettingsDto {
   @IsOptional()
   @IsString()
   activeAccessory?: string;
+
+  @IsOptional()
+  @IsArray()
+  activeAccessories?: string[];
 }
