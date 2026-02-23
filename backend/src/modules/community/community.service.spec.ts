@@ -67,7 +67,21 @@ describe('CommunityService', () => {
 
       const result = await service.getPosts(1, 20);
 
-      expect(result).toEqual(posts);
+      expect(result).toEqual([{
+        id: mockPost.id,
+        user_id: mockPost.userId,
+        owner_name: null,
+        content: mockPost.content,
+        post_type: 'general',
+        dog_name: null,
+        breed: null,
+        photo_url: null,
+        badge_id: null,
+        like_count: 0,
+        comment_count: 0,
+        created_at: mockPost.createdAt,
+        metadata: null,
+      }]);
       expect(postRepo.find).toHaveBeenCalledWith({
         relations: ['user'],
         order: { createdAt: 'DESC' },
@@ -100,14 +114,16 @@ describe('CommunityService', () => {
 
   describe('createPost', () => {
     it('should create and return a post', async () => {
-      const dto = { content: 'My dog learned a new trick!', type: 'general' };
+      const dto = { content: 'My dog learned a new trick!', postType: 'general' };
       postRepo.create.mockReturnValue(mockPost);
       postRepo.save.mockResolvedValue(mockPost);
 
       const result = await service.createPost(userId, dto);
 
       expect(result).toEqual(mockPost);
-      expect(postRepo.create).toHaveBeenCalledWith({ ...dto, userId });
+      expect(postRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({ userId, content: dto.content, type: 'general' }),
+      );
       expect(postRepo.save).toHaveBeenCalledWith(mockPost);
     });
   });

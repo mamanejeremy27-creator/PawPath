@@ -4,10 +4,12 @@ import { NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { DogsService } from './dogs.service';
 import { Dog } from '../../entities/dog.entity';
+import { EarnedBadge } from '../../entities/earned-badge.entity';
 
 describe('DogsService', () => {
   let service: DogsService;
   let dogRepo: jest.Mocked<Partial<Repository<Dog>>>;
+  let badgeRepo: jest.Mocked<Partial<Repository<EarnedBadge>>>;
 
   const userId = 'user-1';
   const dogId = 'dog-1';
@@ -33,12 +35,19 @@ describe('DogsService', () => {
       create: jest.fn(),
       save: jest.fn(),
       remove: jest.fn(),
+      count: jest.fn(),
+    };
+    badgeRepo = {
+      findOne: jest.fn(),
+      create: jest.fn(),
+      save: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DogsService,
         { provide: getRepositoryToken(Dog), useValue: dogRepo },
+        { provide: getRepositoryToken(EarnedBadge), useValue: badgeRepo },
       ],
     }).compile();
 
@@ -100,12 +109,13 @@ describe('DogsService', () => {
   describe('create', () => {
     it('should create and return a dog', async () => {
       const dto = { name: 'Rex', breed: 'German Shepherd' };
+      dogRepo.count.mockResolvedValue(0);  // first dog, no limit hit; no badge threshold
       dogRepo.create.mockReturnValue(mockDog);
       dogRepo.save.mockResolvedValue(mockDog);
 
       const result = await service.create(userId, dto);
 
-      expect(result).toEqual(mockDog);
+      expect(result).toEqual({ ...mockDog, newBadges: [] });
       expect(dogRepo.create).toHaveBeenCalledWith({ ...dto, userId });
       expect(dogRepo.save).toHaveBeenCalledWith(mockDog);
     });
