@@ -11,20 +11,15 @@ async function bootstrap() {
   const explicitOrigins = (process.env.FRONTEND_URL || 'http://localhost:5176')
     .split(',')
     .map((o) => o.trim());
-  const isProduction = process.env.NODE_ENV === 'production';
   app.enableCors({
-    origin: isProduction
-      ? explicitOrigins.length === 1
-        ? explicitOrigins[0]
-        : explicitOrigins
-      : (origin, callback) => {
-          const allowed =
-            !origin ||
-            explicitOrigins.includes(origin) ||
-            /^https:\/\/.*\.vercel\.app$/.test(origin) ||
-            /^http:\/\/localhost(:\d+)?$/.test(origin);
-          callback(allowed ? null : new Error(`CORS: ${origin} not allowed`), allowed);
-        },
+    origin: (origin, callback) => {
+      const allowed =
+        !origin ||
+        explicitOrigins.includes(origin) ||
+        /^https:\/\/.*\.vercel\.app$/.test(origin) ||
+        /^http:\/\/localhost(:\d+)?$/.test(origin);
+      callback(allowed ? null : new Error(`CORS: ${origin} not allowed`), allowed);
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
