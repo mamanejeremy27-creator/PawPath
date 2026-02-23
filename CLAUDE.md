@@ -2,90 +2,90 @@
 
 ## What Is This
 
-PawPath is a bilingual (English + Hebrew/RTL) dog training PWA. Features include multi-dog support, training programs with exercises, XP/streaks/badges/challenges, journal with photos, community feed, buddy system, walk tracker, health dashboard, lost dog tracker with maps, leaderboard, and more.
+PawPath is a bilingual (English + Hebrew/RTL) dog training PWA. Features include multi-dog support, training programs with exercises, XP/streaks/badges/weekly challenges, journal with photos, community feed, buddy system, walk tracker, health dashboard, lost dog tracker with maps, leaderboard, and more.
 
-## Branch: `refactor`
+## Architecture
 
-This branch is a **full-stack migration from Supabase to a self-hosted NestJS + PostgreSQL backend**. The `main` branch was a frontend-only React app that talked directly to Supabase (auth, database, storage). The `refactor` branch introduces a proper backend and restructures the repo into a monorepo.
+**Monorepo:** `frontend/` (React + Vite + TypeScript) + `backend/` (NestJS + TypeScript) + root `docker-compose.yml` and `pnpm-workspace.yaml`.
 
-### What Changed
-
-| Before (`main`) | After (`refactor`) |
+| Layer | Technology |
 |---|---|
-| Single `src/` folder — frontend-only React app | Monorepo: `frontend/` + `backend/` + root `docker-compose.yml` |
-| Supabase Auth (email/password + magic link) | Passport Local + JWT (7-day expiry) |
-| Supabase Postgres (direct client queries via `supabase-js`) | PostgreSQL 16 via Docker + TypeORM entities + NestJS REST API |
-| Supabase Storage for photos | Local file uploads served via `/uploads/` |
-| 10 frontend lib files (`database.js`, `storage.js`, `syncEngine.js`, `migrate.js`, `supabase.js`, `community.js`, `leaderboard.js`, `healthTracker.js`, `buddyMatching.js`, `lostDog.js`) | All deleted — replaced by `frontend/src/lib/api.js` (centralized REST client) |
-| No backend | NestJS backend with 12 modules, 29 entities, DTOs with class-validator, seed service |
+| Frontend | React 18 + Vite + TypeScript (.tsx/.ts) + Tailwind CSS |
+| Backend | NestJS + TypeScript + TypeORM |
+| Database | PostgreSQL 16 via Docker |
+| Auth | Passport Local + JWT (7-day expiry), token in `localStorage` |
+| Package manager | pnpm (workspace monorepo) |
 
 ### Key Architectural Decisions
 
-- **Auth**: JWT stored in `localStorage` via `frontend/src/lib/auth.js`. Backend issues tokens on login/register, frontend sends `Authorization: Bearer <token>` header on all API calls.
+- **Auth**: JWT stored in `localStorage` via `frontend/src/lib/auth.ts`. Backend issues tokens on login/register, frontend sends `Authorization: Bearer <token>` header on all API calls.
 - **API prefix**: All backend routes are under `/api` (set in `backend/src/main.ts`).
 - **Vite proxy**: Frontend dev server proxies `/api` and `/uploads` to `localhost:3004`, so no CORS issues during development.
 - **DB sync**: TypeORM `synchronize: true` is used for development — the schema auto-updates from entity definitions. For production, switch to migrations.
-- **Seed data**: Training programs, badges, challenges, and streak milestones are seeded into the database on startup via `backend/src/modules/seed/`. The seed service runs `onModuleInit` and only inserts if tables are empty.
+- **Seed data**: Training programs, badges, challenges, and streak milestones are seeded on startup via `backend/src/modules/seed/`. The seed service runs `onModuleInit` and only inserts if tables are empty.
 - **Static file uploads**: Stored in `backend/uploads/`, served at `/uploads/` via `express.static`.
 
 ---
 
 ## How to Run Locally
 
+> **This is a pnpm monorepo.** From the project root, `pnpm install` installs all workspace dependencies (frontend + backend) at once.
+
 ### Prerequisites
 
 - **Node.js** (v18+)
-- **npm**
+- **pnpm** (`npm install -g pnpm`)
 - **Docker** and **Docker Compose**
 
 ### 1. Start the Database
-
-From the project root:
 
 ```bash
 docker compose up -d
 ```
 
-This starts:
 - **PostgreSQL 16** on port `5435` (user: `pawpath`, password: `pawpath_dev`, database: `pawpath`)
-- **Adminer** (DB admin UI) on port `8083` — open http://localhost:8083
+- **Adminer** on port `8083` — http://localhost:8083
 
-### 2. Set Up the Backend
+### 2. Install All Dependencies
+
+```bash
+pnpm install
+```
+
+### 3. Set Up the Backend
 
 ```bash
 cd backend
 cp .env.example .env    # defaults are fine for local dev
-npm install
-npm run start:dev       # starts NestJS in watch mode on port 3004
+pnpm run start:dev       # starts NestJS in watch mode on port 3004
 ```
 
-The backend will:
-- Auto-create all database tables on first run (TypeORM `synchronize: true`)
-- Seed training programs, badges, challenges, and streak milestones into the DB
+Or from root: `pnpm --filter pawpath-backend run start:dev`
 
-### 3. Set Up the Frontend
+### 4. Set Up the Frontend
 
 ```bash
 cd frontend
-npm install
-npm run dev             # starts Vite dev server on port 5176
+pnpm run dev             # starts Vite dev server on port 5176
 ```
+
+Or from root: `pnpm --filter pawpath-frontend run dev`
 
 Open http://localhost:5176 — the app is ready.
 
-### 4. Running Tests
+### 5. Running Tests
 
 **Backend** (Jest):
 ```bash
 cd backend
-npm test                # 11 unit test suites, ~130 tests
-npm run test:e2e        # 3 E2E suites, ~40 tests (needs DB running)
+pnpm test                # 11 unit test suites, ~130 tests
+pnpm run test:e2e        # 3 E2E suites, ~40 tests (needs DB running)
 ```
 
 **Frontend** (Vitest):
 ```bash
 cd frontend
-npm test                # 5 test suites, ~94 tests
+pnpm test                # 5 test suites, 94 tests
 ```
 
 E2E tests use a separate `pawpath_test` database on the same Docker PostgreSQL instance (port 5435).
@@ -97,46 +97,48 @@ E2E tests use a separate `pawpath_test` database on the same Docker PostgreSQL i
 ```
 PawPath/
 ├── docker-compose.yml          # PostgreSQL 16 + Adminer
+├── pnpm-workspace.yaml         # pnpm monorepo config
+├── docs/                       # Feature specs (see below)
 ├── backend/                    # NestJS (TypeScript)
 │   ├── .env.example
-│   ├── src/
-│   │   ├── main.ts             # Bootstrap: validation pipe, CORS, /api prefix, static assets
-│   │   ├── app.module.ts       # Root module — imports all feature modules
-│   │   ├── entities/           # 29 TypeORM entities
-│   │   │   ├── user.entity.ts
-│   │   │   ├── dog.entity.ts
-│   │   │   ├── training-program.entity.ts
-│   │   │   └── ...
-│   │   ├── modules/
-│   │   │   ├── auth/           # Login, register, JWT strategy, guards
-│   │   │   ├── dogs/           # CRUD for dogs per user
-│   │   │   ├── training/       # Training progress, exercises, XP
-│   │   │   ├── health/         # Weight, vaccinations, vet visits, medications
-│   │   │   ├── walks/          # Walk tracking
-│   │   │   ├── community/      # Posts, comments, likes
-│   │   │   ├── leaderboard/    # XP leaderboard
-│   │   │   ├── buddies/        # Buddy matching system
-│   │   │   ├── lost-dogs/      # Lost dog reports + sightings
-│   │   │   ├── feedback/       # User feedback
-│   │   │   ├── settings/       # User settings
-│   │   │   └── seed/           # Auto-seeds static data on startup
-│   │   └── data/               # (now in seed/data/) programs, badges, challenges, milestones
-│   └── test/                   # E2E tests
-├── frontend/                   # React + Vite + Tailwind CSS (JavaScript/JSX)
-│   ├── src/
-│   │   ├── App.jsx             # Screen-based navigation (no React Router)
-│   │   ├── context/AppContext.jsx  # Global state (~1,093 lines)
-│   │   ├── components/         # 75+ component files
-│   │   ├── lib/
-│   │   │   ├── api.js          # Centralized REST API layer (replaces all Supabase libs)
-│   │   │   ├── auth.js         # JWT token management (get/set/clear token)
-│   │   │   ├── walkTracker.js
-│   │   │   └── pushNotifications.js
-│   │   ├── hooks/useAuth.js    # React hook for auth state
-│   │   ├── i18n/               # en.js, he.js — bilingual support
-│   │   ├── data/               # Client-side static data (programs, badges, etc.)
-│   │   └── utils/
-│   └── vite.config.js          # Dev server on 5176, proxies /api + /uploads to 3004
+│   └── src/
+│       ├── main.ts             # Bootstrap: validation pipe, CORS, /api prefix, static assets
+│       ├── app.module.ts       # Root module — imports all feature modules
+│       ├── entities/           # 29 TypeORM entities
+│       ├── modules/
+│       │   ├── auth/           # Login, register, JWT strategy, guards
+│       │   ├── dogs/           # CRUD for dogs per user
+│       │   ├── training/       # Training progress, exercises, XP
+│       │   ├── health/         # Weight, vaccinations, vet visits, medications
+│       │   ├── walks/          # Walk tracking
+│       │   ├── community/      # Posts, comments, likes
+│       │   ├── leaderboard/    # XP leaderboard
+│       │   ├── buddies/        # Buddy matching system
+│       │   ├── lost-dogs/      # Lost dog reports + sightings
+│       │   ├── feedback/       # User feedback
+│       │   ├── settings/       # User settings
+│       │   └── seed/           # Auto-seeds static data on startup
+│       └── data/               # Seed source data
+└── frontend/                   # React + Vite + TypeScript PWA
+    └── src/
+        ├── App.tsx             # Screen-based navigation (no React Router)
+        ├── context/
+        │   └── AppContext.tsx  # Global state (~804 lines)
+        ├── hooks/              # 9 custom hooks extracted from AppContext:
+        │                       # useAuth, useChallengeData, useChallengeSync,
+        │                       # useDailyPlan, useDifficultyTracking,
+        │                       # useElevenLabsTts, useReminderCheck,
+        │                       # useSkillHealth, useStreakBreakDetection,
+        │                       # useVoiceMode
+        ├── components/         # 75+ .tsx component files
+        ├── lib/
+        │   ├── api.ts          # Centralized REST API layer
+        │   ├── auth.ts         # JWT token management (get/set/clear)
+        │   ├── walkTracker.ts
+        │   └── pushNotifications.ts
+        ├── i18n/               # en.ts, he.ts — bilingual strings
+        ├── data/               # Client-side static data (programs, badges, etc.)
+        └── utils/
 ```
 
 ## Ports
@@ -166,10 +168,20 @@ FRONTEND_URL=http://localhost:5176
 
 - **Backend pattern**: Each module follows controller + service + DTOs. Controllers handle HTTP, services handle business logic, DTOs use `class-validator` decorators for validation.
 - **Auth**: `JwtAuthGuard` protects routes, `@CurrentUser()` decorator extracts the authenticated user. `LocalAuthGuard` handles login.
-- **Frontend API calls**: All go through `frontend/src/lib/api.js` which attaches JWT headers automatically. No direct DB calls.
-- **Navigation**: The frontend uses screen-based navigation in `App.jsx` (no React Router). Screen state is managed in `AppContext.jsx`.
+- **Frontend API calls**: All go through `frontend/src/lib/api.ts` which attaches JWT headers automatically. No direct DB calls.
+- **Navigation**: The frontend uses screen-based navigation in `App.tsx` (no React Router). Screen state is managed in `AppContext.tsx`.
 - **RTL/Hebrew**: Use CSS logical properties (`margin-inline-start`, `ps-*`/`pe-*` in Tailwind). All user-facing strings go through `i18n/`.
+- **Frontend state**: Global state lives in `AppContext.tsx`. Complex logic is extracted into custom hooks in `hooks/` that `AppContext` imports and delegates to.
 
 ## Known Gotcha
 
 **NEVER use `import type` for DTO classes in NestJS controllers.** `import type` strips the class at compile time, so `ValidationPipe` can't read decorator metadata and rejects all properties as "should not exist". Services CAN use `import type` for DTOs since they only use the shape.
+
+## Docs
+
+Implemented feature specs live in `docs/`:
+
+- [`docs/weekly-challenges.md`](docs/weekly-challenges.md)
+- [`docs/streak-rewards.md`](docs/streak-rewards.md)
+- [`docs/smart-difficulty.md`](docs/smart-difficulty.md)
+- [`docs/feedback-system.md`](docs/feedback-system.md)

@@ -1,5 +1,5 @@
 {
-  "name": "pawpath",
+  "name": "pawpath-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -33,6 +33,7 @@
     "globals": "^16.5.0",
     "jsdom": "^28.1.0",
     "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vitest": "^4.0.18"
   }

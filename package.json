@@ -1,0 +1,20 @@
+{
+  "name": "pawpath",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "pnpm --filter pawpath-frontend run dev",
+    "dev:backend": "pnpm --filter pawpath-backend run start:dev",
+    "test:frontend": "pnpm --filter pawpath-frontend run test",
+    "test:backend": "pnpm --filter pawpath-backend run test",
+    "build:frontend": "pnpm --filter pawpath-frontend run build",
+    "install:all": "pnpm install"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "bcrypt",
+      "esbuild",
+      "unrs-resolver"
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+packages:
+  - frontend
+  - backend
+
+ignoredBuiltDependencies:
+  - '@nestjs/core'
+  - bcrypt
+  - esbuild
+  - unrs-resolver
