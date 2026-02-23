@@ -25,7 +25,7 @@ export default function VoiceMode({ exercise, programName, programIcon, lang, rt
   const [paused, setPaused] = useState(false);
   const [countdown, setCountdown] = useState(null);
   const [countdownTotal, setCountdownTotal] = useState(null);
-  const [phase, setPhase] = useState("intro"); // intro | speaking | countdown | waiting | done
+  const [phase, setPhase] = useState("ready"); // ready | intro | speaking | countdown | waiting | done
   const [vol, setVol] = useState(0.8);
   const [usingHq, setUsingHq] = useState(true); // true = ElevenLabs, false = Web Speech
   const [fadeKey, setFadeKey] = useState(0); // increment to trigger fade animation
@@ -43,25 +43,31 @@ export default function VoiceMode({ exercise, programName, programIcon, lang, rt
   // Keep voice volume in sync
   useEffect(() => { fallbackVoice.setVolume(vol); }, [vol, fallbackVoice.setVolume]);
 
+  // Keep stable refs for hook functions to avoid re-render issues
+  const elRef = useRef(elevenLabs);
+  const fbRef = useRef(fallbackVoice);
+  useEffect(() => { elRef.current = elevenLabs; }, [elevenLabs]);
+  useEffect(() => { fbRef.current = fallbackVoice; }, [fallbackVoice]);
+
   // ── Unified speak function — tries ElevenLabs, falls back to Web Speech ──
   const speak = useCallback(async (text, l) => {
     if (usingHqRef.current) {
-      const result = await elevenLabs.speak(text, l);
+      const result = await elRef.current.speak(text, l);
       if (result && result.fallback) {
         setUsingHq(false);
         usingHqRef.current = false;
-        await fallbackVoice.speak(text, l);
+        await fbRef.current.speak(text, l);
         return;
       }
       return;
     }
-    await fallbackVoice.speak(text, l);
-  }, [elevenLabs, fallbackVoice]);
+    await fbRef.current.speak(text, l);
+  }, []);
 
   const stopAll = useCallback(() => {
-    elevenLabs.stop();
-    fallbackVoice.stop();
-  }, [elevenLabs, fallbackVoice]);
+    elRef.current.stop();
+    fbRef.current.stop();
+  }, []);
 
   // ── Wake Lock ──
   useEffect(() => {
@@ -87,22 +93,6 @@ export default function VoiceMode({ exercise, programName, programIcon, lang, rt
   useEffect(() => {
     return () => { stopAll(); };
   }, [stopAll]);
-
-  // ── Intro flow (runs once on mount) ──
-  useEffect(() => {
-    const id = ++flowIdRef.current;
-    const scripts = VOICE_SCRIPTS[lang] || VOICE_SCRIPTS.en;
-
-    async function intro() {
-      setPhase("intro");
-      await speak(scripts.startExercise(exercise.name, totalSteps), lang);
-      if (flowIdRef.current !== id) return;
-      runStepFlow(0, id);
-    }
-
-    intro();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // ── Step flow ──
   const runStepFlow = useCallback(
@@ -149,6 +139,21 @@ export default function VoiceMode({ exercise, programName, programIcon, lang, rt
     },
     [totalSteps, steps, lang, speak]
   );
+
+  // ── Intro flow — triggered by user tap to satisfy autoplay policy ──
+  const startIntro = useCallback(() => {
+    const id = ++flowIdRef.current;
+    const scripts = VOICE_SCRIPTS[lang] || VOICE_SCRIPTS.en;
+
+    async function intro() {
+      setPhase("intro");
+      await speak(scripts.startExercise(exercise.name, totalSteps), lang);
+      if (flowIdRef.current !== id) return;
+      runStepFlow(0, id);
+    }
+
+    intro();
+  }, [speak, lang, exercise.name, totalSteps, runStepFlow]);
 
   // ── Countdown ticker ──
   useEffect(() => {
@@ -271,7 +276,7 @@ export default function VoiceMode({ exercise, programName, programIcon, lang, rt
       </div>
 
       {/* ── Progress Dots ── */}
-      {phase !== "done" && (
+      {phase !== "done" && phase !== "ready" && (
         <div style={{ display: "flex", justifyContent: "center", gap: 6, padding: "0 24px 16px" }}>
           {steps.map((_, i) => (
             <div key={i} style={{
@@ -289,7 +294,18 @@ export default function VoiceMode({ exercise, programName, programIcon, lang, rt
       {/* ── Main Content ── */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 24px", overflow: "auto" }}>
 
-        {phase === "done" ? (
+        {phase === "ready" ? (
+          /* ── Tap to Begin ── */
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}><Icon name={programIcon} size={48} color={C.acc} /></div>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 900, color: C.t1, margin: "0 0 8px" }}>{exercise.name}</h2>
+            <p style={{ fontSize: 15, color: C.t3, margin: "0 0 8px" }}>{programName}</p>
+            <p style={{ fontSize: 13, color: C.t3, margin: "0 0 32px" }}>{totalSteps} {T("voiceStep").toLowerCase()}{lang === "he" ? "ים" : "s"}</p>
+            <button onClick={startIntro} style={{ padding: "18px 48px", fontSize: 16, fontWeight: 800, background: C.acc, color: "#000", border: "none", borderRadius: 50, cursor: "pointer", boxShadow: "0 8px 32px rgba(34,197,94,0.25)", animation: "pulseGlow 2s ease infinite" }}>
+              {T("voiceStart")} ▶
+            </button>
+          </div>
+        ) : phase === "done" ? (
           /* ── Completion ── */
           <div style={{ textAlign: "center" }}>
             <div style={{ marginBottom: 20 }}><PartyPopper size={72} color={C.acc} /></div>
@@ -345,7 +361,7 @@ export default function VoiceMode({ exercise, programName, programIcon, lang, rt
       </div>
 
       {/* ── Bottom Controls ── */}
-      {phase !== "done" && (
+      {phase !== "done" && phase !== "ready" && (
         <div style={{ flexShrink: 0, padding: "16px 24px 32px" }}>
 
           {/* Volume slider */}

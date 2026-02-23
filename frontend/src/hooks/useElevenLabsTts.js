@@ -3,18 +3,31 @@ import { getAuthHeaders } from "../lib/auth.js";
 
 export function useElevenLabsTts() {
   const [speaking, setSpeaking] = useState(false);
-  const audioRef = useRef(null);
   const abortRef = useRef(null);
+  const audioRef = useRef(null);
+  const resolveRef = useRef(null);
 
   const stop = useCallback(() => {
+    // Abort any in-flight fetch
     if (abortRef.current) {
       abortRef.current.abort();
       abortRef.current = null;
     }
+    // Stop any playing audio
     if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = "";
+      const audio = audioRef.current;
+      audio.onended = null;
+      audio.onerror = null;
+      audio.pause();
+      if (audio._blobUrl) {
+        URL.revokeObjectURL(audio._blobUrl);
+      }
       audioRef.current = null;
+    }
+    // Resolve any pending promise
+    if (resolveRef.current) {
+      resolveRef.current({});
+      resolveRef.current = null;
     }
     setSpeaking(false);
   }, []);
@@ -24,18 +37,35 @@ export function useElevenLabsTts() {
   }, []);
 
   const resume = useCallback(() => {
-    if (audioRef.current) audioRef.current.play();
+    if (audioRef.current) audioRef.current.play().catch(() => {});
   }, []);
 
   const speak = useCallback(
-    (text, lang = "en") => {
-      // Stop any current playback
-      stop();
+    async (text, lang = "en") => {
+      // Clean up previous without aborting — let the new request take over
+      if (audioRef.current) {
+        const audio = audioRef.current;
+        audio.onended = null;
+        audio.onerror = null;
+        audio.pause();
+        if (audio._blobUrl) URL.revokeObjectURL(audio._blobUrl);
+        audioRef.current = null;
+      }
+      if (resolveRef.current) {
+        resolveRef.current({});
+        resolveRef.current = null;
+      }
+      // Abort previous fetch
+      if (abortRef.current) {
+        abortRef.current.abort();
+      }
 
       const controller = new AbortController();
       abortRef.current = controller;
 
       return new Promise(async (resolve) => {
+        resolveRef.current = resolve;
+
         try {
           const res = await fetch("/api/tts/speak", {
             method: "POST",
@@ -47,15 +77,29 @@ export function useElevenLabsTts() {
             signal: controller.signal,
           });
 
+          // Check if we were superseded while fetching
+          if (abortRef.current !== controller) {
+            resolve({});
+            return;
+          }
+
           if (!res.ok) {
-            // 503 = ElevenLabs unavailable, signal fallback
+            resolveRef.current = null;
             resolve({ fallback: true });
             return;
           }
 
           const blob = await res.blob();
+
+          // Check again after blob download
+          if (abortRef.current !== controller) {
+            resolve({});
+            return;
+          }
+
           const url = URL.createObjectURL(blob);
           const audio = new Audio(url);
+          audio._blobUrl = url;
           audioRef.current = audio;
 
           setSpeaking(true);
@@ -63,6 +107,7 @@ export function useElevenLabsTts() {
           audio.onended = () => {
             URL.revokeObjectURL(url);
             audioRef.current = null;
+            resolveRef.current = null;
             setSpeaking(false);
             resolve({});
           };
@@ -70,22 +115,32 @@ export function useElevenLabsTts() {
           audio.onerror = () => {
             URL.revokeObjectURL(url);
             audioRef.current = null;
+            resolveRef.current = null;
             setSpeaking(false);
             resolve({ fallback: true });
           };
 
-          await audio.play();
+          try {
+            await audio.play();
+          } catch {
+            URL.revokeObjectURL(url);
+            audioRef.current = null;
+            resolveRef.current = null;
+            setSpeaking(false);
+            resolve({ fallback: true });
+          }
         } catch (err) {
           if (err.name === "AbortError") {
             resolve({});
             return;
           }
+          resolveRef.current = null;
           setSpeaking(false);
           resolve({ fallback: true });
         }
       });
     },
-    [stop]
+    []
   );
 
   return { speak, stop, pause, resume, speaking };
