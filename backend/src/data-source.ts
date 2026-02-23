@@ -31,13 +31,31 @@ import { StreakMilestone } from './entities/streak-milestone.entity';
 
 config();
 
+// Support DATABASE_URL (Railway) or individual DB_* vars (local dev)
+const databaseUrl = process.env.DATABASE_URL;
+const dbConn = databaseUrl
+  ? (() => {
+      const u = new URL(databaseUrl);
+      return {
+        host: u.hostname,
+        port: parseInt(u.port || '5432', 10),
+        username: u.username,
+        password: u.password,
+        database: u.pathname.slice(1),
+        ssl: { rejectUnauthorized: false },
+      };
+    })()
+  : {
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '5435', 10),
+      username: process.env.DB_USERNAME || 'pawpath',
+      password: process.env.DB_PASSWORD || 'pawpath_dev',
+      database: process.env.DB_DATABASE || 'pawpath',
+    };
+
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5435'),
-  username: process.env.DB_USERNAME || 'pawpath',
-  password: process.env.DB_PASSWORD || 'pawpath_dev',
-  database: process.env.DB_DATABASE || 'pawpath',
+  ...dbConn,
   entities: [
     User, Dog, DogProgress, CompletedExercise, SkillFreshness,
     EarnedBadge, StreakHistory, ChallengeProgress, UnlockedReward,
