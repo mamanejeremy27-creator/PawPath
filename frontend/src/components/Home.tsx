@@ -7,114 +7,157 @@ import MemoryCard from "./MemoryCard.jsx";
 import DogSwitcher from "./DogSwitcher.jsx";
 import DogAvatar from "./DogAvatar.jsx";
 import ChallengeBanner from "./ChallengeBanner.jsx";
-import StreakWidget from "./StreakWidget.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 import LostDogAlert from "./LostDogAlert.jsx";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
-const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
+import { MeshBackground } from "./ui/MeshBackground";
+import { Card } from "./ui/Card";
+import { StatHero } from "./ui/StatHero";
+import { ProgressRing } from "./ui/ProgressRing";
 
 export default function Home() {
-  const { dogProfile, totalXP, playerLevel, xpProgress, completedExercises, earnedBadges, journal, nav, T, dogCount, activeDogId } = useApp();
+  const {
+    dogProfile, totalXP, playerLevel, xpProgress,
+    completedExercises, earnedBadges, journal,
+    nav, T, dogCount, activeDogId, streakData,
+  } = useApp();
   const showReportBanner = hasPreviousMonthReport(journal);
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
-      {/* Header */}
-      <div style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <DogAvatar key={activeDogId} size="small" dogId={activeDogId} />
-          <div>
-            <p style={{ fontSize: 13, color: C.t3, margin: 0 }}>{T("welcomeBack")}</p>
-            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 800, margin: "4px 0 0", color: C.t1 }}>{dogProfile?.name}</h1>
-            <p style={{ fontSize: 13, color: C.t3, margin: "2px 0 0" }}>{dogProfile?.breed}</p>
-          </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <LanguageToggle />
-          <div style={{ textAlign: "center", background: C.s1, border: `1px solid ${C.b1}`, borderRadius: C.r, padding: "10px 18px" }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: C.acc }}>{totalXP}</div>
-            <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>{T("xp")}</div>
-          </div>
-        </div>
-      </div>
+    <div className="relative min-h-screen pb-24 bg-bg [animation:fadeIn_0.3s_ease]">
+      <MeshBackground />
 
-      {dogCount > 1 && <DogSwitcher />}
+      <div className="relative z-10">
+        <div className="grid grid-cols-2 gap-3 px-4 pt-5">
 
-      {/* Lost Dog Alert (appears if nearby lost dogs detected) */}
-      <LostDogAlert />
-
-      {/* Level bar */}
-      <div style={{ margin: "16px 20px 0", ...cardStyle }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("level")} {playerLevel.level} — {playerLevel.title}</span>
-          {playerLevel.next && <span style={{ fontSize: 13, color: C.t3 }}>{totalXP}/{playerLevel.next}</span>}
-        </div>
-        <div style={{ height: 6, background: C.b1, borderRadius: 10, overflow: "hidden" }}>
-          <div style={{ height: "100%", width: `${Math.min(xpProgress, 100)}%`, background: "linear-gradient(90deg, #22C55E, #4ADE80)", borderRadius: 10, transition: "width 0.6s ease" }} />
-        </div>
-      </div>
-
-      {/* Streak Widget */}
-      <div style={{ padding: "12px 20px 0" }}>
-        <StreakWidget />
-      </div>
-
-      {/* Stats */}
-      <div style={{ display: "flex", gap: 10, padding: "10px 20px 0" }}>
-        {[{ v: completedExercises.length, l: T("done"), i: <CheckCircle2 size={18} color="#22C55E" strokeWidth={2} /> }, { v: earnedBadges.length, l: T("badges"), i: <Award size={18} color="#F59E0B" strokeWidth={2} /> }].map((s, i) => (
-          <div key={i} style={{ flex: 1, textAlign: "center", padding: "14px 6px", background: C.s1, borderRadius: C.r, border: `1px solid ${C.b1}` }}>
-            <div style={{ marginBottom: 4 }}>{s.i}</div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: C.t1 }}>{s.v}</div>
-            <div style={{ fontSize: 10, color: C.t3, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600 }}>{s.l}</div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ padding: "12px 20px 0" }}><LifeStageBanner /></div>
-
-      {/* Monthly Report Banner */}
-      {showReportBanner && (
-        <div style={{ padding: "12px 20px 0" }}>
-          <button
-            onClick={() => nav("milestoneCards")}
-            style={{
-              width: "100%", padding: "16px 20px",
-              background: "linear-gradient(135deg, rgba(34,197,94,0.08), rgba(59,130,246,0.08))",
-              border: `1px solid rgba(34,197,94,0.2)`,
-              borderRadius: C.rL, cursor: "pointer",
-              display: "flex", alignItems: "center", gap: 14,
-              color: C.t1, textAlign: "start",
-            }}
-          >
-            <Trophy size={28} color="#22C55E" />
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("reportReady")}</div>
-              <div style={{ fontSize: 12, color: C.acc, fontWeight: 600, marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>{T("viewReport")} <ArrowRight size={14} color={C.acc} /></div>
+          {/* ── Header ── col-span-2 */}
+          <div className="col-span-2 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <DogAvatar key={activeDogId} size="small" dogId={activeDogId} />
+              <div>
+                <p className="text-[13px] text-muted m-0">{T("welcomeBack")}</p>
+                <h1 className="font-display text-3xl font-black m-0 mt-1 text-text leading-none">
+                  {dogProfile?.name}
+                </h1>
+                <p className="text-[13px] text-muted m-0 mt-0.5">{dogProfile?.breed}</p>
+              </div>
             </div>
-          </button>
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
+              <Card className="p-3 text-center min-w-[60px]">
+                <div className="text-xl font-black text-xp">{totalXP}</div>
+                <div className="text-[10px] text-muted uppercase tracking-widest font-bold">{T("xp")}</div>
+              </Card>
+            </div>
+          </div>
+
+          {/* Dog switcher + alerts — full width */}
+          {dogCount > 1 && <div className="col-span-2"><DogSwitcher /></div>}
+          <div className="col-span-2"><LostDogAlert /></div>
+
+          {/* ── ProgressRing ── col-span-1 */}
+          <Card glow="training" className="col-span-1 flex flex-col items-center gap-2 py-4">
+            <ProgressRing value={xpProgress} size={72} strokeWidth={6} color="#22C55E">
+              <span className="text-lg font-black text-training">{playerLevel.level}</span>
+            </ProgressRing>
+            <div className="text-[11px] font-bold text-text-2 text-center leading-tight">
+              {playerLevel.title}
+            </div>
+          </Card>
+
+          {/* ── Streak ── col-span-1 */}
+          <Card glow="xp" className="col-span-1">
+            <button
+              onClick={() => nav("streakView")}
+              className="w-full h-full flex flex-col items-center justify-center gap-1.5 bg-transparent border-none cursor-pointer p-0"
+            >
+              <span
+                className="text-2xl"
+                style={{ animation: streakData?.current > 0 ? "pulse 2s infinite" : "none" }}
+              >
+                {streakData?.fire ?? "🔥"}
+              </span>
+              <StatHero
+                value={streakData?.current ?? 0}
+                label={T("dayStreak")}
+                colorClass="text-xp"
+              />
+            </button>
+          </Card>
+
+          {/* ── Sessions done ── col-span-1 */}
+          <Card className="col-span-1 flex flex-col items-center gap-2 py-4">
+            <CheckCircle2 size={22} className="text-training" />
+            <StatHero value={completedExercises.length} label={T("done")} />
+          </Card>
+
+          {/* ── Badges ── col-span-1 */}
+          <Card glow="achieve" className="col-span-1 flex flex-col items-center gap-2 py-4">
+            <Award size={22} className="text-xp" />
+            <StatHero value={earnedBadges.length} label={T("badges")} colorClass="text-xp" />
+          </Card>
+
+          {/* ── Life stage banner ── col-span-2 */}
+          <div className="col-span-2"><LifeStageBanner /></div>
+
+          {/* ── Monthly report banner ── col-span-2 */}
+          {showReportBanner && (
+            <div className="col-span-2">
+              <button
+                onClick={() => nav("milestoneCards")}
+                className="w-full px-5 py-4 rounded-3xl border border-training/20 bg-gradient-to-r from-training/[0.08] to-health/[0.08] flex items-center gap-3.5 text-text text-start cursor-pointer"
+              >
+                <Trophy size={28} className="text-training" />
+                <div className="flex-1">
+                  <div className="text-sm font-bold">{T("reportReady")}</div>
+                  <div className="text-xs text-training font-semibold mt-0.5 flex items-center gap-1">
+                    {T("viewReport")} <ArrowRight size={14} />
+                  </div>
+                </div>
+              </button>
+            </div>
+          )}
+
+          <div className="col-span-2"><MemoryCard /></div>
+
+          {/* ── Daily Plan ── col-span-2 */}
+          <div className="col-span-2"><DailyPlan /></div>
+
+          {/* ── Challenge Banner ── col-span-2 */}
+          <div className="col-span-2"><ChallengeBanner /></div>
+
+          {/* ── Quick-access row ── col-span-2 */}
+          <div className="col-span-2 grid grid-cols-3 gap-2.5 pb-2">
+            <button
+              onClick={() => nav("community")}
+              className="p-3.5 bg-social/[0.06] border border-social/15 rounded-2xl text-text cursor-pointer text-center"
+            >
+              <div className="flex justify-center mb-1">
+                <Users size={20} className="text-social" />
+              </div>
+              <div className="text-xs font-bold">{T("community")}</div>
+            </button>
+            <button
+              onClick={() => nav("walkTracker")}
+              className="p-3.5 bg-health/[0.06] border border-health/15 rounded-2xl text-text cursor-pointer text-center"
+            >
+              <div className="flex justify-center mb-1">
+                <Footprints size={20} className="text-health" />
+              </div>
+              <div className="text-xs font-bold">{T("walkTracker")}</div>
+            </button>
+            <button
+              onClick={() => nav("healthDashboard")}
+              className="p-3.5 bg-danger/[0.06] border border-danger/15 rounded-2xl text-text cursor-pointer text-center"
+            >
+              <div className="flex justify-center mb-1">
+                <Heart size={20} className="text-danger" />
+              </div>
+              <div className="text-xs font-bold">{T("healthDashboard")}</div>
+            </button>
+          </div>
+
         </div>
-      )}
-
-      <MemoryCard />
-      <DailyPlan />
-      <ChallengeBanner />
-
-      {/* Quick-access row: Community · Walk · Health */}
-      <div style={{ display: "flex", gap: 10, padding: "20px 20px 0" }}>
-        <button onClick={() => nav("community")} style={{ flex: 1, padding: "14px", background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
-          <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><Users size={20} color="#22C55E" /></div>
-          <div style={{ fontSize: 12, fontWeight: 700 }}>{T("community")}</div>
-        </button>
-        <button onClick={() => nav("walkTracker")} style={{ flex: 1, padding: "14px", background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
-          <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><Footprints size={20} color="#3B82F6" /></div>
-          <div style={{ fontSize: 12, fontWeight: 700 }}>{T("walkTracker")}</div>
-        </button>
-        <button onClick={() => nav("healthDashboard")} style={{ flex: 1, padding: "14px", background: "rgba(236,72,153,0.06)", border: "1px solid rgba(236,72,153,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
-          <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><Heart size={20} color="#EC4899" /></div>
-          <div style={{ fontSize: 12, fontWeight: 700 }}>{T("healthDashboard")}</div>
-        </button>
       </div>
 
       <BottomNav active="home" />

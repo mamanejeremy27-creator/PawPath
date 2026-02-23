@@ -4,63 +4,107 @@ import { Lock, ChevronRight, Trophy } from "lucide-react";
 import Icon from "./ui/Icon.jsx";
 import SkillHealth from "./SkillHealth.jsx";
 import BottomNav from "./BottomNav.jsx";
-
-const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
+import { Card } from "./ui/Card";
+import { GlowBadge } from "./ui/GlowBadge";
+import { cn } from "../lib/cn";
 
 export default function TrainView() {
   const { dogProfile, playerLevel, completedExercises, nav, T, programs } = useApp();
   const breedData = matchBreed(dogProfile?.breed);
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
+    <div className="min-h-screen pb-24 bg-bg [animation:fadeIn_0.3s_ease]">
       <SkillHealth />
 
-      {/* Programs */}
-      <div style={{ padding: "24px 20px 8px" }}><h2 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: C.t1 }}>{T("programs")}</h2></div>
-      <div style={{ padding: "0 20px", display: "flex", flexDirection: "column", gap: 8 }}>
+      {/* Programs header */}
+      <div className="px-5 pt-6 pb-2">
+        <h2 className="text-lg font-extrabold m-0 text-text">{T("programs")}</h2>
+      </div>
+
+      {/* Programs list */}
+      <div className="px-4 flex flex-col gap-2">
         {programs.map((prog, idx) => {
           const unlocked = playerLevel.level >= prog.unlockLevel;
           const tot = prog.levels.reduce((a, l) => a + l.exercises.length, 0);
-          const dn = prog.levels.reduce((a, l) => a + l.exercises.filter(e => completedExercises.includes(e.id)).length, 0);
+          const dn = prog.levels.reduce(
+            (a, l) => a + l.exercises.filter(e => completedExercises.includes(e.id)).length,
+            0
+          );
           const pct = tot > 0 ? Math.round((dn / tot) * 100) : 0;
+          const isRecommended = unlocked && breedData && breedData.priorityPrograms.includes(prog.id);
+
           return (
-            <button key={prog.id} onClick={() => unlocked && nav("program", { program: prog })}
-              style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 18px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}`, cursor: unlocked ? "pointer" : "default", opacity: unlocked ? 1 : 0.4, color: C.t1, textAlign: "start", width: "100%", animation: `fadeIn 0.3s ease ${idx * 0.04}s both` }}>
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: prog.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{unlocked ? <Icon name={prog.icon} size={22} color="#fff" /> : <Lock size={22} color="#71717A" />}</div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 15, fontWeight: 700 }}>{prog.name}</div>
-                <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{unlocked ? `${dn}/${tot} ${T("exercises")}` : `${T("unlockAt")} ${prog.unlockLevel}`}</div>
-                {unlocked && breedData && breedData.priorityPrograms.includes(prog.id) && (
-                  <div style={{ marginTop: 4, display: "inline-block", padding: "2px 8px", borderRadius: 6, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)", fontSize: 11, color: C.acc, fontWeight: 600 }}>{T("recommendedForBreed")}</div>
+            <Card
+              key={prog.id}
+              glow={unlocked ? "training" : undefined}
+              className={cn(
+                "p-0 overflow-hidden [animation:fadeIn_0.3s_ease_both]",
+                !unlocked && "opacity-40"
+              )}
+              style={{ animationDelay: `${idx * 0.04}s` }}
+            >
+              <button
+                onClick={() => unlocked && nav("program", { program: prog })}
+                className={cn(
+                  "flex items-center gap-3.5 w-full p-4 text-text text-start bg-transparent border-none",
+                  unlocked ? "cursor-pointer" : "cursor-default"
                 )}
-                {unlocked && dn > 0 && <div style={{ height: 3, background: C.b1, borderRadius: 10, overflow: "hidden", marginTop: 8 }}><div style={{ height: "100%", width: `${pct}%`, background: prog.gradient, borderRadius: 10 }} /></div>}
-              </div>
-              <ChevronRight size={16} color={C.t3} />
-            </button>
+              >
+                <div
+                  className="w-12 h-12 rounded-[14px] flex items-center justify-center shrink-0"
+                  style={{ background: prog.gradient }}
+                >
+                  {unlocked
+                    ? <Icon name={prog.icon} size={22} color="#fff" />
+                    : <Lock size={22} className="text-muted" />}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[15px] font-bold">{prog.name}</span>
+                    {isRecommended && (
+                      <GlowBadge color="training" size="sm">
+                        {T("recommendedForBreed")}
+                      </GlowBadge>
+                    )}
+                  </div>
+                  <div className="text-xs text-muted mt-0.5">
+                    {unlocked
+                      ? `${dn}/${tot} ${T("exercises")}`
+                      : `${T("unlockAt")} ${prog.unlockLevel}`}
+                  </div>
+                  {unlocked && dn > 0 && (
+                    <div className="h-[3px] bg-border rounded-full overflow-hidden mt-2">
+                      <div
+                        className="h-full rounded-full"
+                        style={{ width: `${pct}%`, background: prog.gradient }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <ChevronRight size={16} className="text-muted shrink-0" />
+              </button>
+            </Card>
           );
         })}
       </div>
 
-      {/* Leaderboard Entry */}
-      <div style={{ padding: "12px 20px 0" }}>
-        <button
-          onClick={() => nav("leaderboard")}
-          style={{
-            width: "100%", padding: "16px 20px", boxSizing: "border-box",
-            background: "linear-gradient(135deg, rgba(255,215,0,0.08), rgba(245,158,11,0.06))",
-            border: "1px solid rgba(255,215,0,0.2)",
-            borderRadius: C.rL, cursor: "pointer",
-            display: "flex", alignItems: "center", gap: 14,
-            color: C.t1, textAlign: "start",
-          }}
-        >
-          <Trophy size={28} color="#FFD700" />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("leaderboard")}</div>
-            <div style={{ fontSize: 12, color: "#FFD700", fontWeight: 600, marginTop: 2 }}>{T("leaderboardSubtitle")}</div>
-          </div>
-          <ChevronRight size={16} color={C.t3} />
-        </button>
+      {/* Leaderboard entry */}
+      <div className="px-4 pt-3">
+        <Card glow="achieve" className="p-0">
+          <button
+            onClick={() => nav("leaderboard")}
+            className="w-full flex items-center gap-3.5 px-5 py-4 text-text text-start bg-transparent border-none cursor-pointer"
+          >
+            <Trophy size={28} className="text-xp" />
+            <div className="flex-1">
+              <div className="text-sm font-bold">{T("leaderboard")}</div>
+              <div className="text-xs text-xp font-semibold mt-0.5">{T("leaderboardSubtitle")}</div>
+            </div>
+            <ChevronRight size={16} className="text-muted" />
+          </button>
+        </Card>
       </div>
 
       <BottomNav active="train" />
