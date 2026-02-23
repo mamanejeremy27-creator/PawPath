@@ -19,4 +19,4 @@ COPY --from=builder /app/dist ./dist
 RUN mkdir -p uploads
 
 EXPOSE 3004
-CMD ["node", "dist/src/main"]
+CMD ["node", "dist/main.js"]
