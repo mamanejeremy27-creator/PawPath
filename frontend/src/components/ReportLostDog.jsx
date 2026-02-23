@@ -18,6 +18,7 @@ export default function ReportLostDog() {
   const [lat, setLat] = useState(null);
   const [lng, setLng] = useState(null);
   const [gpsStatus, setGpsStatus] = useState("loading");
+  const [gpsAccuracy, setGpsAccuracy] = useState(null); // meters
   const [radius, setRadius] = useState(10);
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState(null);
@@ -27,7 +28,12 @@ export default function ReportLostDog() {
   useEffect(() => {
     if (!navigator.geolocation) { setGpsStatus("error"); return; }
     navigator.geolocation.getCurrentPosition(
-      (pos) => { setLat(pos.coords.latitude); setLng(pos.coords.longitude); setGpsStatus("ok"); },
+      (pos) => {
+        setLat(pos.coords.latitude);
+        setLng(pos.coords.longitude);
+        setGpsAccuracy(Math.round(pos.coords.accuracy));
+        setGpsStatus(pos.coords.accuracy > 500 ? "low_accuracy" : "ok");
+      },
       () => setGpsStatus("error"),
       { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -144,26 +150,45 @@ export default function ReportLostDog() {
         {/* GPS Location */}
         <div>
           <label style={lbl}>{T("lostLastLocation")}</label>
-          <div style={{ padding: "12px 16px", background: C.s1, borderRadius: 12, border: `1px solid ${C.b1}`, fontSize: 13, color: gpsStatus === "ok" ? C.acc : gpsStatus === "error" ? C.danger : C.t3 }}>
+          <div style={{ padding: "12px 16px", background: C.s1, borderRadius: 12, border: `1px solid ${C.b1}`, fontSize: 13, color: gpsStatus === "ok" ? C.acc : gpsStatus === "low_accuracy" ? "#F59E0B" : gpsStatus === "error" ? C.danger : C.t3 }}>
             {gpsStatus === "loading" && T("lostGpsLoading")}
             {gpsStatus === "ok" && `${T("lostGpsLocked")} (${lat?.toFixed(4)}, ${lng?.toFixed(4)})`}
+            {gpsStatus === "low_accuracy" && (
+              <>
+                {T("lostGpsLowAccuracy") || "Location approximate"} ({gpsAccuracy}m) — {T("lostTapToSetLocation") || "tap map to adjust"}
+                <div style={{ fontSize: 12, marginTop: 4, color: C.t3 }}>({lat?.toFixed(4)}, {lng?.toFixed(4)})</div>
+              </>
+            )}
             {gpsStatus === "error" && T("lostGpsError")}
           </div>
         </div>
 
-        {/* Tap-to-set location map */}
-        {(lat !== null && lng !== null) && (
+        {/* Tap-to-set location map — show even on error so user can pick manually */}
+        {(lat !== null && lng !== null) ? (
           <div>
             <label style={lbl}>{T("lostTapToSetLocation") || "Tap map to adjust location"}</label>
             <LostDogMap
               center={{ lat, lng }}
-              zoom={15}
+              zoom={gpsStatus === "low_accuracy" ? 12 : 15}
               height={200}
               interactive={true}
               tappable={true}
-              onTap={(latlng) => { setLat(latlng.lat); setLng(latlng.lng); }}
+              onTap={(latlng) => { setLat(latlng.lat); setLng(latlng.lng); setGpsStatus("ok"); }}
               markerPosition={{ lat, lng }}
               originLabel={T("lostLastKnown")}
+            />
+          </div>
+        ) : gpsStatus === "error" && (
+          <div>
+            <label style={lbl}>{T("lostTapToSetLocation") || "Tap map to set location"}</label>
+            <LostDogMap
+              center={{ lat: 32.08, lng: 34.78 }}
+              zoom={10}
+              height={200}
+              interactive={true}
+              tappable={true}
+              onTap={(latlng) => { setLat(latlng.lat); setLng(latlng.lng); setGpsStatus("ok"); }}
+              originLabel=""
             />
           </div>
         )}
