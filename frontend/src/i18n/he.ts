@@ -113,6 +113,7 @@ export default {
 
   // Nav
   home: "בית",
+  train: "אימון",
   profile: "פרופיל",
 
   // Gear

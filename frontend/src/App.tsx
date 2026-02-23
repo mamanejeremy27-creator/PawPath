@@ -4,6 +4,7 @@ import Auth from "./components/Auth.jsx";
 import Splash from "./components/Splash.jsx";
 import Onboarding from "./components/Onboarding.jsx";
 import Home from "./components/Home.jsx";
+import TrainView from "./components/TrainView.jsx";
 import ProgramView from "./components/ProgramView.jsx";
 import LevelView from "./components/LevelView.jsx";
 import ExerciseView from "./components/ExerciseView.jsx";
@@ -108,6 +109,7 @@ export default function App() {
       {screen === "splash" && <Splash />}
       {screen === "onboard" && <Onboarding />}
       {screen === "home" && <Home />}
+      {screen === "train" && <TrainView />}
       {screen === "program" && <ProgramView />}
       {screen === "level" && <LevelView />}
       {screen === "exercise" && <ExerciseView />}

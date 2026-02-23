@@ -1,10 +1,7 @@
 import { useApp } from "../context/AppContext.jsx";
 import { hasPreviousMonthReport } from "../utils/monthlyStats.js";
-import { matchBreed } from "../data/breedTraits.js";
-import { CheckCircle2, Award, Stethoscope, ShieldAlert, Footprints, Heart, Search, ShoppingCart, Clock, PenLine, Trophy, Lock, ChevronRight, ArrowRight } from "lucide-react";
-import Icon from "./ui/Icon.jsx";
+import { CheckCircle2, Award, Trophy, ArrowRight, Users, Footprints, Heart } from "lucide-react";
 import DailyPlan from "./DailyPlan.jsx";
-import SkillHealth from "./SkillHealth.jsx";
 import LifeStageBanner from "./LifeStageBanner.jsx";
 import MemoryCard from "./MemoryCard.jsx";
 import DogSwitcher from "./DogSwitcher.jsx";
@@ -14,15 +11,13 @@ import StreakWidget from "./StreakWidget.jsx";
 import BottomNav from "./BottomNav.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 import LostDogAlert from "./LostDogAlert.jsx";
-import LostDogFeed from "./LostDogFeed.jsx";
 
 const C = { bg: "#0A0A0C", s1: "#131316", b1: "rgba(255,255,255,0.06)", t1: "#F5F5F7", t2: "#A1A1AA", t3: "#71717A", acc: "#22C55E", r: 16, rL: 24 };
 const cardStyle = { padding: "18px 20px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}` };
 
 export default function Home() {
-  const { dogProfile, totalXP, playerLevel, xpProgress, completedExercises, earnedBadges, journal, nav, setShowGear, setShowReminders, T, programs, dogCount, activeDogId } = useApp();
+  const { dogProfile, totalXP, playerLevel, xpProgress, completedExercises, earnedBadges, journal, nav, T, dogCount, activeDogId } = useApp();
   const showReportBanner = hasPreviousMonthReport(journal);
-  const breedData = matchBreed(dogProfile?.breed);
 
   return (
     <div style={{ minHeight: "100vh", paddingBottom: 100, background: C.bg, animation: "fadeIn 0.3s ease" }}>
@@ -103,205 +98,22 @@ export default function Home() {
       )}
 
       <MemoryCard />
-      <SkillHealth />
       <DailyPlan />
       <ChallengeBanner />
 
-      {/* Diagnostic Entry */}
-      <div style={{ padding: "12px 20px 0" }}>
-        <button
-          onClick={() => nav("diagnostic")}
-          style={{
-            width: "100%", padding: "16px 20px",
-            background: "linear-gradient(135deg, rgba(20,184,166,0.08), rgba(6,182,212,0.05))",
-            border: "1px solid rgba(20,184,166,0.2)",
-            borderRadius: C.rL, cursor: "pointer",
-            display: "flex", alignItems: "center", gap: 14,
-            color: C.t1, textAlign: "start",
-          }}
-        >
-          <Stethoscope size={28} color="#14B8A6" />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("diagCardTitle")}</div>
-            <div style={{ fontSize: 12, color: "#14B8A6", fontWeight: 600, marginTop: 2 }}>{T("diagCardSub")}</div>
-          </div>
-          <ChevronRight size={16} color={C.t3} />
-        </button>
-      </div>
-
-      {/* Emergency First Aid Entry */}
-      <div style={{ padding: "12px 20px 0" }}>
-        <button
-          onClick={() => nav("emergency")}
-          style={{
-            width: "100%", padding: "16px 20px",
-            background: "linear-gradient(135deg, rgba(239,68,68,0.08), rgba(220,38,38,0.06))",
-            border: "1px solid rgba(239,68,68,0.2)",
-            borderRadius: C.rL, cursor: "pointer",
-            display: "flex", alignItems: "center", gap: 14,
-            color: C.t1, textAlign: "start",
-          }}
-        >
-          <ShieldAlert size={28} color="#EF4444" />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("emergencyCardTitle")}</div>
-            <div style={{ fontSize: 12, color: "#EF4444", fontWeight: 600, marginTop: 2 }}>{T("emergencyCardSub")}</div>
-          </div>
-          <ChevronRight size={16} color={C.t3} />
-        </button>
-      </div>
-
-      {/* Dog Nutrition Guide Entry */}
-      <div style={{ padding: "12px 20px 0" }}>
-        <button
-          onClick={() => nav("nutrition")}
-          style={{
-            width: "100%", padding: "16px 20px",
-            background: "linear-gradient(135deg, rgba(34,197,94,0.08), rgba(16,185,129,0.06))",
-            border: "1px solid rgba(34,197,94,0.2)",
-            borderRadius: C.rL, cursor: "pointer",
-            display: "flex", alignItems: "center", gap: 14,
-            color: C.t1, textAlign: "start",
-          }}
-        >
-          <span style={{ fontSize: 28 }}>{"\uD83E\uDD62"}</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("nutritionCardTitle")}</div>
-            <div style={{ fontSize: 12, color: C.acc, fontWeight: 600, marginTop: 2 }}>{T("nutritionCardSub")}</div>
-          </div>
-          <ChevronRight size={16} color={C.t3} />
-        </button>
-      </div>
-
-      {/* Walk Tracker Entry */}
-      <div style={{ padding: "12px 20px 0" }}>
-        <button
-          onClick={() => nav("walkTracker")}
-          style={{
-            width: "100%", padding: "16px 20px",
-            background: "linear-gradient(135deg, rgba(59,130,246,0.08), rgba(34,197,94,0.06))",
-            border: "1px solid rgba(59,130,246,0.2)",
-            borderRadius: C.rL, cursor: "pointer",
-            display: "flex", alignItems: "center", gap: 14,
-            color: C.t1, textAlign: "start",
-          }}
-        >
-          <Footprints size={28} color="#3B82F6" />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("walkTracker")}</div>
-            <div style={{ fontSize: 12, color: "#3B82F6", fontWeight: 600, marginTop: 2 }}>{T("walkTrackerSub")}</div>
-          </div>
-          <ChevronRight size={16} color={C.t3} />
-        </button>
-      </div>
-
-      {/* Health Tracker Entry */}
-      <div style={{ padding: "12px 20px 0" }}>
-        <button
-          onClick={() => nav("healthDashboard")}
-          style={{
-            width: "100%", padding: "16px 20px",
-            background: "linear-gradient(135deg, rgba(236,72,153,0.08), rgba(168,85,247,0.05))",
-            border: "1px solid rgba(236,72,153,0.2)",
-            borderRadius: C.rL, cursor: "pointer",
-            display: "flex", alignItems: "center", gap: 14,
-            color: C.t1, textAlign: "start",
-          }}
-        >
-          <Heart size={28} color="#EC4899" />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("healthDashboard")}</div>
-            <div style={{ fontSize: 12, color: "#EC4899", fontWeight: 600, marginTop: 2 }}>{T("healthDashboardSub")}</div>
-          </div>
-          <ChevronRight size={16} color={C.t3} />
-        </button>
-      </div>
-
-      {/* Lost Dog Feed — nearby alerts */}
-      <LostDogFeed />
-
-      {/* Report Lost Dog */}
-      <div style={{ padding: "12px 20px 0" }}>
-        <button
-          onClick={() => nav("reportLostDog")}
-          style={{
-            width: "100%", padding: "16px 20px",
-            background: "linear-gradient(135deg, rgba(251,146,60,0.08), rgba(245,158,11,0.05))",
-            border: "1px solid rgba(251,146,60,0.2)",
-            borderRadius: C.rL, cursor: "pointer",
-            display: "flex", alignItems: "center", gap: 14,
-            color: C.t1, textAlign: "start",
-          }}
-        >
-          <Search size={28} color="#FB923C" />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: "#FB923C" }}>{T("lostReportDog")}</div>
-            <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{T("lostReportDogSub")}</div>
-          </div>
-          <ChevronRight size={16} color={C.t3} />
-        </button>
-      </div>
-
-      {/* Quick Actions */}
+      {/* Quick-access row: Community · Walk · Health */}
       <div style={{ display: "flex", gap: 10, padding: "20px 20px 0" }}>
-        <button onClick={() => setShowGear(true)} style={{ flex: 1, padding: "14px", background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
-          <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><ShoppingCart size={20} color="#F59E0B" /></div>
-          <div style={{ fontSize: 12, fontWeight: 700 }}>{T("gearGuide")}</div>
+        <button onClick={() => nav("community")} style={{ flex: 1, padding: "14px", background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
+          <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><Users size={20} color="#22C55E" /></div>
+          <div style={{ fontSize: 12, fontWeight: 700 }}>{T("community")}</div>
         </button>
-        <button onClick={() => setShowReminders(true)} style={{ flex: 1, padding: "14px", background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
-          <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><Clock size={20} color="#3B82F6" /></div>
-          <div style={{ fontSize: 12, fontWeight: 700 }}>{T("reminders")}</div>
+        <button onClick={() => nav("walkTracker")} style={{ flex: 1, padding: "14px", background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
+          <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><Footprints size={20} color="#3B82F6" /></div>
+          <div style={{ fontSize: 12, fontWeight: 700 }}>{T("walkTracker")}</div>
         </button>
-        <button onClick={() => nav("journal")} style={{ flex: 1, padding: "14px", background: "rgba(139,92,246,0.06)", border: "1px solid rgba(139,92,246,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
-          <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><PenLine size={20} color="#8B5CF6" /></div>
-          <div style={{ fontSize: 12, fontWeight: 700 }}>{T("journal")}</div>
-        </button>
-      </div>
-
-      {/* Programs */}
-      <div style={{ padding: "24px 20px 8px" }}><h2 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: C.t1 }}>{T("programs")}</h2></div>
-      <div style={{ padding: "0 20px", display: "flex", flexDirection: "column", gap: 8 }}>
-        {programs.map((prog, idx) => {
-          const unlocked = playerLevel.level >= prog.unlockLevel;
-          const tot = prog.levels.reduce((a, l) => a + l.exercises.length, 0);
-          const dn = prog.levels.reduce((a, l) => a + l.exercises.filter(e => completedExercises.includes(e.id)).length, 0);
-          const pct = tot > 0 ? Math.round((dn / tot) * 100) : 0;
-          return (
-            <button key={prog.id} onClick={() => unlocked && nav("program", { program: prog })}
-              style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 18px", background: C.s1, borderRadius: C.rL, border: `1px solid ${C.b1}`, cursor: unlocked ? "pointer" : "default", opacity: unlocked ? 1 : 0.4, color: C.t1, textAlign: "start", width: "100%", animation: `fadeIn 0.3s ease ${idx * 0.04}s both` }}>
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: prog.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{unlocked ? <Icon name={prog.icon} size={22} color="#fff" /> : <Lock size={22} color="#71717A" />}</div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 15, fontWeight: 700 }}>{prog.name}</div>
-                <div style={{ fontSize: 12, color: C.t3, marginTop: 2 }}>{unlocked ? `${dn}/${tot} ${T("exercises")}` : `${T("unlockAt")} ${prog.unlockLevel}`}</div>
-                {unlocked && breedData && breedData.priorityPrograms.includes(prog.id) && (
-                  <div style={{ marginTop: 4, display: "inline-block", padding: "2px 8px", borderRadius: 6, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)", fontSize: 11, color: C.acc, fontWeight: 600 }}>{T("recommendedForBreed")}</div>
-                )}
-                {unlocked && dn > 0 && <div style={{ height: 3, background: C.b1, borderRadius: 10, overflow: "hidden", marginTop: 8 }}><div style={{ height: "100%", width: `${pct}%`, background: prog.gradient, borderRadius: 10 }} /></div>}
-              </div>
-              <ChevronRight size={16} color={C.t3} />
-            </button>
-          );
-        })}
-      </div>
-      {/* Leaderboard Entry */}
-      <div style={{ padding: "12px 20px 0" }}>
-        <button
-          onClick={() => nav("leaderboard")}
-          style={{
-            width: "100%", padding: "16px 20px", boxSizing: "border-box",
-            background: "linear-gradient(135deg, rgba(255,215,0,0.08), rgba(245,158,11,0.06))",
-            border: "1px solid rgba(255,215,0,0.2)",
-            borderRadius: C.rL, cursor: "pointer",
-            display: "flex", alignItems: "center", gap: 14,
-            color: C.t1, textAlign: "start",
-          }}
-        >
-          <Trophy size={28} color="#FFD700" />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("leaderboard")}</div>
-            <div style={{ fontSize: 12, color: "#FFD700", fontWeight: 600, marginTop: 2 }}>{T("leaderboardSubtitle")}</div>
-          </div>
-          <ChevronRight size={16} color={C.t3} />
+        <button onClick={() => nav("healthDashboard")} style={{ flex: 1, padding: "14px", background: "rgba(236,72,153,0.06)", border: "1px solid rgba(236,72,153,0.15)", borderRadius: C.r, color: C.t1, cursor: "pointer", textAlign: "center" }}>
+          <div style={{ marginBottom: 4, display: "flex", justifyContent: "center" }}><Heart size={20} color="#EC4899" /></div>
+          <div style={{ fontSize: 12, fontWeight: 700 }}>{T("healthDashboard")}</div>
         </button>
       </div>
 

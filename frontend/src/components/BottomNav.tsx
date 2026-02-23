@@ -1,5 +1,5 @@
 import { useApp } from "../context/AppContext.jsx";
-import { Home, Users, BookOpen, Award, User } from "lucide-react";
+import { Home, Dumbbell, BookOpen, Award, User } from "lucide-react";
 
 const C = { bg: "#0A0A0C", acc: "#22C55E", t3: "#71717A" };
 
@@ -8,7 +8,7 @@ export default function BottomNav({ active }) {
 
   const items = [
     { id: "home", Icon: Home, label: T("home") },
-    { id: "community", Icon: Users, label: T("community") },
+    { id: "train", Icon: Dumbbell, label: T("train") },
     { id: "journal", Icon: BookOpen, label: T("journal") },
     { id: "badges", Icon: Award, label: T("badges") },
     { id: "profile", Icon: User, label: T("profile") },

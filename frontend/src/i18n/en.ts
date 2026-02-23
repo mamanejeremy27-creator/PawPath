@@ -113,6 +113,7 @@ export default {
 
   // Nav
   home: "Home",
+  train: "Train",
   profile: "Profile",
 
   // Gear
