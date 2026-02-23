@@ -29,7 +29,10 @@ import {
   // Lost Dog / Map
   MapPin, AlertCircle, MapPinned, Route,
   // Misc
-  Handshake, TreePine, Sunrise, Glasses, Coins, Bot,
+  Handshake, HeartHandshake, TreePine, Sunrise, Glasses, Coins, Bot,
+  // Badge-specific
+  Mountain, Sun, Diamond, CalendarCheck, Gauge, Sparkle,
+  Wrench, Box, DoorOpen, Layers, Aperture,
   // Walk
   Pause, Play, Square,
   // Extra
@@ -58,7 +61,9 @@ const ICONS = {
   Upload, Download, Phone, Mail, ExternalLink, Settings, Info,
   MessageCircle, ThumbsUp, Flag,
   MapPin, AlertCircle, MapPinned, Route,
-  Handshake, TreePine, Sunrise, Glasses, Coins, Bot,
+  Handshake, HeartHandshake, TreePine, Sunrise, Glasses, Coins, Bot,
+  Mountain, Sun, Diamond, CalendarCheck, Gauge, Sparkle,
+  Wrench, Box, DoorOpen, Layers, Aperture,
   Pause, Play, Square,
   Pencil, Trash2, MoreHorizontal, ArrowLeft, Filter,
   CircleDot, Bookmark, Tag, FileText, Activity,
