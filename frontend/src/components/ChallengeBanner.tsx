@@ -11,73 +11,58 @@ export default function ChallengeBanner() {
   const task = lang === "he" ? todayTask?.taskHe : todayTask?.task;
 
   return (
-    <div className="px-5 pt-3">
-      <button
-        onClick={() => nav("challenge")}
-        className="w-full px-5 py-[18px] rounded-3xl cursor-pointer text-text text-start"
-        style={{
-          background: `linear-gradient(135deg, ${accent}08, ${accent}14)`,
-          border: `1px solid ${accent}30`,
-          animation: "fadeIn 0.3s ease",
-        }}
-      >
-        {/* Header */}
-        <div className="flex justify-between items-center mb-2.5">
-          <div className="flex items-center gap-2">
-            <Icon name={challenge.icon || "Trophy"} size={20} color={accent} />
-            <span
-              className="text-[11px] font-bold uppercase tracking-[1.5px]"
-              style={{ color: accent }}
-            >
-              {T("thisWeeksChallenge")}
-            </span>
-          </div>
-          <span className="text-[13px] font-extrabold" style={{ color: accent }}>
-            {progress}/7
+    <button
+      onClick={() => nav("challenge")}
+      className="w-full px-5 py-[18px] rounded-2xl cursor-pointer text-black text-start bg-achieve brut-border brut-shadow hover:-translate-y-1 transition-transform"
+    >
+      {/* Header */}
+      <div className="flex justify-between items-center mb-3">
+        <div className="flex items-center gap-2 bg-white brut-border-sm px-2 py-1 rounded-sm rotate-[-2deg]">
+          <Icon name={challenge.icon || "Trophy"} size={18} color="#000" />
+          <span className="text-[10px] font-black uppercase tracking-[1.5px] text-black">
+            {T("thisWeeksChallenge")}
           </span>
         </div>
+        <span className="text-[14px] font-black bg-white brut-border-sm px-2 py-0.5 rounded-sm rotate-[2deg]">
+          {progress}/7
+        </span>
+      </div>
 
-        {/* Challenge name */}
-        <div className="text-base font-extrabold text-text mb-2">
-          {lang === "he" ? challenge.nameHe : challenge.name}
-        </div>
+      {/* Challenge name */}
+      <div className="text-xl font-display font-black text-black mb-3 drop-shadow-[1px_1px_0_rgba(255,255,255,1)]">
+        {lang === "he" ? challenge.nameHe : challenge.name}
+      </div>
 
-        {/* Progress bar */}
-        <div className="h-1 bg-border rounded-full overflow-hidden mb-2.5">
-          <div
-            className="h-full rounded-full transition-[width] duration-[600ms] ease-in-out"
-            style={{ width: `${(progress / 7) * 100}%`, background: accent }}
-          />
-        </div>
+      {/* Progress bar */}
+      <div className="h-4 bg-white brut-border-sm rounded-full overflow-hidden mb-4 p-[2px]">
+        <div
+          className="h-full rounded-full transition-[width] duration-[600ms] ease-in-out bg-black"
+          style={{ width: `${(progress / 7) * 100}%` }}
+        />
+      </div>
 
-        {/* Today's task */}
-        <div className="flex justify-between items-center">
-          <div className="text-[13px] text-text-2 flex-1">
-            <span
-              className="font-bold"
-              style={{ color: todayCompleted ? accent : "#F5F5F7" }}
-            >
-              {T("challengeDay")} {todayDay}:
-            </span>{" "}
-            {task}
-            {todayCompleted && (
-              <span className="ms-1.5 inline-flex align-middle">
-                <CheckCircle2 size={14} color={accent} />
-              </span>
-            )}
-          </div>
-          {!todayCompleted && (
-            <span
-              className="text-[11px] py-[5px] px-3 rounded-full font-bold ms-2.5 shrink-0 text-black"
-              style={{ background: accent }}
-            >
-              <span className="inline-flex items-center gap-1">
-                {T("challengeGo")} <ArrowRight size={11} />
-              </span>
+      {/* Today's task */}
+      <div className="flex justify-between items-center bg-white brut-border-sm p-3 rounded-xl rotate-[1deg]">
+        <div className="text-[13px] font-bold text-black flex-1">
+          <span className="font-black bg-yellow-200 px-1 brut-border-sm inline-block mb-1">
+            {T("challengeDay")} {todayDay}:
+          </span>
+          <br/>
+          {task}
+          {todayCompleted && (
+            <span className="ms-2 inline-flex align-middle">
+              <CheckCircle2 size={18} color="#000" strokeWidth={3} />
             </span>
           )}
         </div>
-      </button>
-    </div>
+        {!todayCompleted && (
+          <span className="text-[11px] py-1.5 px-3 rounded-md font-black ms-3 shrink-0 text-white bg-black brut-border-sm">
+            <span className="flex items-center gap-1.5">
+              {T("challengeGo")} <ArrowRight size={14} strokeWidth={3} />
+            </span>
+          </span>
+        )}
+      </div>
+    </button>
   );
 }

@@ -11,8 +11,8 @@ interface ProgressRingProps {
 export function ProgressRing({
   value,
   size = 88,
-  strokeWidth = 7,
-  color = '#22C55E',
+  strokeWidth = 8,
+  color = '#000000',
   children,
 }: ProgressRingProps) {
   const radius = (size - strokeWidth) / 2;
@@ -21,16 +21,18 @@ export function ProgressRing({
   const center = size / 2;
 
   return (
-    <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+    <div className="relative inline-flex items-center justify-center bg-white rounded-full brut-border-sm brut-shadow-sm" style={{ width: size + 16, height: size + 16 }}>
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        {/* Background track */}
         <circle
           cx={center}
           cy={center}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="rgba(0,0,0,0.1)"
           strokeWidth={strokeWidth}
         />
+        {/* Progress track */}
         <circle
           cx={center}
           cy={center}
@@ -38,7 +40,7 @@ export function ProgressRing({
           fill="none"
           stroke={color}
           strokeWidth={strokeWidth}
-          strokeLinecap="round"
+          strokeLinecap="square"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           style={{ transition: 'stroke-dashoffset 0.5s ease' }}
