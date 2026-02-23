@@ -15,7 +15,7 @@ export class CommunityService {
   ) {}
 
   async getPosts(page = 1, limit = 20) {
-    return this.postRepo.find({
+    const posts = await this.postRepo.find({
       relations: ['user'],
       order: { createdAt: 'DESC' },
       take: limit,
@@ -24,10 +24,40 @@ export class CommunityService {
         user: { id: true, name: true },
       },
     });
+
+    // Map to the shape the frontend expects (snake_case + flattened metadata)
+    return posts.map(p => ({
+      id: p.id,
+      user_id: p.userId,
+      owner_name: p.user?.name || null,
+      content: p.content,
+      post_type: p.type || 'general',
+      dog_name: p.metadata?.dogName || null,
+      breed: p.metadata?.breed || null,
+      photo_url: p.metadata?.photoUrl || null,
+      badge_id: p.metadata?.badgeId || null,
+      like_count: p.likesCount || 0,
+      comment_count: 0,
+      created_at: p.createdAt,
+      metadata: p.metadata,
+    }));
   }
 
   async createPost(userId: string, dto: CreatePostDto): Promise<Post> {
-    const post = this.postRepo.create({ ...dto, userId });
+    const { content, postType, dogId, dogName, breed, photoUrl, badgeId, metadata } = dto;
+    const post = this.postRepo.create({
+      userId,
+      content,
+      type: postType || 'general',
+      metadata: {
+        ...metadata,
+        dogId: dogId || undefined,
+        dogName: dogName || undefined,
+        breed: breed || undefined,
+        photoUrl: photoUrl || undefined,
+        badgeId: badgeId || undefined,
+      },
+    });
     return this.postRepo.save(post);
   }
 

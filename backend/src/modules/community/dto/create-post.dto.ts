@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsObject } from 'class-validator';
+import { IsString, IsOptional, IsObject, Allow } from 'class-validator';
 
 export class CreatePostDto {
   @IsString()
@@ -6,7 +6,27 @@ export class CreatePostDto {
 
   @IsOptional()
   @IsString()
-  type?: string;
+  postType?: string;
+
+  @IsOptional()
+  @IsString()
+  dogId?: string;
+
+  @IsOptional()
+  @IsString()
+  dogName?: string;
+
+  @IsOptional()
+  @IsString()
+  breed?: string;
+
+  @IsOptional()
+  @IsString()
+  photoUrl?: string;
+
+  @IsOptional()
+  @Allow()
+  badgeId?: string | null;
 
   @IsOptional()
   @IsObject()
