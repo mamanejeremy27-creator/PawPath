@@ -12,6 +12,11 @@ import type { User } from '../../entities/user.entity';
 export class BuddiesController {
   constructor(private buddiesService: BuddiesService) {}
 
+  @Get('candidates')
+  findCandidates(@CurrentUser() user: User) {
+    return this.buddiesService.findCandidates(user.id);
+  }
+
   @Get()
   listBuddies(@CurrentUser() user: User) {
     return this.buddiesService.listBuddies(user.id);

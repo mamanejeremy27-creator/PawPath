@@ -21,7 +21,7 @@ export default function BuddyFinder() {
 
     async function load() {
       try {
-        const data = await api.getBuddies();
+        const data = await api.getBuddyCandidates();
         if (cancelled) return;
         setCandidates(data || []);
       } catch {

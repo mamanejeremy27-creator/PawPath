@@ -104,6 +104,7 @@ export const api = {
 
   // Buddies
   getBuddies: () => apiFetch('/buddies'),
+  getBuddyCandidates: () => apiFetch('/buddies/candidates'),
   sendBuddyRequest: (toUserId) => apiFetch('/buddies/request', { method: 'POST', body: JSON.stringify({ toUserId }) }),
   acceptBuddy: (id) => apiFetch(`/buddies/${id}/accept`, { method: 'PATCH' }),
   rejectBuddy: (id) => apiFetch(`/buddies/${id}/reject`, { method: 'PATCH' }),

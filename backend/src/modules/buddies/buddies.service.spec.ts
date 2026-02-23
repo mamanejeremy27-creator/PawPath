@@ -7,6 +7,10 @@ import {
 import { Repository } from 'typeorm';
 import { BuddiesService } from './buddies.service';
 import { BuddyRequest } from '../../entities/buddy-request.entity';
+import { Dog } from '../../entities/dog.entity';
+import { DogProgress } from '../../entities/dog-progress.entity';
+import { LeaderboardEntry } from '../../entities/leaderboard-entry.entity';
+import { User } from '../../entities/user.entity';
 
 describe('BuddiesService', () => {
   let service: BuddiesService;
@@ -25,10 +29,19 @@ describe('BuddiesService', () => {
       count: jest.fn(),
     };
 
+    const emptyRepo = {
+      find: jest.fn().mockResolvedValue([]),
+      findOne: jest.fn().mockResolvedValue(null),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BuddiesService,
         { provide: getRepositoryToken(BuddyRequest), useValue: buddyRepo },
+        { provide: getRepositoryToken(Dog), useValue: emptyRepo },
+        { provide: getRepositoryToken(DogProgress), useValue: emptyRepo },
+        { provide: getRepositoryToken(LeaderboardEntry), useValue: emptyRepo },
+        { provide: getRepositoryToken(User), useValue: emptyRepo },
       ],
     }).compile();
 
