@@ -7,6 +7,17 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // CORS must be first — before static assets, health route, and routing
+  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5176')
+    .split(',')
+    .map((o) => o.trim());
+  app.enableCors({
+    origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
+
   // Serve uploaded files
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
@@ -24,15 +35,6 @@ async function bootstrap() {
   // Health check — outside /api prefix, used by Railway
   app.getHttpAdapter().get('/health', (_req: any, res: any) => {
     res.status(200).json({ status: 'ok' });
-  });
-
-  // CORS — supports comma-separated FRONTEND_URL for multiple origins (e.g. Vercel preview URLs)
-  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5176')
-    .split(',')
-    .map((o) => o.trim());
-  app.enableCors({
-    origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
-    credentials: true,
   });
 
   // Global prefix
