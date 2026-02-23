@@ -6,6 +6,12 @@ export function useElevenLabsTts() {
   const abortRef = useRef(null);
   const audioRef = useRef(null);
   const resolveRef = useRef(null);
+  const volumeRef = useRef(0.8);
+
+  const setVolume = useCallback((v) => {
+    volumeRef.current = v;
+    if (audioRef.current) audioRef.current.volume = v;
+  }, []);
 
   const stop = useCallback(() => {
     // Abort any in-flight fetch
@@ -100,6 +106,7 @@ export function useElevenLabsTts() {
           const url = URL.createObjectURL(blob);
           const audio = new Audio(url);
           audio._blobUrl = url;
+          audio.volume = volumeRef.current;
           audioRef.current = audio;
 
           setSpeaking(true);
@@ -143,5 +150,5 @@ export function useElevenLabsTts() {
     []
   );
 
-  return { speak, stop, pause, resume, speaking };
+  return { speak, stop, pause, resume, speaking, setVolume };
 }

@@ -42,6 +42,7 @@ export default function VoiceMode({ exercise, programName, programIcon, lang, rt
 
   // Keep voice volume in sync
   useEffect(() => { fallbackVoice.setVolume(vol); }, [vol, fallbackVoice.setVolume]);
+  useEffect(() => { elevenLabs.setVolume(vol); }, [vol, elevenLabs.setVolume]);
 
   // Keep stable refs for hook functions to avoid re-render issues
   const elRef = useRef(elevenLabs);
@@ -391,7 +392,7 @@ export default function VoiceMode({ exercise, programName, programIcon, lang, rt
                 opacity: step === 0 ? 0.3 : 1, transition: "all 0.2s",
               }}
             >
-              <ChevronLeft size={20} color={step === 0 ? C.t3 : C.t2} />
+              {rtl ? <ChevronRight size={20} color={step === 0 ? C.t3 : C.t2} /> : <ChevronLeft size={20} color={step === 0 ? C.t3 : C.t2} />}
             </button>
 
             {/* Pause / Play */}
@@ -428,7 +429,7 @@ export default function VoiceMode({ exercise, programName, programIcon, lang, rt
                 opacity: isSpeaking ? 0.5 : 1,
               }}
             >
-              {T("voiceNextStep")} <ChevronRight size={18} />
+              {rtl ? <ChevronLeft size={18} /> : null} {T("voiceNextStep")} {rtl ? null : <ChevronRight size={18} />}
             </button>
           </div>
 
