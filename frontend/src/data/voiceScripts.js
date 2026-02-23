@@ -9,7 +9,7 @@ export const VOICE_SCRIPTS = {
       return intros[Math.floor(Math.random() * intros.length)];
     },
     nextStep: (num, total) =>
-      `Step ${num} of ${total}.`,
+      `Step number ${num}, of ${total}.`,
     holdFor: (seconds) =>
       `Hold for ${seconds} seconds.`,
     countdown: (n) => `${n}`,
