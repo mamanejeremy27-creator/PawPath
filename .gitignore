@@ -38,3 +38,6 @@ backend/.env
 backend/uploads/*
 !backend/uploads/.gitkeep
 backend/tsconfig.build.tsbuildinfo
+
+# devctl
+.devctl
