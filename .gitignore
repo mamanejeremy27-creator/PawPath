@@ -40,4 +40,4 @@ backend/uploads/*
 backend/tsconfig.build.tsbuildinfo
 
 # devctl
-.devctl
+devctl.json
