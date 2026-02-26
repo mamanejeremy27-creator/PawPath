@@ -1,0 +1,30 @@
+{
+  "name": "pawpath",
+  "services": {
+    "postgres": {
+      "type": "docker-compose",
+      "composeName": "postgres",
+      "port": 5435
+    },
+    "adminer": {
+      "type": "docker-compose",
+      "composeName": "adminer",
+      "port": 8083,
+      "dependsOn": ["postgres"]
+    },
+    "backend": {
+      "type": "process",
+      "command": "pnpm start:dev",
+      "cwd": "backend",
+      "port": 3004,
+      "env": { "PORT": "3004" },
+      "dependsOn": ["postgres"]
+    },
+    "frontend": {
+      "type": "process",
+      "command": "pnpm dev -- --port 5176",
+      "cwd": "frontend",
+      "port": 5176
+    }
+  }
+}
