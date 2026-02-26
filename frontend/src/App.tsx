@@ -3,7 +3,6 @@ import { useAuth } from "./hooks/useAuth.js";
 import Auth from "./components/Auth.jsx";
 import Splash from "./components/Splash.jsx";
 import Onboarding from "./components/Onboarding.jsx";
-import Home from "./components/Home.jsx";
 import Today from "./components/Today.jsx";
 import Progress from "./components/Progress.jsx";
 import Dog from "./components/Dog.jsx";

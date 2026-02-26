@@ -1,6 +1,6 @@
 import { useApp } from "../context/AppContext.jsx";
 import { matchBreed } from "../data/breedTraits.js";
-import { Lock, ChevronRight, Trophy } from "lucide-react";
+import { Lock, ChevronRight } from "lucide-react";
 import Icon from "./ui/Icon.jsx";
 import SkillHealth from "./SkillHealth.jsx";
 import BottomNav from "./BottomNav.jsx";
@@ -126,23 +126,6 @@ export default function TrainView() {
             </Card>
           );
         })}
-      </div>
-
-      {/* Leaderboard entry */}
-      <div className="px-4 pt-3">
-        <Card glow="achieve" className="p-0">
-          <button
-            onClick={() => nav("leaderboard")}
-            className="w-full flex items-center gap-3.5 px-5 py-4 text-text text-start bg-transparent border-none cursor-pointer"
-          >
-            <Trophy size={28} className="text-xp" />
-            <div className="flex-1">
-              <div className="text-sm font-bold">{T("leaderboard")}</div>
-              <div className="text-xs text-xp font-semibold mt-0.5">{T("leaderboardSubtitle")}</div>
-            </div>
-            <ChevronRight size={16} className="text-muted" />
-          </button>
-        </Card>
       </div>
 
       <BottomNav active="train" />
