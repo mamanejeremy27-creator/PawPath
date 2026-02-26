@@ -116,7 +116,7 @@ export default function MilestoneCards() {
           </button>
         </div>
 
-        <BottomNav active="profile" />
+        <BottomNav active="dog" />
       </div>
     );
   }

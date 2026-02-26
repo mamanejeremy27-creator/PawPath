@@ -1,16 +1,16 @@
 import { useApp } from "../context/AppContext.jsx";
-import { Home, Dumbbell, BookOpen, Award, User } from "lucide-react";
+import { CalendarCheck, Dumbbell, TrendingUp, Users, PawPrint } from "lucide-react";
 import { cn } from "../lib/cn";
 
 export default function BottomNav({ active }) {
   const { setScreen, setSelProgram, setSelLevel, setSelExercise, T } = useApp();
 
   const items = [
-    { id: "home",    Icon: Home,     label: T("home")    },
-    { id: "train",   Icon: Dumbbell, label: T("train")   },
-    { id: "journal", Icon: BookOpen, label: T("journal") },
-    { id: "badges",  Icon: Award,    label: T("badges")  },
-    { id: "profile", Icon: User,     label: T("profile") },
+    { id: "today",     Icon: CalendarCheck, label: T("today")     },
+    { id: "train",     Icon: Dumbbell,      label: T("train")     },
+    { id: "progress",  Icon: TrendingUp,    label: T("progress")  },
+    { id: "community", Icon: Users,         label: T("community") },
+    { id: "dog",       Icon: PawPrint,      label: T("dog")       },
   ];
 
   return (
@@ -23,7 +23,7 @@ export default function BottomNav({ active }) {
               key={item.id}
               onClick={() => {
                 setScreen(item.id);
-                if (item.id === "home") {
+                if (item.id === "today") {
                   setSelProgram(null);
                   setSelLevel(null);
                   setSelExercise(null);

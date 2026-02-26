@@ -68,7 +68,7 @@ export default function Badges() {
         })}
       </div>
 
-      <BottomNav active="badges" />
+      <BottomNav active="progress" />
     </div>
   );
 }

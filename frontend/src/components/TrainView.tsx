@@ -12,9 +12,47 @@ export default function TrainView() {
   const { dogProfile, playerLevel, completedExercises, nav, T, programs } = useApp();
   const breedData = matchBreed(dogProfile?.breed);
 
+  // Find most in-progress program to show Continue card
+  const continueProgram = programs.find(prog => {
+    const unlocked = playerLevel.level >= prog.unlockLevel;
+    if (!unlocked) return false;
+    const tot = prog.levels.reduce((a, l) => a + l.exercises.length, 0);
+    const dn = prog.levels.reduce((a, l) => a + l.exercises.filter(e => completedExercises.includes(e.id)).length, 0);
+    return dn > 0 && dn < tot;
+  });
+
   return (
     <div className="min-h-screen pb-24 bg-bg [animation:fadeIn_0.3s_ease]">
       <SkillHealth />
+
+      {continueProgram && (() => {
+        const tot = continueProgram.levels.reduce((a, l) => a + l.exercises.length, 0);
+        const dn = continueProgram.levels.reduce((a, l) => a + l.exercises.filter(e => completedExercises.includes(e.id)).length, 0);
+        const pct = Math.round((dn / tot) * 100);
+        return (
+          <div className="px-4 pt-4 pb-1">
+            <div className="text-[10px] font-black text-muted uppercase tracking-widest mb-2 ps-1">{T("continueTraining")}</div>
+            <Card glow="training" className="p-0 overflow-hidden">
+              <button
+                onClick={() => nav("program", { program: continueProgram })}
+                className="w-full flex items-center gap-3.5 p-4 text-start bg-transparent border-none cursor-pointer"
+              >
+                <div className="w-14 h-14 rounded-[14px] flex items-center justify-center shrink-0" style={{ background: continueProgram.gradient }}>
+                  <Icon name={continueProgram.icon} size={24} color="#fff" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-base font-black text-black">{continueProgram.name}</div>
+                  <div className="text-xs text-muted mt-0.5">{dn}/{tot} {T("exercises")} · {pct}%</div>
+                  <div className="h-2 bg-black/10 rounded-full overflow-hidden mt-2">
+                    <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: continueProgram.gradient }} />
+                  </div>
+                </div>
+                <ChevronRight size={18} className="text-muted shrink-0" />
+              </button>
+            </Card>
+          </div>
+        );
+      })()}
 
       {/* Programs header */}
       <div className="px-5 pt-6 pb-2">

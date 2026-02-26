@@ -4,6 +4,9 @@ import Auth from "./components/Auth.jsx";
 import Splash from "./components/Splash.jsx";
 import Onboarding from "./components/Onboarding.jsx";
 import Home from "./components/Home.jsx";
+import Today from "./components/Today.jsx";
+import Progress from "./components/Progress.jsx";
+import Dog from "./components/Dog.jsx";
 import TrainView from "./components/TrainView.jsx";
 import ProgramView from "./components/ProgramView.jsx";
 import LevelView from "./components/LevelView.jsx";
@@ -107,14 +110,15 @@ export default function App() {
       {/* Screens */}
       {screen === "splash" && <Splash />}
       {screen === "onboard" && <Onboarding />}
-      {screen === "home" && <Home />}
+      {(screen === "home" || screen === "today") && <Today />}
       {screen === "train" && <TrainView />}
+      {screen === "progress" && <Progress />}
       {screen === "program" && <ProgramView />}
       {screen === "level" && <LevelView />}
       {screen === "exercise" && <ExerciseView />}
       {screen === "journal" && <JournalList />}
       {screen === "badges" && <Badges />}
-      {screen === "profile" && <Profile />}
+      {(screen === "profile" || screen === "dog") && <Dog />}
       {screen === "lifeStageDetail" && <LifeStageDetail />}
       {screen === "milestoneCards" && <MilestoneCards />}
       {screen === "memoryDetail" && <MemoryDetail />}
