@@ -37,7 +37,10 @@ backend/dist
 backend/.env
 backend/uploads/*
 !backend/uploads/.gitkeep
-backend/tsconfig.build.tsbuildinfo
+*.tsbuildinfo
+
+# Lock files (pnpm uses pnpm-lock.yaml)
+package-lock.json
 
 # devctl
-.devctl
+devctl.json
