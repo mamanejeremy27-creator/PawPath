@@ -189,7 +189,7 @@ export default function Auth() {
           {isSignUp ? T("authHasAccount") : T("authNoAccount")}{" "}
           <button
             onClick={() => { setMode(isSignUp ? "signin" : "signup"); setError(null); setMessage(null); }}
-            className="bg-transparent border-none text-training text-sm font-bold cursor-pointer p-0"
+            className="bg-transparent border-none text-black text-sm font-bold cursor-pointer p-0 underline underline-offset-2"
           >
             {isSignUp ? T("signIn") : T("signUp")}
           </button>

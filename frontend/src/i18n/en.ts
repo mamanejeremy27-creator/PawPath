@@ -113,8 +113,19 @@ export default {
 
   // Nav
   home: "Home",
+  today: "Today",
   train: "Train",
+  progress: "Progress",
+  dog: "Dog",
   profile: "Profile",
+
+  // Progress screen
+  progressSubtitle: "Your journey so far",
+  continueTraining: "Continue",
+
+  // Dog screen
+  healthAndActivity: "Health & Activity",
+  walkHistorySub: "Past walks & routes",
 
   // Gear
   trainingGear: "Training Gear",

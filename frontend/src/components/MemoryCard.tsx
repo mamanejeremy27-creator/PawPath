@@ -2,11 +2,12 @@ import { useMemo } from "react";
 import { useApp } from "../context/AppContext.jsx";
 import { getTodaysMemory, recordMemoryShown } from "../utils/memories.js";
 import { ChevronRight } from "lucide-react";
+import { cn } from "../lib/cn.js";
 
 const TYPE_CONFIG = {
-  onThisDay: { gradient: "linear-gradient(135deg, rgba(139,92,246,0.1), rgba(59,130,246,0.08))", border: "rgba(139,92,246,0.2)", label: "onThisDay" },
-  anniversary: { gradient: "linear-gradient(135deg, rgba(245,158,11,0.1), rgba(234,88,12,0.08))", border: "rgba(245,158,11,0.2)", label: "trainingAnniversary" },
-  throwback: { gradient: "linear-gradient(135deg, rgba(34,197,94,0.08), rgba(59,130,246,0.08))", border: "rgba(34,197,94,0.2)", label: "throwback" },
+  onThisDay: { bg: "bg-social", label: "onThisDay" },
+  anniversary: { bg: "bg-xp", label: "trainingAnniversary" },
+  throwback: { bg: "bg-training", label: "throwback" },
 };
 
 export default function MemoryCard() {
@@ -32,32 +33,30 @@ export default function MemoryCard() {
       : "";
 
   return (
-    <div className="px-5 pt-3">
-      <button
-        onClick={handleTap}
-        className="w-full px-5 py-4 rounded-3xl cursor-pointer flex items-center gap-3.5 text-text text-start"
-        style={{
-          background: config.gradient,
-          border: `1px solid ${config.border}`,
-          animation: "fadeIn 0.4s ease",
-        }}
-      >
-        <span className="text-[32px] shrink-0">{memory.emoji}</span>
-        <div className="flex-1 min-w-0">
-          <div className="text-[10px] font-bold text-training uppercase tracking-[1.5px] mb-0.5">
-            {T(config.label)}
-          </div>
-          <div className="text-[14px] font-bold text-text overflow-hidden text-ellipsis whitespace-nowrap">
-            {memory.title}
-          </div>
-          {timeLabel && (
-            <div className="text-[12px] text-muted mt-0.5">
-              {timeLabel}{(memory as any).year ? ` \u00B7 ${(memory as any).year}` : ""}
-            </div>
-          )}
+    <button
+      onClick={handleTap}
+      className={cn(
+        "w-full px-5 py-4 rounded-2xl cursor-pointer flex items-center gap-4 text-black text-start brut-border brut-shadow hover:-translate-y-1 transition-transform",
+        config.bg
+      )}
+    >
+      <span className="text-4xl shrink-0 drop-shadow-[2px_2px_0_rgba(0,0,0,1)] rotate-[-6deg]">{memory.emoji}</span>
+      <div className="flex-1 min-w-0">
+        <div className="text-[10px] font-black uppercase tracking-[1.5px] mb-1 bg-white inline-block px-1 brut-border-sm">
+          {T(config.label)}
         </div>
-        <ChevronRight size={18} color="#71717A" />
-      </button>
-    </div>
+        <div className="text-[16px] font-black overflow-hidden text-ellipsis whitespace-nowrap">
+          {memory.title}
+        </div>
+        {timeLabel && (
+          <div className="text-[12px] font-bold mt-1 bg-black/5 inline-flex px-1.5 py-0.5 rounded-sm">
+            {timeLabel}{(memory as any).year ? ` \u00B7 ${(memory as any).year}` : ""}
+          </div>
+        )}
+      </div>
+      <div className="bg-white p-2 rounded-full brut-border-sm shrink-0">
+        <ChevronRight size={20} strokeWidth={3} className="text-black" />
+      </div>
+    </button>
   );
 }

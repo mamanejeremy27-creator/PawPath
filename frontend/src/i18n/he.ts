@@ -113,8 +113,19 @@ export default {
 
   // Nav
   home: "בית",
+  today: "היום",
   train: "אימון",
+  progress: "התקדמות",
+  dog: "כלב",
   profile: "פרופיל",
+
+  // Progress screen
+  progressSubtitle: "המסע שלכם עד כה",
+  continueTraining: "המשך",
+
+  // Dog screen
+  healthAndActivity: "בריאות ופעילות",
+  walkHistorySub: "טיולים ומסלולים",
 
   // Gear
   trainingGear: "ציוד אילוף",

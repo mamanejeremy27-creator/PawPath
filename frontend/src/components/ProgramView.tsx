@@ -19,10 +19,10 @@ export default function ProgramView() {
         <div className="absolute -top-10 -end-10 w-[200px] h-[200px] rounded-full bg-white/[0.08] pointer-events-none" />
 
         <button
-          onClick={() => nav("home", { program: null })}
+          onClick={() => nav("train")}
           className="inline-flex items-center gap-1.5 bg-black/20 text-white text-sm font-semibold px-4 py-2 rounded-[20px] mb-5 backdrop-blur-[10px] border-0 cursor-pointer"
         >
-          {rtl ? <ArrowRight size={14} /> : <ArrowLeft size={14} />} {T("back")}
+          {rtl ? <ArrowRight size={14} /> : <ArrowLeft size={14} />} {T("train")}
         </button>
 
         <div className="mb-3 w-16 h-16 rounded-[18px] bg-white/15 flex items-center justify-center">
@@ -38,52 +38,77 @@ export default function ProgramView() {
         </div>
       </div>
 
-      {/* Level list */}
-      <div className="p-5">
-        {p.levels.map((lv, idx) => {
-          const dn = lv.exercises.filter(e => completedExercises.includes(e.id)).length;
-          const tot = lv.exercises.length;
-          const done = dn === tot;
-          const prevOk = idx === 0 || p.levels[idx - 1].exercises.every(e => completedExercises.includes(e.id));
-          const locked = idx > 0 && !prevOk;
-          const pct = (dn / tot) * 100;
+      {/* Levels with inline exercises */}
+      <div className="px-4 pt-5 pb-24">
+        {p.levels.map((lv, lvidx) => {
+          const lvDn = lv.exercises.filter(e => completedExercises.includes(e.id)).length;
+          const lvTot = lv.exercises.length;
+          const lvDone = lvDn === lvTot;
+          const prevOk = lvidx === 0 || p.levels[lvidx - 1].exercises.every(e => completedExercises.includes(e.id));
+          const locked = lvidx > 0 && !prevOk;
+          const pct = lvTot > 0 ? Math.round((lvDn / lvTot) * 100) : 0;
 
           return (
-            <button
-              key={lv.id}
-              onClick={() => !locked && nav("level", { level: lv })}
-              className={cn(
-                "flex items-center gap-4 w-full p-[18px] mb-2 bg-surface rounded-3xl border border-border text-start text-text",
-                locked ? "opacity-35 cursor-default" : "cursor-pointer",
+            <div key={lv.id} className={cn("mb-6", locked && "opacity-35 pointer-events-none")}>
+              {/* Level section header */}
+              <div className="flex items-center gap-3 mb-2.5">
+                <div
+                  className={cn(
+                    "w-8 h-8 rounded-[10px] flex items-center justify-center text-sm font-extrabold shrink-0",
+                    lvDone ? "text-white" : locked ? "bg-surface-2 text-muted" : "bg-border text-text"
+                  )}
+                  style={lvDone ? { background: p.gradient } : undefined}
+                >
+                  {lvDone ? <Check size={14} strokeWidth={3} /> : locked ? <Lock size={14} /> : lvidx + 1}
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-black text-black uppercase tracking-wide">{lv.name}</div>
+                  <div className="text-xs text-muted">{lvDn}/{lvTot} · +{lv.xpReward} {T("xp")}</div>
+                </div>
+                {lvDn > 0 && <span className="text-xs font-black text-muted">{pct}%</span>}
+              </div>
+
+              {/* Progress bar (only if started) */}
+              {lvDn > 0 && (
+                <div className="h-1 bg-border rounded-full overflow-hidden mb-3 ms-11">
+                  <div className="h-full rounded-full" style={{ width: `${pct}%`, background: p.gradient }} />
+                </div>
               )}
-              style={{ animation: `fadeIn 0.3s ease ${idx * 0.06}s both` }}
-            >
-              {/* Icon square */}
-              <div
-                className={cn(
-                  "w-[46px] h-[46px] rounded-[14px] flex items-center justify-center shrink-0 font-extrabold",
-                  done ? "text-white" : locked ? "bg-surface-2 text-muted" : "bg-border text-text",
-                )}
-                style={done ? { background: p.gradient } : undefined}
-              >
-                {done ? <Check size={18} strokeWidth={3} /> : locked ? <Lock size={16} /> : idx + 1}
-              </div>
 
-              <div className="flex-1">
-                <div className="text-[15px] font-bold">{lv.name}</div>
-                <div className="text-xs text-muted mt-0.5">{dn}/{tot} · +{lv.xpReward} {T("xp")}</div>
-                {dn > 0 && (
-                  <div className="h-[3px] bg-border rounded-[10px] overflow-hidden mt-2">
-                    <div
-                      className="h-full rounded-[10px]"
-                      style={{ width: `${pct}%`, background: p.gradient }}
-                    />
-                  </div>
-                )}
+              {/* Exercise rows */}
+              <div className="flex flex-col gap-1.5">
+                {lv.exercises.map((ex, exidx) => {
+                  const done = completedExercises.includes(ex.id);
+                  return (
+                    <button
+                      key={ex.id}
+                      onClick={() => nav("exercise", { exercise: ex, level: lv })}
+                      className={cn(
+                        "flex items-center gap-3 w-full p-3.5 rounded-2xl cursor-pointer text-start text-text brut-border-sm",
+                        done ? "bg-training/10 border-training/20" : "bg-surface border-border"
+                      )}
+                      style={{ animation: `fadeIn 0.3s ease ${exidx * 0.05}s both` }}
+                    >
+                      <div
+                        className={cn(
+                          "w-9 h-9 rounded-xl flex items-center justify-center text-sm font-extrabold shrink-0",
+                          done ? "bg-training text-black" : "bg-border text-muted"
+                        )}
+                      >
+                        {done ? <Check size={16} strokeWidth={3} /> : exidx + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[14px] font-bold">{ex.name}</div>
+                        <div className="text-xs text-muted mt-0.5">
+                          {Math.floor(ex.duration / 60)}m · {"●".repeat(ex.difficulty)}{"○".repeat(4 - ex.difficulty)}
+                        </div>
+                      </div>
+                      <ChevronRight size={16} className="text-muted shrink-0" />
+                    </button>
+                  );
+                })}
               </div>
-
-              <ChevronRight size={16} className="text-muted" />
-            </button>
+            </div>
           );
         })}
       </div>

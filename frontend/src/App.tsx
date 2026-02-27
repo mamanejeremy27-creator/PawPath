@@ -3,7 +3,9 @@ import { useAuth } from "./hooks/useAuth.js";
 import Auth from "./components/Auth.jsx";
 import Splash from "./components/Splash.jsx";
 import Onboarding from "./components/Onboarding.jsx";
-import Home from "./components/Home.jsx";
+import Today from "./components/Today.jsx";
+import Progress from "./components/Progress.jsx";
+import Dog from "./components/Dog.jsx";
 import TrainView from "./components/TrainView.jsx";
 import ProgramView from "./components/ProgramView.jsx";
 import LevelView from "./components/LevelView.jsx";
@@ -52,8 +54,7 @@ import LostDogTracker from "./components/LostDogTracker.jsx";
 import ReportSighting from "./components/ReportSighting.jsx";
 import LostDogPublicPage from "./components/LostDogPublicPage.jsx";
 import LostDogFeedList from "./components/LostDogFeedList.jsx";
-
-const C = { bg: "#0A0A0C", t1: "#F5F5F7", acc: "#22C55E" };
+import { cn } from "./lib/cn.js";
 
 export default function App() {
   const { screen, xpAnim, newBadge, rtl, challengeDayToast, T, streakFreezeNotif, nav } = useApp();
@@ -63,7 +64,7 @@ export default function App() {
   const lostMatch = typeof window !== "undefined" && window.location.pathname.match(/^\/lost\/([A-Za-z0-9]+)$/);
   if (lostMatch) {
     return (
-      <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#0A0A0C", color: "#F5F5F7", minHeight: "100vh", maxWidth: 480, margin: "0 auto", WebkitFontSmoothing: "antialiased", direction: rtl ? "rtl" : "ltr", textAlign: rtl ? "right" : "left" }}>
+      <div className={cn("min-h-screen max-w-[480px] mx-auto bg-bg text-text antialiased", rtl ? "rtl text-right" : "ltr text-left")}>
         <LostDogPublicPage shareTokenFromUrl={lostMatch[1]} />
       </div>
     );
@@ -71,36 +72,36 @@ export default function App() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: C.bg }}>
-        <div style={{ width: 40, height: 40, border: "3px solid rgba(255,255,255,0.1)", borderTopColor: C.acc, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div className="min-h-screen flex items-center justify-center bg-bg">
+        <div className="w-10 h-10 border-4 border-black border-t-training rounded-full animate-spin brut-shadow-sm" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div style={{ fontFamily: "'DM Sans', sans-serif", background: C.bg, color: C.t1, minHeight: "100vh", maxWidth: 480, margin: "0 auto", WebkitFontSmoothing: "antialiased", direction: rtl ? "rtl" : "ltr", textAlign: rtl ? "right" : "left" }}>
+      <div className={cn("min-h-screen max-w-[480px] mx-auto bg-bg text-text antialiased", rtl ? "rtl text-right" : "ltr text-left")}>
         <Auth />
       </div>
     );
   }
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", background: C.bg, color: C.t1, minHeight: "100vh", maxWidth: 480, margin: "0 auto", position: "relative", WebkitFontSmoothing: "antialiased", direction: rtl ? "rtl" : "ltr", textAlign: rtl ? "right" : "left" }}>
+    <div className={cn("min-h-screen max-w-[480px] mx-auto relative bg-bg text-text antialiased overflow-x-hidden", rtl ? "rtl text-right" : "ltr text-left")}>
       {/* XP Animation */}
       {xpAnim && (
-        <div style={{ position: "fixed", top: 80, left: "50%", transform: "translateX(-50%)", zIndex: 400, animation: "xpFloat 2s ease forwards", background: C.acc, color: "#000", padding: "12px 28px", borderRadius: 24, fontSize: 18, fontWeight: 800, boxShadow: "0 8px 32px rgba(34,197,94,0.4)" }}>
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[400] animate-[xpFloat_2s_ease_forwards] bg-training text-black px-6 py-3 rounded-full text-xl font-black brut-border brut-shadow-sm">
           +{xpAnim} XP ⚡
         </div>
       )}
 
       {/* Badge Notification */}
       {newBadge && (
-        <div style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 400, display: "flex", alignItems: "center", gap: 14, background: "rgba(20,20,24,0.95)", border: "1px solid rgba(34,197,94,0.25)", padding: "16px 24px", borderRadius: 20, boxShadow: "0 16px 48px rgba(0,0,0,0.6)", backdropFilter: "blur(24px)", animation: "badgeDrop 0.5s ease", width: "calc(100% - 40px)", maxWidth: 340 }}>
-          <span style={{ fontSize: 36 }}>{newBadge.emoji}</span>
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[400] flex items-center gap-3 bg-white brut-border brut-shadow p-4 rounded-2xl animate-[badgeDrop_0.5s_ease] w-[calc(100%-40px)] max-w-[340px]">
+          <span className="text-4xl drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">{newBadge.emoji}</span>
           <div>
-            <div style={{ fontSize: 10, color: C.acc, textTransform: "uppercase", letterSpacing: 2, fontWeight: 800 }}>Achievement Unlocked</div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: C.t1, marginTop: 2 }}>{newBadge.name}</div>
+            <div className="text-[10px] text-black uppercase tracking-widest font-black bg-achieve inline-block px-1 mb-1 brut-border-sm">Achievement Unlocked</div>
+            <div className="text-lg font-black text-black leading-tight">{newBadge.name}</div>
           </div>
         </div>
       )}
@@ -108,14 +109,15 @@ export default function App() {
       {/* Screens */}
       {screen === "splash" && <Splash />}
       {screen === "onboard" && <Onboarding />}
-      {screen === "home" && <Home />}
+      {(screen === "home" || screen === "today") && <Today />}
       {screen === "train" && <TrainView />}
+      {screen === "progress" && <Progress />}
       {screen === "program" && <ProgramView />}
       {screen === "level" && <LevelView />}
       {screen === "exercise" && <ExerciseView />}
       {screen === "journal" && <JournalList />}
       {screen === "badges" && <Badges />}
-      {screen === "profile" && <Profile />}
+      {(screen === "profile" || screen === "dog") && <Dog />}
       {screen === "lifeStageDetail" && <LifeStageDetail />}
       {screen === "milestoneCards" && <MilestoneCards />}
       {screen === "memoryDetail" && <MemoryDetail />}
@@ -148,17 +150,17 @@ export default function App() {
 
       {/* Streak Freeze Notification */}
       {streakFreezeNotif && (
-        <div style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 400, display: "flex", alignItems: "center", gap: 10, background: "rgba(20,20,24,0.95)", border: "1px solid rgba(96,165,250,0.25)", padding: "14px 22px", borderRadius: 20, boxShadow: "0 12px 40px rgba(0,0,0,0.5)", backdropFilter: "blur(24px)", animation: "badgeDrop 0.5s ease", maxWidth: 340 }}>
-          <span style={{ fontSize: 28 }}>{"\uD83E\uDDCA"}</span>
-          <div style={{ fontSize: 13, fontWeight: 700, color: C.t1 }}>{T("streakFreezeUsed")}</div>
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[400] flex items-center gap-3 bg-health brut-border brut-shadow px-4 py-3 rounded-2xl animate-[badgeDrop_0.5s_ease] max-w-[340px]">
+          <span className="text-3xl drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">{"\uD83E\uDDCA"}</span>
+          <div className="text-[13px] font-black text-black">{T("streakFreezeUsed")}</div>
         </div>
       )}
 
       {/* Challenge Day Toast */}
       {challengeDayToast && (
-        <div style={{ position: "fixed", bottom: 100, left: "50%", transform: "translateX(-50%)", zIndex: 400, background: "rgba(20,20,24,0.95)", border: "1px solid rgba(34,197,94,0.25)", padding: "12px 24px", borderRadius: 20, boxShadow: "0 8px 32px rgba(0,0,0,0.5)", backdropFilter: "blur(16px)", animation: "badgeDrop 0.4s ease", textAlign: "center" }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: C.t1 }}>{T("challengeDay")} {challengeDayToast.day} {"\u2705"}</div>
-          <div style={{ fontSize: 12, color: "#A1A1AA", marginTop: 4 }}>{challengeDayToast.remaining} {T("moreToGo")}</div>
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[400] bg-white brut-border brut-shadow px-5 py-3 rounded-2xl animate-[badgeDrop_0.4s_ease] text-center">
+          <div className="text-sm font-black text-black">{T("challengeDay")} {challengeDayToast.day} {"\u2705"}</div>
+          <div className="text-xs font-bold text-muted mt-1">{challengeDayToast.remaining} {T("moreToGo")}</div>
         </div>
       )}
 

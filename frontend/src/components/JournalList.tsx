@@ -110,7 +110,7 @@ export default function JournalList() {
       {journalTab === "timeline" && <Timeline />}
       {journalTab === "growth" && <GrowthView />}
 
-      <BottomNav active="journal" />
+      <BottomNav active="progress" />
     </div>
   );
 }

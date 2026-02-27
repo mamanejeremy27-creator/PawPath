@@ -80,14 +80,14 @@ export default function ExerciseView() {
   const journalEntries = journal.filter(j => j.exerciseId === ex.id);
 
   return (
-    <div className="min-h-screen bg-bg pb-10 animate-[fadeIn_0.3s_ease]">
+    <div className="min-h-screen bg-bg pb-32 animate-[fadeIn_0.3s_ease]">
       {/* Back nav */}
       <div className="px-5 pt-6 pb-4">
         <button
-          onClick={() => nav("level", { exercise: null })}
-          className="flex items-center gap-1.5 bg-transparent border-0 text-training text-sm font-semibold cursor-pointer p-0 mb-4"
+          onClick={() => nav("program", { exercise: null, level: null })}
+          className="inline-flex items-center gap-1.5 bg-surface brut-border-sm px-3 py-1.5 rounded-xl text-sm font-semibold text-text cursor-pointer border-none mb-4"
         >
-          {rtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />} {selLevel.name}
+          {rtl ? <ArrowRight size={14} /> : <ArrowLeft size={14} />} {selProgram.name}
         </button>
       </div>
 
@@ -157,10 +157,10 @@ export default function ExerciseView() {
         </Card>
 
         {/* Pro Tip */}
-        <div className="mt-3.5 p-[18px] bg-training/[0.05] rounded-3xl border border-training/10 flex gap-3 items-start">
-          <Lightbulb size={20} className="text-training shrink-0" />
+        <div className="mt-3.5 p-[18px] bg-xp/[0.08] rounded-3xl brut-border-sm flex gap-3 items-start">
+          <Lightbulb size={20} className="text-black shrink-0" />
           <div>
-            <h4 className="text-xs font-extrabold m-0 text-training uppercase tracking-[1px]">{T("proTip")}</h4>
+            <h4 className="text-xs font-extrabold m-0 text-black uppercase tracking-[1px]">{T("proTip")}</h4>
             <p className="text-[13px] text-text-2 mt-1.5 leading-relaxed">{ex.tips}</p>
           </div>
         </div>
@@ -227,56 +227,56 @@ export default function ExerciseView() {
         {/* Difficulty Suggestion Card */}
         <DifficultyCard exerciseId={ex.id} program={selProgram} />
 
-        {/* Complete / done actions */}
-        {!done ? (
-          <button
-            onClick={() => { if (enteredRef.current) enteredRef.current.completed = true; triggerComplete(ex.id, selLevel.id, selProgram.id); }}
-            className="w-full py-5 mt-6 text-base font-extrabold bg-training text-black border-0 rounded-full cursor-pointer shadow-[0_8px_32px_rgba(34,197,94,0.25)]"
-          >
-            {T("markComplete")}
-          </button>
-        ) : (
-          <>
+        {/* Program complete celebration (inline — only shows when all done) */}
+        {done && allProgramDone && (
+          <div className="mt-6 text-center py-4">
+            <div><PartyPopper size={48} className="text-black" /></div>
+            <div className="text-base font-black text-black mt-2 uppercase tracking-wide">{T("programComplete")}</div>
+          </div>
+        )}
+      </div>
+
+      {/* Sticky action bar */}
+      <div className="fixed bottom-4 inset-x-0 px-4 z-20">
+        <div className="max-w-[480px] mx-auto flex flex-col gap-2">
+          {!done ? (
             <button
               onClick={() => { if (enteredRef.current) enteredRef.current.completed = true; triggerComplete(ex.id, selLevel.id, selProgram.id); }}
-              className="w-full py-5 mt-6 text-base font-extrabold bg-transparent text-training border-2 border-training rounded-full cursor-pointer"
+              className="w-full py-4 text-base font-extrabold bg-training text-black brut-border brut-shadow rounded-full cursor-pointer"
+            >
+              {T("markComplete")} ✓
+            </button>
+          ) : allProgramDone ? (
+            <button
+              onClick={() => nav("train")}
+              className="w-full py-4 text-base font-extrabold bg-surface text-text brut-border brut-shadow rounded-full cursor-pointer"
+            >
+              {T("backToPrograms")}
+            </button>
+          ) : nextExInfo ? (
+            <>
+              <button
+                onClick={() => nav("exercise", { exercise: nextExInfo.exercise, level: nextExInfo.level })}
+                className="w-full py-4 text-base font-extrabold bg-training text-black brut-border brut-shadow rounded-full cursor-pointer"
+              >
+                {T("nextExercise")} →
+              </button>
+              <button
+                onClick={() => { if (enteredRef.current) enteredRef.current.completed = true; triggerComplete(ex.id, selLevel.id, selProgram.id); }}
+                className="w-full py-3 text-sm font-bold bg-surface text-text brut-border-sm rounded-full cursor-pointer"
+              >
+                {T("reviewRefresh")}
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => { if (enteredRef.current) enteredRef.current.completed = true; triggerComplete(ex.id, selLevel.id, selProgram.id); }}
+              className="w-full py-4 text-base font-extrabold bg-surface text-text brut-border brut-shadow rounded-full cursor-pointer"
             >
               {T("reviewRefresh")}
             </button>
-
-            <div className="mt-4">
-              {allProgramDone ? (
-                <>
-                  <div className="text-center py-4">
-                    <div><PartyPopper size={48} className="text-training" /></div>
-                    <div className="text-base font-bold text-training mt-2">{T("programComplete")}</div>
-                  </div>
-                  <button
-                    onClick={() => nav("home", { program: null, level: null, exercise: null })}
-                    className="w-full py-[18px] text-[15px] font-bold bg-surface text-text border border-border rounded-full cursor-pointer"
-                  >
-                    {T("backToPrograms")}
-                  </button>
-                </>
-              ) : nextExInfo && (
-                <>
-                  <button
-                    onClick={() => nav("exercise", { exercise: nextExInfo.exercise, level: nextExInfo.level })}
-                    className="w-full py-[18px] text-[15px] font-bold bg-training text-black border-0 rounded-full cursor-pointer shadow-[0_8px_32px_rgba(34,197,94,0.25)]"
-                  >
-                    {T("nextExercise")}
-                  </button>
-                  <button
-                    onClick={() => nav("program", { level: null, exercise: null })}
-                    className="w-full py-[18px] mt-2.5 text-[15px] font-bold bg-surface text-text border border-border rounded-full cursor-pointer"
-                  >
-                    {T("backToProgram")}
-                  </button>
-                </>
-              )}
-            </div>
-          </>
-        )}
+          )}
+        </div>
       </div>
 
       <MoodCheck />

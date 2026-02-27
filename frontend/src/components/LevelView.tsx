@@ -12,9 +12,9 @@ export default function LevelView() {
       <div className="px-5 pt-6 pb-4">
         <button
           onClick={() => nav("program", { level: null })}
-          className="flex items-center gap-1.5 bg-transparent border-0 text-training text-sm font-semibold cursor-pointer p-0 mb-4"
+          className="inline-flex items-center gap-1.5 bg-surface brut-border-sm px-3 py-1.5 rounded-xl text-sm font-semibold text-text cursor-pointer border-none mb-4"
         >
-          {rtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />} {selProgram.name}
+          {rtl ? <ArrowRight size={14} /> : <ArrowLeft size={14} />} {selProgram.name}
         </button>
         <h2 className="font-display text-2xl font-extrabold m-0 text-text">{selLevel.name}</h2>
         {selLevel.description && (
