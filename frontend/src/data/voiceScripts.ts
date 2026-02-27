@@ -1,3 +1,24 @@
+// Spell out Hebrew numbers as words to avoid ElevenLabs mispronunciation.
+// "6" → "שש" gets read as "שס" by the model, so we send the word directly.
+const HE_NUMS: Record<number, string> = {
+  1: 'אחת', 2: 'שתיים', 3: 'שלוש', 4: 'ארבע', 5: 'חמש',
+  6: 'שֵׁשׁ', 7: 'שֶׁבַע', 8: 'שמונה', 9: 'תֵּשַׁע', 10: 'עֶשֶׂר',
+  11: 'אחת עשרה', 12: 'שתים עשרה', 13: 'שלוש עשרה', 14: 'ארבע עשרה',
+  15: 'חמש עשרה', 16: 'שש עשרה', 17: 'שבע עשרה', 18: 'שמונה עשרה',
+  19: 'תשע עשרה', 20: 'עשרים', 30: 'שלושים', 60: 'שישים', 90: 'תשעים',
+};
+
+function heNum(n: number): string {
+  if (HE_NUMS[n]) return HE_NUMS[n];
+  if (n > 20 && n < 100) {
+    const tens = Math.floor(n / 10) * 10;
+    const ones = n % 10;
+    const tensWord = HE_NUMS[tens] ?? `${tens}`;
+    return ones ? `${tensWord} ו${HE_NUMS[ones] ?? ones}` : tensWord;
+  }
+  return String(n);
+}
+
 export const VOICE_SCRIPTS = {
   en: {
     startExercise: (name, totalSteps) => {
@@ -32,17 +53,18 @@ export const VOICE_SCRIPTS = {
   },
   he: {
     startExercise: (name, totalSteps) => {
+      const n = heNum(totalSteps);
       const intros = [
-        `בואו נתרגל ${name}. יש ${totalSteps} שלבים. מתחילים.`,
-        `הגיע הזמן לעבוד על ${name}. ${totalSteps} שלבים לפנינו. קדימה.`,
-        `יאללה, בואו נעשה ${name} ביחד. ${totalSteps} שלבים בסך הכל. נתחיל.`,
+        `בואו נתרגל ${name}. יש ${n} שלבים. מתחילים.`,
+        `הגיע הזמן לעבוד על ${name}. ${n} שלבים לפנינו. קדימה.`,
+        `יאללה, בואו נעשה ${name} ביחד. ${n} שלבים בסך הכל. נתחיל.`,
       ];
       return intros[Math.floor(Math.random() * intros.length)];
     },
     nextStep: (num, total) =>
-      `שלב ${num} מתוך ${total}.`,
+      `שלב ${heNum(num)} מתוך ${heNum(total)}.`,
     holdFor: (seconds) =>
-      `החזיקו למשך ${seconds} שניות.`,
+      `החזיקו למשך ${heNum(seconds)} שניות.`,
     countdown: (n) => `${n}`,
     release: "שחררו. כל הכבוד.",
     encouragement: [
