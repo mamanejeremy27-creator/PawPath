@@ -177,6 +177,46 @@ FRONTEND_URL=http://localhost:5176
 
 **NEVER use `import type` for DTO classes in NestJS controllers.** `import type` strips the class at compile time, so `ValidationPipe` can't read decorator metadata and rejects all properties as "should not exist". Services CAN use `import type` for DTOs since they only use the shape.
 
+## Workflow
+
+### Git
+
+- **Always create a branch** before starting any work — feature, bug fix, refactor, whatever. No working directly on `main` or `staging`.
+- **Branch naming**:
+  - `feat/<short-description>` — new feature
+  - `fix/<short-description>` — bug fix
+  - `chore/<short-description>` — non-feature work (refactor, infra, deps)
+  - `docs/<short-description>` — documentation only
+  - If there's a Linear ticket ID, include it: `feat/PAW-42-training-screen-redesign`
+- **Never merge to `staging`** without explicitly asking the user first.
+- **Never merge to `main`** — ever. Main is sacred; only the user controls it.
+- **Never force-push** to shared branches (`staging`, `main`).
+- Keep commits atomic and meaningful. Use conventional commit format (`feat:`, `fix:`, `chore:`, etc.).
+
+### Linear
+
+**Team**: PawPath — ticket prefix `PAW` (e.g. `PAW-42`)
+
+Use Linear to track all meaningful work. When starting or identifying a task, create a ticket if one doesn't exist.
+
+**Ticket types and when to use them:**
+
+| Type | Label | When to use |
+|------|-------|-------------|
+| Feature | `Feature` | New user-facing functionality |
+| Bug | `Bug` | Something broken or behaving incorrectly |
+| Improvement | `Improvement` | Enhancement to an existing feature |
+| Chore | `Chore` | Refactor, dependency update, infra, cleanup |
+| Design | `Design` | UI/UX work without new backend logic |
+
+**Creating a ticket:**
+- Title: short, imperative (e.g. "Add XP animation on exercise complete")
+- Description: what it is, why it matters, acceptance criteria if clear
+- Link the git branch in the ticket (Linear auto-detects branch names with ticket IDs)
+- Set priority: Urgent → blockers only; High → current sprint; Normal → default; Low → nice-to-have
+
+---
+
 ## Docs
 
 Implemented feature specs live in `docs/`:
