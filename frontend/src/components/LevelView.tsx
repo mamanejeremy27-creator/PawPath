@@ -29,7 +29,7 @@ export default function LevelView() {
           return (
             <button
               key={ex.id}
-              onClick={() => nav("exercise", { exercise: ex })}
+              onClick={() => nav("exercise", { exercise: ex, from: "program" })}
               className={cn(
                 "flex items-center gap-3.5 w-full p-[18px] mb-2 bg-surface rounded-3xl cursor-pointer text-text text-start border",
                 done ? "border-training/20" : "border-border",

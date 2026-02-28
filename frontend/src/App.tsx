@@ -54,6 +54,7 @@ import LostDogTracker from "./components/LostDogTracker.jsx";
 import ReportSighting from "./components/ReportSighting.jsx";
 import LostDogPublicPage from "./components/LostDogPublicPage.jsx";
 import LostDogFeedList from "./components/LostDogFeedList.jsx";
+import CompletionScreen from "./components/CompletionScreen.jsx";
 import { cn } from "./lib/cn.js";
 
 export default function App() {
@@ -115,6 +116,7 @@ export default function App() {
       {screen === "program" && <ProgramView />}
       {screen === "level" && <LevelView />}
       {screen === "exercise" && <ExerciseView />}
+      {screen === "completion" && <CompletionScreen />}
       {screen === "journal" && <JournalList />}
       {screen === "badges" && <Badges />}
       {(screen === "profile" || screen === "dog") && <Dog />}

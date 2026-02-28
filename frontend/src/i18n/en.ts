@@ -404,6 +404,9 @@ export default {
   backToProgram: "Back to Program",
   programComplete: "Program Complete!",
   backToPrograms: "Back to Programs",
+  backHome: "Back Home",
+  exerciseCompleteHeading: "Complete!",
+  programCompleteSubtitle: "You've finished every exercise in this program!",
 
   // Auth
   authWelcome: "Welcome to PawPath",

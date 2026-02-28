@@ -85,6 +85,7 @@ export function AppProvider({ children }) {
   // ─── Navigation State ───
   const [screen, setScreen] = useState("splash");
   const [screenParams, setScreenParams] = useState<Record<string, any>>({});
+  const [navSource, setNavSource] = useState<"home" | "program" | null>(null);
   const [selProgram, setSelProgram] = useState(null);
   const [selLevel, setSelLevel] = useState(null);
   const [selExercise, setSelExercise] = useState(null);
@@ -583,6 +584,7 @@ export function AppProvider({ children }) {
     if (o.exercise !== undefined) setSelExercise(o.exercise);
     if (o.emergency !== undefined) setSelEmergency(o.emergency);
     if (o.walkData !== undefined) setWalkData(o.walkData);
+    if (o.from !== undefined) setNavSource(o.from);
     setWalkSavedToast(!!o.walkSavedToast);
     setScreenParams(o);
     setScreen(s);
@@ -601,6 +603,12 @@ export function AppProvider({ children }) {
     const { exId, lvlId, progId, isReview } = pendingComplete;
     const currentDog = dogs[activeDogId];
 
+    // Capture navigation context before async operations
+    const completedExercise = selExercise;
+    const completedProgram = selProgram;
+    const completedLevel = selLevel;
+    const completionSource = navSource;
+
     // Prepare journal data
     const hasContent = journalForm.note.trim() || (journalForm.photos && journalForm.photos.length > 0);
     const journalData = (!skipJournal && hasContent) ? {
@@ -609,6 +617,8 @@ export function AppProvider({ children }) {
       mood: journalForm.mood,
       photos: journalForm.photos || [],
     } : undefined;
+
+    let xpEarned = 0;
 
     try {
       const backendDogId = getDogBackendId(activeDogId) || activeDogId;
@@ -619,6 +629,8 @@ export function AppProvider({ children }) {
         programId: progId,
         journal: journalData,
       });
+
+      xpEarned = result.xpGained ?? 0;
 
       // XP animation
       setXpAnim(result.xpGained);
@@ -678,7 +690,11 @@ export function AppProvider({ children }) {
 
     setPendingComplete(null);
     setShowJournalEntry(false);
-  }, [pendingComplete, dogs, activeDogId, journalForm, badges]);
+
+    // Navigate to completion screen
+    setScreenParams({ completedExercise, program: completedProgram, level: completedLevel, xpEarned, navSource: completionSource });
+    setScreen("completion");
+  }, [pendingComplete, dogs, activeDogId, journalForm, badges, selExercise, selProgram, selLevel, navSource]);
 
   // ─── Notification Permission ───
   const requestNotifPermission = useCallback(async () => {
@@ -731,6 +747,7 @@ export function AppProvider({ children }) {
 
     // Navigation
     screen, setScreen, nav, screenParams,
+    navSource,
     selProgram, setSelProgram,
     selLevel, setSelLevel,
     selExercise, setSelExercise,

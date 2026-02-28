@@ -35,7 +35,7 @@ export default function DailyPlan() {
           return (
             <button
               key={idx}
-              onClick={() => nav("exercise", { program: item.program, level: item.level, exercise: item.exercise })}
+              onClick={() => nav("exercise", { program: item.program, level: item.level, exercise: item.exercise, from: "home" })}
               className={cn(
                 "flex items-center gap-3 w-full p-3 rounded-xl cursor-pointer text-black text-start transition-transform hover:-translate-y-1 brut-border-sm brut-shadow-sm",
                 isDone ? "bg-training opacity-80" : "bg-white"

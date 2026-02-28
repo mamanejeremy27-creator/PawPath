@@ -82,7 +82,7 @@ export default function ProgramView() {
                   return (
                     <button
                       key={ex.id}
-                      onClick={() => nav("exercise", { exercise: ex, level: lv })}
+                      onClick={() => nav("exercise", { exercise: ex, level: lv, from: "program" })}
                       className={cn(
                         "flex items-center gap-3 w-full p-3.5 rounded-2xl cursor-pointer text-start text-text brut-border-sm",
                         done ? "bg-training/10 border-training/20" : "bg-surface border-border"

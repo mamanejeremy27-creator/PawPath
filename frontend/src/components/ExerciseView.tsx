@@ -7,7 +7,7 @@ import VoiceMode from "./VoiceMode.jsx";
 import { Card } from "./ui/Card";
 import { calculateFreshness, getFreshnessColor } from "../utils/freshness.js";
 import { matchBreed, getBreedExerciseTip } from "../data/breedTraits.js";
-import { ArrowLeft, ArrowRight, Clock, Lightbulb, Dog, Mic, PartyPopper } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Lightbulb, Dog, Mic } from "lucide-react";
 import Icon from "./ui/Icon.jsx";
 import { cn } from "../lib/cn";
 
@@ -35,6 +35,7 @@ export default function ExerciseView() {
     selExercise, selLevel, selProgram, completedExercises, journal,
     triggerComplete, nav, T, rtl, lang, gear: gearData,
     skillFreshness, incrementDifficultyField, moodCheck, dogProfile,
+    navSource,
   } = useApp();
   const enteredRef = useRef(null);
   const [showVoice, setShowVoice] = useState(false);
@@ -55,22 +56,6 @@ export default function ExerciseView() {
   if (!selExercise || !selLevel || !selProgram) return null;
   const ex = selExercise;
   const done = completedExercises.includes(ex.id);
-  const allProgramDone = done && selProgram.levels.every(l => l.exercises.every(e => completedExercises.includes(e.id)));
-
-  let nextExInfo = null;
-  if (done && !allProgramDone) {
-    for (let i = 0; i < selProgram.levels.length; i++) {
-      const lvl = selProgram.levels[i];
-      if (i > 0 && !selProgram.levels[i - 1].exercises.every(e => completedExercises.includes(e.id))) continue;
-      for (const exercise of lvl.exercises) {
-        if (!completedExercises.includes(exercise.id)) {
-          nextExInfo = { exercise, level: lvl };
-          break;
-        }
-      }
-      if (nextExInfo) break;
-    }
-  }
 
   const freshData = skillFreshness[ex.id];
   const daysSince = freshData
@@ -84,10 +69,10 @@ export default function ExerciseView() {
       {/* Back nav */}
       <div className="px-5 pt-6 pb-4">
         <button
-          onClick={() => nav("program", { exercise: null, level: null })}
+          onClick={() => navSource === "home" ? nav("today") : nav("program", { exercise: null, level: null })}
           className="inline-flex items-center gap-1.5 bg-surface brut-border-sm px-3 py-1.5 rounded-xl text-sm font-semibold text-text cursor-pointer border-none mb-4"
         >
-          {rtl ? <ArrowRight size={14} /> : <ArrowLeft size={14} />} {selProgram.name}
+          {rtl ? <ArrowRight size={14} /> : <ArrowLeft size={14} />} {navSource === "home" ? T("home") : selProgram.name}
         </button>
       </div>
 
@@ -227,14 +212,7 @@ export default function ExerciseView() {
         {/* Difficulty Suggestion Card */}
         <DifficultyCard exerciseId={ex.id} program={selProgram} />
 
-        {/* Program complete celebration (inline — only shows when all done) */}
-        {done && allProgramDone && (
-          <div className="mt-6 text-center py-4">
-            <div><PartyPopper size={48} className="text-black" /></div>
-            <div className="text-base font-black text-black mt-2 uppercase tracking-wide">{T("programComplete")}</div>
-          </div>
-        )}
-      </div>
+        </div>
 
       {/* Sticky action bar */}
       <div className="fixed bottom-4 inset-x-0 px-4 z-20">
@@ -246,28 +224,6 @@ export default function ExerciseView() {
             >
               {T("markComplete")} ✓
             </button>
-          ) : allProgramDone ? (
-            <button
-              onClick={() => nav("train")}
-              className="w-full py-4 text-base font-extrabold bg-surface text-text brut-border brut-shadow rounded-full cursor-pointer"
-            >
-              {T("backToPrograms")}
-            </button>
-          ) : nextExInfo ? (
-            <>
-              <button
-                onClick={() => nav("exercise", { exercise: nextExInfo.exercise, level: nextExInfo.level })}
-                className="w-full py-4 text-base font-extrabold bg-training text-black brut-border brut-shadow rounded-full cursor-pointer"
-              >
-                {T("nextExercise")} →
-              </button>
-              <button
-                onClick={() => { if (enteredRef.current) enteredRef.current.completed = true; triggerComplete(ex.id, selLevel.id, selProgram.id); }}
-                className="w-full py-3 text-sm font-bold bg-surface text-text brut-border-sm rounded-full cursor-pointer"
-              >
-                {T("reviewRefresh")}
-              </button>
-            </>
           ) : (
             <button
               onClick={() => { if (enteredRef.current) enteredRef.current.completed = true; triggerComplete(ex.id, selLevel.id, selProgram.id); }}
