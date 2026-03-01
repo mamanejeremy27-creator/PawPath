@@ -26,7 +26,7 @@ export default function Today() {
       <div className="relative z-10 px-4 pt-5 flex flex-col gap-3">
 
         {/* ── Header ── */}
-        <div className="flex justify-between items-center bg-white brut-border brut-shadow p-3 rounded-2xl">
+        <div className="flex justify-between items-center bg-surface brut-border brut-shadow p-4 rounded-2xl">
           <div className="flex items-center gap-3">
             <DogAvatar key={activeDogId} size="small" dogId={activeDogId} />
             <div>
@@ -53,15 +53,15 @@ export default function Today() {
           {/* Streak */}
           <button
             onClick={() => nav("streakView")}
-            className="flex-1 bg-xp brut-border-sm brut-shadow-sm rounded-xl px-2 py-2.5 flex flex-col items-center gap-0.5 cursor-pointer rotate-[-1deg] hover:rotate-1 transition-transform"
+            className="flex-1 bg-xp brut-border-sm brut-shadow-sm rounded-xl p-3 flex flex-col items-center gap-1 cursor-pointer rotate-[-1deg] hover:rotate-1 transition-transform"
           >
-            <span className="text-lg">{streakData?.fire ?? "🔥"}</span>
+            <span className="text-xl">{streakData?.fire ?? "🔥"}</span>
             <span className="text-sm font-black text-black">{streakData?.current ?? 0}</span>
             <span className="text-[9px] font-black text-black uppercase tracking-wide">{T("dayStreak")}</span>
           </button>
 
           {/* Level */}
-          <div className="flex-1 bg-white brut-border-sm brut-shadow-sm rounded-xl px-2 py-2.5 flex flex-col items-center gap-0.5">
+          <div className="flex-1 bg-surface brut-border-sm brut-shadow-sm rounded-xl p-3 flex flex-col items-center gap-1">
             <ProgressRing value={xpProgress} size={32} strokeWidth={4} color="#000000">
               <span className="text-[10px] font-black text-black">{playerLevel.level}</span>
             </ProgressRing>
@@ -71,15 +71,15 @@ export default function Today() {
           </div>
 
           {/* Sessions */}
-          <div className="flex-1 bg-training brut-border-sm brut-shadow-sm rounded-xl px-2 py-2.5 flex flex-col items-center gap-0.5">
-            <span className="text-lg">✅</span>
+          <div className="flex-1 bg-training brut-border-sm brut-shadow-sm rounded-xl p-3 flex flex-col items-center gap-1">
+            <span className="text-xl">✅</span>
             <span className="text-sm font-black text-black">{completedExercises.length}</span>
             <span className="text-[9px] font-black text-black uppercase tracking-wide">{T("done")}</span>
           </div>
 
           {/* Badges */}
-          <div className="flex-1 bg-achieve brut-border-sm brut-shadow-sm rounded-xl px-2 py-2.5 flex flex-col items-center gap-0.5">
-            <span className="text-lg">🏆</span>
+          <div className="flex-1 bg-achieve brut-border-sm brut-shadow-sm rounded-xl p-3 flex flex-col items-center gap-1">
+            <span className="text-xl">🏆</span>
             <span className="text-sm font-black text-black">{earnedBadges.length}</span>
             <span className="text-[9px] font-black text-black uppercase tracking-wide">{T("badges")}</span>
           </div>

@@ -31,10 +31,10 @@ export default function BottomNav({ active }) {
               }}
               className={cn(
                 "flex-1 flex flex-col items-center py-3 gap-1 bg-transparent border-none cursor-pointer hover:bg-black/5 transition-colors",
-                isActive ? "text-black bg-black/10" : "text-muted"
+                isActive ? "text-black bg-black/[0.08]" : "text-muted"
               )}
             >
-              <item.Icon size={24} strokeWidth={isActive ? 3 : 2} className={isActive ? "text-black" : "text-muted"} />
+              <item.Icon size={24} strokeWidth={isActive ? 2.5 : 2} className={isActive ? "text-black" : "text-muted"} />
               <span className={cn("text-[10px] font-black uppercase tracking-wide", isActive ? "text-black" : "text-muted")}>
                 {item.label}
               </span>

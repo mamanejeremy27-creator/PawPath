@@ -21,7 +21,7 @@ export default function DailyPlan() {
       </div>
 
       {/* Daily message */}
-      <div className="px-4 py-3 bg-[#FFF3E3] rounded-xl brut-border-sm mb-4">
+      <div className="px-4 py-3 bg-bg rounded-xl brut-border-sm mb-4">
         <p className="text-[13px] font-bold text-black m-0 leading-relaxed italic flex items-start gap-2">
           <Lightbulb size={18} className="text-black shrink-0 mt-0.5" strokeWidth={3} />
           &ldquo;{dailyMsg}&rdquo;
